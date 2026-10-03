@@ -7,10 +7,12 @@ over to WebXR, so a page built with IWFDK gets the Frame's full gamepad
 layout, and the real Frame controller models, in a WebXR browser on the
 headset.
 
-**Status (2026-10-03):** SDK side implemented and unit-tested; Chromium patch
-written and unit-tested in isolation; model extraction tool built for the
-Frame (aarch64) and tested on synthetic data. **Nothing has run on a Frame
-yet** (see [What still needs a Frame](#7-what-still-needs-a-frame)).
+**Status (2026-10-04):** running on a Steam Frame. The Frame's WebXR browser,
+Chromium XR, carries the controller patches; the controller models were
+extracted on a Frame and ship with IWFDK; haptics work. The rendering
+workarounds for other Frame browsers ([section 5](#5-making-a-webxr-app-great-on-the-steam-frame))
+are unit-tested but not yet run on the headset (see
+[What still needs a Frame](#8-what-still-needs-a-frame)).
 
 Controller paths and layout come from Valve's own OpenXR profile for the
 Frame controllers
@@ -31,11 +33,15 @@ shoulder button and thumbstick, with touch sensing on every button.
 | Input profile                     | No `valve-frame` profile exists in `@webxr-input-profiles`, and IWSDK only resolves profiles baked in from that package.                                                 | `registerInputProfile()` in `@iwsdk/xr-input`; `valve-frame` registered by default.                                                                                                                                                                                                   |
 | SDK input semantics               | IWSDK reads controllers per hand and per component; Frame apps think in gamepad terms (A/B/X/Y, D-pad, menu/view) and must also work on an unpatched browser.            | `FrameInput`: a port of FramePlayer's `fp-xr` input layer, exposed as `world.input.frame`, plus a `frame` binding source for input actions.                                                                                                                                           |
 | Controller models                 | The real models come from the OpenXR runtime (`XR_EXT_render_model`), which a page cannot reach; no Frame model exists in `@webxr-input-profiles`.                       | `tools/frame-models` extracts them on the headset with their animation; `loadFrameControllerModels()` shows and animates them ([section 4](#4-real-controller-models)).                                                                                                               |
+| Rendering                         | Chromium on the Frame offers WebXR projection layers it cannot composite (black headset), and builds without patch 0005 lose the right eye.                              | On a Steam Frame browser `@iwsdk/core` renders through an `XRWebGLLayer` and finishes each XR frame where needed ([section 5](#5-making-a-webxr-app-great-on-the-steam-frame)).                                                                                                       |
+| Haptics                           | Chromium XR vibrates XR controllers through `vibrationActuator.playEffect()`, Quest Browser through `hapticActuators[0].pulse()`.                                        | `pulseHaptics()` (and `frame.vibrate()`) try both.                                                                                                                                                                                                                                    |
 
 Package names stay `@iwsdk/*` for now so upstream merges stay mechanical (see
-[Tracking upstream](#6-tracking-upstream)). New code is under
+[Tracking upstream](#7-tracking-upstream)). New code is under
 `packages/xr-input/src/frame/`, `packages/xr-input/src/gamepad/profiles/`,
-`platform/chromium/` and `tools/frame-models/`.
+`packages/xr-input/src/gamepad/haptics.ts`,
+`packages/core/src/init/steam-frame.ts`, `platform/chromium/` and
+`tools/frame-models/`.
 
 ## 2. Using Frame input in an app
 
@@ -101,9 +107,19 @@ mirrors the right controller's X/Y into the left gamepad, so
 X. On the Frame that press also shows on the right `X_Button`; `FrameInput`
 reads the right one only.
 
-Haptics: `frame.vibrate('right', 0.5, 40)` is best effort and returns `false`
-when the browser exposes no actuator. Controller haptics are not wired up in
-the community Frame Chromium build.
+Haptics: `frame.vibrate('right', 0.5, 40)`, or `pulseHaptics(source, 0.5, 40)`
+for any controller (an `XRInputSource` or its gamepad), is best effort and
+returns `false` when the browser exposes no actuator. It tries
+`gamepad.vibrationActuator.playEffect('dual-rumble', ...)` first, which is
+what Chromium XR supports (patch 0008), then `gamepad.hapticActuators[0].pulse()`,
+which is what Quest Browser supports. The community Frame Chromium builds
+have no controller haptics.
+
+```ts
+import { pulseHaptics } from '@iwsdk/core';
+
+pulseHaptics(this.input.xr.gamepads.right?.inputSource, 0.6, 30);
+```
 
 ### Where each control comes from
 
@@ -254,15 +270,131 @@ shoulders, menu and view stay at rest because the emulation does not expose
 them under their own names. A control not exercised during capture stays at
 rest (the tool's summary and `missingCoverage` list them).
 
-## 5. Browser build
+## 5. Making a WebXR app great on the Steam Frame
 
-The Frame's WebXR browser is the community arm64 Chromium build
-([saphid/chromium-webxr-steam-frame](https://github.com/saphid/chromium-webxr-steam-frame)).
-Two patch sets apply on top of it, in file-name order:
+What bringing WebXR apps (Fish & Chips, built with IWSDK) to the Frame
+taught, as a checklist. Each item says what IWFDK already does; apps on plain
+three.js or older IWSDK builds need to do it themselves. The Frame renders
+2160×2160 pixels per eye at 90 Hz in Chromium XR on an Adreno 750: an
+11.1 ms frame.
+
+1. **Don't render into WebXR projection layers.** Chromium's Linux OpenXR
+   backend offers the `layers` feature and
+   `XRWebGLBinding.createProjectionLayer`, but its Vulkan graphics binding
+   cannot composite layers (`SupportsLayers()` is false), so a page drawing
+   into a projection layer shows black in the headset. three.js draws into
+   one whenever `createProjectionLayer` exists, whatever features the
+   session has. Chromium XR's launcher turns the API off; other Frame builds
+   don't. _IWFDK:_ in a Steam Frame browser it requests `layers` only if the
+   app requires them, and hides `createProjectionLayer` while three.js sets
+   the session up, so three.js renders through an `XRWebGLLayer`
+   (`packages/core/src/init/steam-frame.ts`). In Chromium XR a page that
+   asks for `layers` logs "Unsupported feature requested: layers", which is
+   harmless. A plain three.js app can do the same:
+
+   ```ts
+   const proto = XRWebGLBinding.prototype;
+   const method = Object.getOwnPropertyDescriptor(
+     proto,
+     'createProjectionLayer',
+   );
+   if (method) delete proto.createProjectionLayer;
+   try {
+     await renderer.xr.setSession(session);
+   } finally {
+     if (method) Object.defineProperty(proto, 'createProjectionLayer', method);
+   }
+   ```
+
+2. **Finish each frame in Frame browsers without Chromium XR's fix.**
+   Blink discards the depth and stencil buffers
+   (`DiscardFramebufferEXT` in `XRWebGLDrawingBuffer::DoneWithSharedBuffer`)
+   when it hands a frame to the compositor, and on the Frame's graphics stack
+   (ANGLE on GL on zink on Turnip) that turns the right eye black or
+   flickering and loses effects such as water. Chromium XR skips the discard
+   (patch 0005). Elsewhere a `gl.finish()` at the end of each XR frame,
+   before the browser takes it, avoids it; a finish after the discard does
+   not. _IWFDK:_ `render.finishXRFrames` (default `'auto'`) finishes frames
+   in a Steam Frame browser until a controller reports `valve-frame`, so
+   Chromium XR pays nothing. A finish stops the CPU running ahead of the GPU,
+   which lowers the frame-rate ceiling; `false` turns it off, `true` forces
+   it in any browser.
+
+3. **Request the session once.** A second `requestSession()` while one is
+   pending or active rejects with "InvalidStateError: ... There is already an
+   active, immersive XRSession". _IWFDK:_ `world.launchXR()` ignores calls
+   while a request is pending and logs "XRSession already exists" while a
+   session is active (IWSDK's own guard). Fish & Chips's build of IWSDK
+   predates the pending-request guard and logs that error on every Enter VR:
+   update IWSDK, or ignore clicks while a request is in flight.
+
+4. **Read the controllers as Touch controllers, or as Frame controllers.**
+   Chromium XR reports
+   `["valve-frame", "oculus-touch-v3", "oculus-touch", "generic-trigger-squeeze-thumbstick"]`
+   with a gamepad whose slots 0-6 match Touch
+   ([section 3](#3-the-valve-frame-gamepad-layout)), so Quest code works
+   unchanged; the D-pad, shoulders, menu and view are Frame-only. Other Frame
+   builds report SteamVR's Touch emulation (`oculus-touch`). _IWFDK:_
+   `world.input.frame` covers both; `frame.layout` says which applies
+   ([section 2](#2-using-frame-input-in-an-app)).
+
+5. **Show Frame controllers.** _IWFDK:_ loads the shipped Frame models in a
+   Steam Frame browser (`frameControllerModels` in the XR input options;
+   [section 4](#4-real-controller-models)). Chromium XR also redirects the
+   Touch models that pages fetch from the WebXR input profiles CDN to Frame
+   models, so apps that show Touch models show Frame controllers there.
+
+6. **Vibrate through `vibrationActuator` first.** Chromium XR supports
+   `gamepad.vibrationActuator.playEffect('dual-rumble', { duration, strongMagnitude, weakMagnitude })`
+   (patch 0008), not `hapticActuators[0].pulse()`; Quest Browser supports
+   `pulse()`. _IWFDK:_ `pulseHaptics()` and `frame.vibrate()` try both.
+
+7. **Detect the Frame by its CPU.** Chromium's reduced user agent says
+   "Linux x86*64" on the Frame;
+   `navigator.userAgentData.getHighEntropyValues(['platform', 'architecture'])`
+   says `Linux` / `arm`. \_IWFDK:* `detectSteamFrameBrowser()` (and the
+   synchronous `isSteamFrameBrowser()` once it has answered), which never
+   matches Quest, Pico or Android browsers.
+
+8. **Budget for 2160×2160 at 90 Hz; the page can't change either.** The
+   refresh rate and resolution are SteamVR per-app settings: Chromium XR's
+   launcher sets 90 Hz and 2160 pixels per eye (SteamVR's defaults are 72 Hz
+   and 1728), and SteamVR overrides refresh-rate requests from the app. What
+   a page controls:
+   - **Framebuffer scale:** `renderer.xr.setFramebufferScaleFactor(s)` before
+     entering XR; 1.0 (IWSDK's default) is SteamVR's resolution. Lower it for
+     a heavy scene.
+   - **Antialiasing:** IWSDK's renderer always asks for it, and the XR
+     framebuffer is multisampled.
+   - **Foveation and multiview** have no effect: Chromium's `XRWebGLLayer`
+     has no fixed foveation, and three.js only uses multiview with projection
+     layers, so each eye is drawn separately.
+
+   IWFDK keeps IWSDK's defaults: nothing measured on the Frame yet calls for
+   different ones.
+
+## 6. Browser build
+
+The Frame's WebXR browser is **Chromium XR**: arm64 Chromium 157 built from
+`chromium/main` `2255089d4176` with the patches below, after the community
+build ([saphid/chromium-webxr-steam-frame](https://github.com/saphid/chromium-webxr-steam-frame)).
+It installs through Frame Control from the
+[FramePlayer release](https://github.com/yellkell/frameplayer/releases/tag/chromium-xr-frame-157.0.8085.0-3)
+(`chromium-xr-frame-157.0.8085.0-3`). Two patch sets apply, in file-name
+order:
 
 1. **FramePlayer patches** (`frameplayer` repo, `docs/webxr/patches`,
-   `docs/project-outline` branch): 0001-0003 let WebXR run with the seccomp
-   sandbox on; 0005 fixes black and one-eyed rendering.
+   `docs/project-outline` branch):
+   - 0001-0003 let WebXR run with the seccomp sandbox on;
+   - 0005 skips the depth/stencil discard that blacks out the right eye
+     ([section 5](#5-making-a-webxr-app-great-on-the-steam-frame), item 2);
+   - 0006 is the Quest-compatible gamepad (below);
+   - 0008 vibrates XR controllers through OpenXR haptics, for
+     `gamepad.vibrationActuator.playEffect('dual-rumble', ...)`.
+
+   There is no 0007 (FramePlayer's embedding hooks, dropped when FramePlayer
+   and Chromium XR became separate apps).
+
 2. **IWFDK controller patches** (`platform/chromium/patches`, this repo):
    0004 adds the Frame controllers; 0006 makes their gamepad
    Quest-compatible and applies on top of 0004.
@@ -277,6 +409,25 @@ platform/chromium/apply-chromium-patches.sh /path/to/chromium/src
 autoninja -C out/Default device_unittests
 out/Default/device_unittests --gtest_filter='OpenXrInteractionProfilesTest.*'
 ```
+
+The release's launcher (`chromium-xr.sh`; FramePlayer
+`tools/webxr/frame-title/launch.sh`) also:
+
+- passes `--disable-blink-features=WebXRLayers`, so pages render through an
+  `XRWebGLLayer` (projection layers show black;
+  [section 5](#5-making-a-webxr-app-great-on-the-steam-frame), item 1);
+- passes `--test-type`, which hides the "unsupported command-line flag" bar
+  over every page (the non-sandboxed title runs with
+  `--disable-seccomp-filter-sandbox`);
+- sets SteamVR's per-app defaults for Chromium XR with `vrcmd`, 90 Hz and
+  2160 pixels per eye, unless they were chosen in SteamVR's per-app video
+  settings (`CHROMIUM_XR_REFRESH_RATE` / `CHROMIUM_XR_RESOLUTION` change
+  them, `0` leaves SteamVR's);
+- loads the Frame controller models extension shipped in the title
+  (`--load-extension`, with
+  `--disable-features=DisableLoadExtensionCommandLineSwitch`), which serves
+  Frame models in place of the `oculus-touch` models, so pages that show
+  Touch controllers show Frame controllers.
 
 What patch 0004 does:
 
@@ -307,12 +458,10 @@ What patch 0006 does:
   controller's X/Y into the left gamepad's slots 4 and 5, where Touch has
   them.
 
-Generated against `chromium/main` `2255089d4176` (2026-10-02); applies cleanly
-there. The profile table and its unit test were compiled and run against
-stand-ins for Chromium's `base` headers. The controller and input-helper
-changes have **not** been compiled in a Chromium tree yet.
+Generated against `chromium/main` `2255089d4176` (2026-10-02); compiled and
+running on a Frame in Chromium XR (Chromium 157.0.8085.0).
 
-## 6. Tracking upstream
+## 7. Tracking upstream
 
 `upstream` is facebook/immersive-web-sdk; IWFDK started from 1.0.1
 (`0778f51`) with full history.
@@ -329,17 +478,23 @@ Upstream-touching edits are deliberately small: `InputComponent` (6 ids),
 `input-profiles.ts` (registry and per-profile visual), `base-visual-adapter.ts`
 (uses the profile's visual), `xr-input/src/index.ts` (exports),
 `core/src/input/input-manager.ts` and `input-actions.ts` (the `frame` source),
+`core/src/init/xr.ts` (no `layers` offer and no projection layer in a Steam
+Frame browser), `core/src/init/world-initializer.ts` (`render.finishXRFrames`),
 and `scripts/check-headers.mjs` (accepts the IWFDK header).
 
-## 7. What still needs a Frame
+## 8. What still needs a Frame
 
-1. **Run `tools/frame-models.sh`** and check its summary: every control
-   mapped, model-to-grip spread under a millimetre, nothing left in
-   "not fully exercised". Then load the result in any IWFDK example and
-   compare against SteamVR's own controller rendering.
-2. **A Chromium build** with patch 0004, then `device_unittests` and an
-   on-headset run: `frame.layout === 'frame'` and every button lights up.
-3. **What an unpatched browser reports** (`oculus-touch` is expected from
-   Valve's documentation of Touch emulation) and that `isSteamFrameBrowser()`
-   (`Linux aarch64` in the user agent) matches the Frame browser.
+Verified on a Frame (2026-10-03/04): Chromium XR with patches 0004 and 0006
+reports `valve-frame` with the [section 3](#3-the-valve-frame-gamepad-layout)
+layout; the extracted controller models show and animate; controllers
+vibrate through patch 0008; `userAgentData` identifies the Frame (its user
+agent says x86_64). Still open:
+
+1. **IWFDK's rendering workarounds in a Frame browser without Chromium XR's
+   fixes** (the community build): both eyes render with
+   `render.finishXRFrames: 'auto'`, and what the finish costs at 90 Hz.
+2. **What such a browser reports** (`oculus-touch` is expected from Valve's
+   documentation of Touch emulation), so that `frame.layout` reads
+   `remapped`.
+3. **Chromium XR Sandboxed** (seccomp filter on).
 4. **Pinch thresholds** against Frame hand-tracking noise.
