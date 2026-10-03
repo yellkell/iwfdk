@@ -104,6 +104,7 @@ import {
   armSessionGrantCaptureForOptions,
   onSessionGrant,
 } from './session-grant.js';
+import { shouldFinishXRFrame } from './steam-frame.js';
 import {
   ReferenceSpaceType,
   SessionMode,
@@ -145,6 +146,15 @@ export type WorldOptions = {
     far?: number;
     /** Enable stencil buffer. @defaultValue false */
     stencil?: boolean;
+    /**
+     * End every XR frame with `gl.finish()`. `'auto'` does so only in a
+     * Steam Frame browser without Chromium XR's rendering fix, where it
+     * stops the right eye going black or flickering; it costs CPU/GPU
+     * overlap, so `false` turns it off and `true` forces it anywhere.
+     * See FRAME.md, "Making a WebXR app great on the Steam Frame".
+     * @defaultValue 'auto'
+     */
+    finishXRFrames?: boolean | 'auto';
     /** Initial local camera pose under `world.player`. */
     camera?: {
       position?: [number, number, number];
@@ -323,7 +333,7 @@ export async function initializeWorld(
   await registerFeatureSystems(world, config);
 
   // Setup render loop
-  setupRenderLoop(world, renderer);
+  setupRenderLoop(world, renderer, config.finishXRFrames);
 
   // Setup resize handling
   setupResizeHandling(world, camera, renderer);
@@ -417,6 +427,7 @@ export function extractConfiguration(options: WorldOptions) {
     cameraFar: options.render?.far ?? 200,
     cameraPose: options.render?.camera,
     stencil: options.render?.stencil ?? false,
+    finishXRFrames: options.render?.finishXRFrames ?? ('auto' as const),
     xr: {
       enabled: options.xr !== false,
       sessionMode: xrOptions?.sessionMode ?? SessionMode.ImmersiveVR,
@@ -896,7 +907,11 @@ async function registerFeatureSystems(
 /**
  * Setup the main render loop
  */
-function setupRenderLoop(world: World, renderer: WebGLRenderer) {
+function setupRenderLoop(
+  world: World,
+  renderer: WebGLRenderer,
+  finishXRFrames: boolean | 'auto',
+) {
   const clock = new Clock();
 
   const render = () => {
@@ -914,6 +929,9 @@ function setupRenderLoop(world: World, renderer: WebGLRenderer) {
       world.runXRFrameCallbacks(xrFrame, delta, elapsedTime);
     }
     renderer.render(world.scene, world.camera);
+    if (shouldFinishXRFrame(finishXRFrames, world.session)) {
+      renderer.getContext().finish();
+    }
   };
 
   renderer.setAnimationLoop(render);

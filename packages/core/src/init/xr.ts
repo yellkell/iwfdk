@@ -7,6 +7,7 @@
 
 import type { World } from '../ecs/world.js';
 import { attachBrowserCameraRestore } from './browser-camera.js';
+import { avoidsWebXRLayers, withoutProjectionLayers } from './steam-frame.js';
 
 /** WebXR session modes supported by IWSDK. @category Runtime */
 export enum SessionMode {
@@ -53,7 +54,9 @@ export type XRFeatureOptions = {
   depthSensing?: DepthSensingFlag;
   /**
    * WebXR Layers. Defaults to optional even if not set, to maximize success.
-   * You may set `{ required: true }` to require layers.
+   * You may set `{ required: true }` to require layers. In a Steam Frame
+   * browser layers are only requested when required: Chromium on the Frame
+   * cannot composite them and shows black (see FRAME.md).
    */
   layers?: FeatureFlag;
   unbounded?: FeatureFlag;
@@ -210,9 +213,15 @@ export function buildSessionInit(opts: XROptions): XRSessionInit {
     push('depthSensing', normalized);
   }
 
+  // A Steam Frame browser grants `layers` but cannot composite layers (see
+  // steam-frame.ts), so it is offered there only when the app requires it.
+  const offered = avoidsWebXRLayers()
+    ? optionalFeatures.filter((feature) => feature !== map.layers)
+    : optionalFeatures;
+
   const sessionInit: XRSessionInit = {
     requiredFeatures: Array.from(new Set(requiredFeatures)),
-    optionalFeatures: Array.from(new Set(optionalFeatures)),
+    optionalFeatures: Array.from(new Set(offered)),
   };
 
   if (isDepthFlagObject(f.depthSensing)) {
@@ -402,7 +411,9 @@ export async function adoptXRSession(
       if (options.restoreCameraOnExit !== false) {
         attachBrowserCameraRestore(world.camera, session);
       }
-      await world.renderer.xr.setSession(session);
+      await withoutProjectionLayers(() =>
+        world.renderer.xr.setSession(session),
+      );
       if (sessionEnded) {
         session.removeEventListener('end', onEnd);
         return false;
