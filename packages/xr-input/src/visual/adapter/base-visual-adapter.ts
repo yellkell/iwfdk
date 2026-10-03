@@ -48,6 +48,8 @@ export interface InputConfig {
   profileId: string;
   resolvedProfileId: string;
   assetPath?: string;
+  /** Visual registered with the resolved input profile, if any. */
+  visualClass?: VisualConstructor<VisualImplementation>;
 }
 
 export interface HandPose {
@@ -62,6 +64,8 @@ export abstract class XRInputVisualAdapter {
   public gripSpace: Group | undefined;
   public isPrimary = false;
   protected _inputSource?: XRInputSource;
+  /** Set once the app picks a visual; profile visuals no longer apply. */
+  private explicitVisualClass = false;
 
   constructor(
     protected playerSpace: Group,
@@ -76,8 +80,11 @@ export abstract class XRInputVisualAdapter {
   protected connectVisual() {
     if (this.inputConfig) {
       const { inputSource, layout } = this.inputConfig;
+      const visualClass =
+        (!this.explicitVisualClass && this.inputConfig.visualClass) ||
+        this.visualClass;
       XRInputVisualAdapter.createVisual(
-        this.visualClass,
+        visualClass,
         inputSource,
         layout,
         this.visualsEnabled,
@@ -89,7 +96,7 @@ export abstract class XRInputVisualAdapter {
         if (
           visual &&
           inputSource === this._inputSource &&
-          visual.constructor === this.visualClass
+          visual.constructor === visualClass
         ) {
           this.visual = visual;
           this.visual.xrInput = this;
@@ -137,6 +144,7 @@ export abstract class XRInputVisualAdapter {
   ) {
     this.disconnectVisual();
     this.visualClass = visualClass;
+    this.explicitVisualClass = true;
     this.connectVisual();
   }
 

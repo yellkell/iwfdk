@@ -8,6 +8,10 @@
 export const DEFAULT_PROFILES_PATH =
   'https://cdn.jsdelivr.net/npm/@webxr-input-profiles/assets@1.0/dist/profiles';
 
+import type {
+  VisualConstructor,
+  VisualImplementation,
+} from '../visual/adapter/base-visual-adapter.js';
 import {
   PROFILES_LIST,
   getProfile as getGeneratedProfile,
@@ -57,11 +61,18 @@ export interface RegisterInputProfileOptions {
    * `<DEFAULT_PROFILES_PATH>/<profileId>`. Absolute asset paths are used as is.
    */
   assetBasePath?: string;
+  /**
+   * Visual used for controllers that resolve to this profile, instead of the
+   * adapter's default (`AnimatedController`). An app's explicit
+   * `updateVisualImplementation()` call still takes precedence.
+   */
+  visualClass?: VisualConstructor<VisualImplementation>;
 }
 
 type RegisteredInputProfile = {
   profile: InputProfile;
   assetBasePath?: string;
+  visualClass?: VisualConstructor<VisualImplementation>;
 };
 
 const registeredProfiles = new Map<string, RegisteredInputProfile>();
@@ -79,6 +90,7 @@ export function registerInputProfile(
   registeredProfiles.set(profile.profileId, {
     profile,
     assetBasePath: options.assetBasePath,
+    visualClass: options.visualClass,
   });
 }
 
@@ -111,10 +123,7 @@ function resolveAssetPath(
   return `${base.replace(/\/+$/, '')}/${assetPath}`;
 }
 
-type ResolvedProfile = {
-  profile: InputProfile;
-  assetBasePath?: string;
-};
+type ResolvedProfile = RegisteredInputProfile;
 
 function resolveProfileSync(
   inputSource: XRInputSource,
@@ -200,7 +209,7 @@ export async function fetchProfile(
 
 export function loadInputProfile(inputSource: XRInputSource) {
   const profileId = inputSource.profiles[0];
-  const { profile, assetBasePath } = resolveProfileSync(
+  const { profile, assetBasePath, visualClass } = resolveProfileSync(
     inputSource,
     DEFAULT_PROFILE,
   );
@@ -218,5 +227,6 @@ export function loadInputProfile(inputSource: XRInputSource) {
       layout.assetPath,
       assetBasePath,
     ),
+    visualClass,
   };
 }

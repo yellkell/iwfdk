@@ -1,0 +1,376 @@
+{
+  "format": "iwfdk-frame-controller-models",
+  "version": 1,
+  "runtime": {
+    "name": "synthetic",
+    "version": "0.0.0"
+  },
+  "hands": {
+    "left": {
+      "asset": "left.glb",
+      "nodeNames": [
+        "trigger",
+        "stick",
+        "button_a",
+        "a_touch_dot",
+        "body"
+      ],
+      "animations": [
+        {
+          "kind": "button",
+          "node": "trigger",
+          "component": "xr-standard-trigger",
+          "property": "value",
+          "rest": {
+            "position": [
+              0.0,
+              -0.009999997,
+              0.029999983
+            ],
+            "orientation": [
+              0.00021284232,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "pressed": {
+            "position": [
+              0.0,
+              -0.009999999,
+              0.03
+            ],
+            "orientation": [
+              0.17364821,
+              0.0,
+              0.0,
+              0.9848078
+            ]
+          },
+          "confidence": 0.9999994
+        },
+        {
+          "kind": "stick",
+          "node": "stick",
+          "component": "xr-standard-thumbstick",
+          "rest": {
+            "position": [
+              0.0,
+              0.009999997,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "left": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              1.8909523e-9,
+              2.489486e-10,
+              0.1305262,
+              0.9914449
+            ]
+          },
+          "right": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              -0.1305262,
+              0.9914449
+            ]
+          },
+          "up": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              -0.1305262,
+              -1.244743e-10,
+              9.454761e-10,
+              0.9914449
+            ]
+          },
+          "down": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              0.1305262,
+              -3.3957767e-11,
+              -2.5793484e-10,
+              0.9914449
+            ]
+          },
+          "confidence": 0.9999996
+        },
+        {
+          "kind": "button",
+          "node": "button_a",
+          "component": "a-button",
+          "property": "pressed",
+          "rest": {
+            "position": [
+              0.009999997,
+              0.011999996,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "pressed": {
+            "position": [
+              0.01,
+              0.009499999,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "confidence": 0.9999999
+        },
+        {
+          "kind": "visibility",
+          "node": "a_touch_dot",
+          "component": "a-button",
+          "property": "touched",
+          "visibleWhenActive": true,
+          "confidence": 0.99999994
+        }
+      ],
+      "visibleAtRest": {
+        "a_touch_dot": false,
+        "body": true,
+        "button_a": true,
+        "stick": true,
+        "trigger": true
+      },
+      "unmappedNodes": [
+        "body"
+      ],
+      "gripFromModel": {
+        "position": [
+          0.0,
+          -0.019999985,
+          0.03999997
+        ],
+        "orientation": [
+          -0.14943855,
+          0.0,
+          0.0,
+          0.988771
+        ]
+      },
+      "gripFromModelSpread": 3.332001e-8,
+      "restSamples": 41,
+      "missingCoverage": []
+    },
+    "right": {
+      "asset": "right.glb",
+      "nodeNames": [
+        "trigger",
+        "stick",
+        "button_a",
+        "a_touch_dot",
+        "body"
+      ],
+      "animations": [
+        {
+          "kind": "button",
+          "node": "trigger",
+          "component": "xr-standard-trigger",
+          "property": "value",
+          "rest": {
+            "position": [
+              0.0,
+              -0.009999997,
+              0.029999983
+            ],
+            "orientation": [
+              0.00021284232,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "pressed": {
+            "position": [
+              0.0,
+              -0.009999999,
+              0.03
+            ],
+            "orientation": [
+              0.17364821,
+              0.0,
+              0.0,
+              0.9848078
+            ]
+          },
+          "confidence": 0.9999994
+        },
+        {
+          "kind": "stick",
+          "node": "stick",
+          "component": "xr-standard-thumbstick",
+          "rest": {
+            "position": [
+              0.0,
+              0.009999997,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "left": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              1.8909523e-9,
+              2.489486e-10,
+              0.1305262,
+              0.9914449
+            ]
+          },
+          "right": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              -0.1305262,
+              0.9914449
+            ]
+          },
+          "up": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              -0.1305262,
+              -1.244743e-10,
+              9.454761e-10,
+              0.9914449
+            ]
+          },
+          "down": {
+            "position": [
+              0.0,
+              0.009999999,
+              0.0
+            ],
+            "orientation": [
+              0.1305262,
+              -3.3957767e-11,
+              -2.5793484e-10,
+              0.9914449
+            ]
+          },
+          "confidence": 0.9999996
+        },
+        {
+          "kind": "button",
+          "node": "button_a",
+          "component": "a-button",
+          "property": "pressed",
+          "rest": {
+            "position": [
+              0.009999997,
+              0.011999996,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "pressed": {
+            "position": [
+              0.01,
+              0.009499999,
+              0.0
+            ],
+            "orientation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "confidence": 0.9999999
+        },
+        {
+          "kind": "visibility",
+          "node": "a_touch_dot",
+          "component": "a-button",
+          "property": "touched",
+          "visibleWhenActive": true,
+          "confidence": 0.99999994
+        }
+      ],
+      "visibleAtRest": {
+        "a_touch_dot": false,
+        "body": true,
+        "button_a": true,
+        "stick": true,
+        "trigger": true
+      },
+      "unmappedNodes": [
+        "body"
+      ],
+      "gripFromModel": {
+        "position": [
+          0.0,
+          -0.019999985,
+          0.03999997
+        ],
+        "orientation": [
+          -0.14943855,
+          0.0,
+          0.0,
+          0.988771
+        ]
+      },
+      "gripFromModelSpread": 3.332001e-8,
+      "restSamples": 41,
+      "missingCoverage": []
+    }
+  }
+}
