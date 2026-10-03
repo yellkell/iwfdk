@@ -1,0 +1,6 @@
+{
+  "runtimeServerName": "iwsdk-runtime",
+  "optionalServerNames": ["iwsdk-reference", "metavr"],
+  "legacyServerNames": ["iwsdk", "iwsdk-dev-mcp", "iwsdk-rag-local", "hzdb"],
+  "legacyArgTokens": ["--port", "--workspace"]
+}

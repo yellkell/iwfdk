@@ -1,0 +1,121 @@
+{
+  "screenshots": [
+    {
+      "hash": "68a2003a2b990fb2f80f210aea6d34b709c69bc11068621ac4d16d9311c630d1",
+      "imageDataLength": 6468,
+      "mimeType": "image/png",
+      "view": "right",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [8, 2, 0],
+        "projection": "perspective",
+        "view": "right"
+      }
+    },
+    {
+      "hash": "158c4cb0cce5cfa4bef6e8efbb9dc4b81a94ae58aa937fa8e06f41a1d34b3a49",
+      "imageDataLength": 7100,
+      "mimeType": "image/png",
+      "view": "top",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [0, 8, 0],
+        "projection": "perspective",
+        "view": "top"
+      }
+    },
+    {
+      "hash": "45ee8ecbe345fe617b9cc68e4069353ec2d3d506458da31b1b974a59d2c7e7d7",
+      "imageDataLength": 6336,
+      "mimeType": "image/png",
+      "view": "front",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [0, 2, 8],
+        "projection": "perspective",
+        "view": "front"
+      }
+    },
+    {
+      "hash": "15e3fa156ba0c44b36f8a95a587f8055d65cc233f7fb3be345bea37f0afc845e",
+      "imageDataLength": 6696,
+      "mimeType": "image/png",
+      "view": "back",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [0, 2, -8],
+        "projection": "perspective",
+        "view": "back"
+      }
+    },
+    {
+      "hash": "16b4786ddcdd422728105a040753956e1a0098ee0506d14353e846bcdf9e00ee",
+      "imageDataLength": 6228,
+      "mimeType": "image/png",
+      "view": "left",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [-8, 2, 0],
+        "projection": "perspective",
+        "view": "left"
+      }
+    },
+    {
+      "hash": "68a2003a2b990fb2f80f210aea6d34b709c69bc11068621ac4d16d9311c630d1",
+      "imageDataLength": 6468,
+      "mimeType": "image/png",
+      "view": "right",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [8, 2, 0],
+        "projection": "perspective",
+        "view": "right"
+      }
+    },
+    {
+      "hash": "117d2f7e803a8b92a1fcc4ac7218efbddf7da6e2f2e3332f0a1ef7afcc559b5e",
+      "imageDataLength": 6304,
+      "mimeType": "image/png",
+      "view": "quarter",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [4, 3, 4],
+        "projection": "perspective",
+        "view": "quarter"
+      }
+    },
+    {
+      "hash": "97c8c925a4eb0a9bdbf989983ac96d1128e94eccc88b06bd88d833480486e8f6",
+      "imageDataLength": 6352,
+      "mimeType": "image/png",
+      "view": "orbit",
+      "camera": {
+        "fov": 50,
+        "lookAt": [0, 0, 0],
+        "position": [-4.0022, 3, 4.0022],
+        "projection": "perspective",
+        "view": "orbit"
+      }
+    },
+    {
+      "hash": "f1b754640e66030645963a77a4a0dea31d3899a31c6e042f6232f49c13d103eb",
+      "imageDataLength": 8196,
+      "mimeType": "image/png",
+      "view": "custom",
+      "camera": {
+        "fov": 35,
+        "lookAt": [0, 0.5, 0],
+        "position": [3, 4, 5],
+        "projection": "perspective",
+        "view": "custom"
+      }
+    }
+  ]
+}

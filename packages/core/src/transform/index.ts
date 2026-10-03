@@ -1,0 +1,12 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+export * from './transform.js';
+export * from './transform-utils.js';
+export * from './synced-vector3.js';
+export * from './synced-quaternion.js';
+export * from './synced-euler.js';

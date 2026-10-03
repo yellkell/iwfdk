@@ -1,0 +1,253 @@
+{
+  "app": {
+    "assets": { "environment-desk": [200, 200, 200, 200] },
+    "components": {
+      "DistanceGrabbable": 5,
+      "LocomotionEnvironment": 1,
+      "OneHandGrabbable": 3,
+      "RayInteractable": 10,
+      "TwoHandsGrabbable": 1
+    },
+    "hierarchyNameCount": 25,
+    "performance": {
+      "gotoMs": 1411,
+      "runtimeReadyMs": 79,
+      "canvasReadyMs": 18,
+      "screenshotCaptureMs": 119
+    },
+    "screenshot": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk/docs/test-evidence/native-scene-examples/current/grab/app.png",
+    "screenshotStats": {
+      "path": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk/docs/test-evidence/native-scene-examples/current/grab/app.png",
+      "sampledPixels": 66,
+      "uniqueColors": 32
+    }
+  },
+  "baseUrl": "https://127.0.0.1:63256/",
+  "editor": {
+    "performance": {
+      "gotoMs": 175,
+      "worldReadyMs": 1254,
+      "screenshotCaptureMs": 99
+    },
+    "sceneDocument": { "assetCount": 0, "nodeCount": 8 },
+    "screenshot": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk/docs/test-evidence/native-scene-examples/current/grab/editor.png",
+    "screenshotStats": {
+      "path": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk/docs/test-evidence/native-scene-examples/current/grab/editor.png",
+      "sampledPixels": 187,
+      "uniqueColors": 32
+    },
+    "viewport": {
+      "assetLoads": [],
+      "meshCount": 23,
+      "nodeObjectCount": 11,
+      "objectHierarchy": [
+        {
+          "assetId": "environment-desk",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0, -0.1069, 0],
+          "nodeId": "environment",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "environment",
+          "worldPosition": [0, -0.1069, 0]
+        },
+        {
+          "assetId": "earth",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0, 1.1497, -1.6608],
+          "nodeId": "earth",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "earth",
+          "worldPosition": [0, 1.1497, -1.6608]
+        },
+        {
+          "assetId": "opera-house",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0.2389, -0.1417, 0.2523],
+          "nodeId": "opera-house",
+          "parentNodeId": "earth",
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "opera-house",
+          "worldPosition": [0.2389, 1.008, -1.4085]
+        },
+        {
+          "assetId": "eiffel-tower",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [-0.1155, 0.327, 0.1385],
+          "nodeId": "eiffel-tower",
+          "parentNodeId": "earth",
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "eiffel-tower",
+          "worldPosition": [-0.1155, 1.4767, -1.5223]
+        },
+        {
+          "assetId": "chichen-itza",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0.0666, 0.2129, -0.2982],
+          "nodeId": "chichen-itza",
+          "parentNodeId": "earth",
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "chichen-itza",
+          "worldPosition": [0.0666, 1.3626, -1.959]
+        },
+        {
+          "assetId": "pin",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0.6, 0.8, -1.5],
+          "nodeId": "pin-1",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "pin-1",
+          "worldPosition": [0.6, 0.8, -1.5]
+        },
+        {
+          "assetId": "pin",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0.75, 0.8, -1.5],
+          "nodeId": "pin-2",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "pin-2",
+          "worldPosition": [0.75, 0.8, -1.5]
+        },
+        {
+          "assetId": "pin",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0.9, 0.8, -1.5],
+          "nodeId": "pin-3",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "pin-3",
+          "worldPosition": [0.9, 0.8, -1.5]
+        },
+        {
+          "assetId": "pyramid",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [-1, 0.75, -1.6],
+          "nodeId": "pyramid-distance-grab",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "pyramid-distance-grab",
+          "worldPosition": [-1, 0.75, -1.6]
+        },
+        {
+          "assetId": "pyramid",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [-0.6, 0.75, -1.6],
+          "nodeId": "pyramid-two-hands",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "pyramid-two-hands",
+          "worldPosition": [-0.6, 0.75, -1.6]
+        },
+        {
+          "assetId": "grab-welcome-panel",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [0, 2.082, -2.3648],
+          "nodeId": "welcome-panel",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:0a589d8e6525c71d86aee27d1b07796ef642c44aa3a0823410533e21342176c6",
+          "sourceNodeId": "welcome-panel",
+          "worldPosition": [0, 2.082, -2.3648]
+        }
+      ],
+      "renderer": "iwsdk-webgl",
+      "webgl": true,
+      "worldReady": true
+    }
+  },
+  "packedAssets": {
+    "appRequests": [
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/environmentDesk.gltf",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/environmentDesk.gltf"
+      },
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/de62cd3b4ecfca5e0179c8f217ba59fe.jpg",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/de62cd3b4ecfca5e0179c8f217ba59fe.jpg"
+      },
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/d022feed3df22c33fedf823eab2fb76a.jpg",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/d022feed3df22c33fedf823eab2fb76a.jpg"
+      },
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/fdcc7a0dae2c9b19ef712deb4a2d287c.jpg",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/fdcc7a0dae2c9b19ef712deb4a2d287c.jpg"
+      }
+    ],
+    "editorRequests": [
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/environmentDesk.gltf",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/environmentDesk.gltf"
+      },
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/de62cd3b4ecfca5e0179c8f217ba59fe.jpg",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/de62cd3b4ecfca5e0179c8f217ba59fe.jpg"
+      },
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/d022feed3df22c33fedf823eab2fb76a.jpg",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/d022feed3df22c33fedf823eab2fb76a.jpg"
+      },
+      {
+        "assetId": "environment-desk",
+        "path": "environment-desk/fdcc7a0dae2c9b19ef712deb4a2d287c.jpg",
+        "url": "https://iwsdk-example-assets.invalid/npm/@iwsdk/example-assets@0.4.2/assets/environment-desk/fdcc7a0dae2c9b19ef712deb4a2d287c.jpg"
+      }
+    ],
+    "packageVersion": "0.4.2"
+  },
+  "performance": {
+    "app": {
+      "gotoMs": 1411,
+      "runtimeReadyMs": 79,
+      "canvasReadyMs": 18,
+      "screenshotCaptureMs": 119
+    },
+    "editor": {
+      "gotoMs": 175,
+      "worldReadyMs": 1254,
+      "screenshotCaptureMs": 99
+    },
+    "thresholds": {
+      "appCanvasReadyMs": 30000,
+      "appRuntimeReadyMs": 60000,
+      "appScreenshotCaptureMs": 10000,
+      "editorScreenshotCaptureMs": 10000,
+      "editorWorldReadyMs": 60000,
+      "targetTotalMs": 120000
+    },
+    "totalMs": 5449
+  },
+  "scene": "public/scenes/grab.iwsdk.scene.json",
+  "target": "grab"
+}

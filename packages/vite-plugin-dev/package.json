@@ -1,0 +1,84 @@
+{
+  "name": "@iwsdk/vite-plugin-dev",
+  "version": "1.0.1",
+  "type": "module",
+  "description": "Vite plugin for IWSDK development — XR emulation, AI agent tooling, and Playwright browser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    },
+    "./editor/session": {
+      "types": "./dist/editor/scene-editor-session.d.ts",
+      "import": "./dist/editor/scene-editor-session.js"
+    },
+    "./editor/workspace": {
+      "types": "./dist/editor/editor-workspace.d.ts",
+      "import": "./dist/editor/editor-workspace.js"
+    }
+  },
+  "files": [
+    "dist",
+    "client.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "npm --prefix ../cli run build",
+    "prebuild:plugin": "npm --prefix ../cli run build",
+    "build": "rollup -c rollup.injection.config.js && rollup -c rollup.config.js",
+    "build:plugin": "rollup -c rollup.config.js",
+    "build:injection": "rollup -c rollup.injection.config.js",
+    "test": "npm --prefix ../scene-composition run build && npm --prefix ../core run build && npm --prefix ../cli run build && npm run build:injection && rollup -c rollup.config.js && vitest run",
+    "test:watch": "vitest",
+    "dev": "rollup -c --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "webxr",
+    "emulation",
+    "iwsdk",
+    "ai",
+    "polyfill",
+    "meta",
+    "quest",
+    "mcp"
+  ],
+  "author": "Felix Zhang <fe1ix@meta.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@drawcall/uikitml": "0.1.8",
+    "@iwer/devui": "^2.5.0",
+    "@iwsdk/core": "workspace:*",
+    "@iwsdk/scene-composition": "workspace:*",
+    "@preact/signals-core": "^1.12.1",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "lucide": "^0.468.0",
+    "open": "^10.2.0",
+    "playwright": "^1.58.2",
+    "preact": "^10.29.7",
+    "sharp": "^0.35.4",
+    "three": "npm:super-three@0.181.0",
+    "three-viewport-gizmo": "^2.2.0",
+    "ws": "^8.21.1"
+  },
+  "devDependencies": {
+    "@iwer/sem": "^2.5.0",
+    "@iwsdk/cli": "workspace:*",
+    "@types/ws": "^8.5.13",
+    "iwer": "^2.5.0",
+    "vitest": "^4.1.10"
+  },
+  "peerDependencies": {
+    "vite": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=20.19.0 <21.0.0-0 || >=22.12.0 <23.0.0-0 || >=24.0.0"
+  }
+}

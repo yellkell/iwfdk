@@ -1,0 +1,20 @@
+{
+  "thresholds": {
+    "appInitialReadyMs": 60000,
+    "compareScreenshotsMs": 20000,
+    "editorStartupMs": 60000,
+    "explicitScreenshotPairMs": 20000,
+    "namedScreenshotBatchMs": 60000,
+    "singleScreenshotCaptureMs": 10000,
+    "transformCommitMs": 10000
+  },
+  "timings": {
+    "appInitialReadyMs": 1037,
+    "editorStartupMs": 446,
+    "transformCommitMs": 20,
+    "compareScreenshotsMs": 31.19999998807907,
+    "explicitScreenshotPairMs": 38.5,
+    "namedScreenshotBatchMs": 135.09999999403954,
+    "singleScreenshotCaptureMs": 34.29999998211861
+  }
+}

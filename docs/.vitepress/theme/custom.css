@@ -1,0 +1,77 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/* Examples page specific styles - remove ALL padding, margins, and width constraints */
+
+/* When examples-page class is on body, override all width constraints */
+body.examples-page {
+  --vp-layout-max-width: 100% !important;
+}
+
+body.examples-page .VPDoc .container,
+body.examples-page .VPDoc .content,
+body.examples-page .VPDoc .content-container,
+body.examples-page .VPDoc:not(.has-sidebar) .container,
+body.examples-page .VPDoc:not(.has-sidebar) .content,
+body.examples-page .VPDoc.has-aside .content-container,
+body.examples-page .VPDoc.has-sidebar .content,
+body.examples-page .VPDoc.has-sidebar .content-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide the aside on examples page */
+body.examples-page .VPDoc .aside {
+  display: none !important;
+}
+
+body.examples-page .VPDoc .main {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body.examples-page .VPDoc {
+  padding: 0 !important;
+}
+
+body.examples-page .vp-doc {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+body.examples-page .vp-doc > div {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Hide the doc footer on examples page */
+body.examples-page .VPDocFooter {
+  display: none !important;
+}
+
+/* Hide the page footer on examples page */
+body.examples-page .VPFooter {
+  display: none !important;
+}
+
+/* Prevent scrolling on examples page */
+body.examples-page .VPContent {
+  overflow: hidden !important;
+}
+
+body.examples-page #VPContent {
+  overflow: hidden !important;
+}
+
+/* Hide the local nav (breadcrumb bar) on examples page */
+body.examples-page .VPLocalNav {
+  display: none !important;
+}

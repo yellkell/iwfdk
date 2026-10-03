@@ -1,0 +1,67 @@
+<style>
+  .heading {
+    height: 48px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.5px;
+    color: #272727;
+  }
+
+  .heading:dark {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .sub-heading {
+    color: #272727;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .sub-heading:dark {
+    color: rgba(255, 255, 255, 0.90);
+  }
+
+  .panel-root {
+    flex-direction: column;
+    width: 344px;
+  }
+
+  .panel-content {
+    align-items: center;
+    flex-direction: column;
+    padding-top: 16px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .button {
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+</style>
+<Panel class="panel-root">
+  <div class="panel-content">
+    <div class="heading"> Browser-First IWSDK </div>
+    <Divider></Divider>
+    <div class="sub-heading"> Runs with xr: false. WASD or arrow keys move the player; right-drag to look around; left-click to ray-press the cube or grab the ball. Toggle View switches between first- and third-person cameras.</div>
+  </div>
+  <Button id="reset-button" class="button" style="margin-bottom: 0">
+    <ButtonIcon>
+      <RotateCcw></RotateCcw>
+    </ButtonIcon>
+    Reset Ball
+  </Button>
+  <Button id="toggle-view-button" class="button">
+    <ButtonIcon>
+      <Camera></Camera>
+    </ButtonIcon>
+    Toggle View
+  </Button>
+</Panel>

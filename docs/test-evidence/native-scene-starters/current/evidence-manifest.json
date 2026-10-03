@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-07-31T19:11:04.733Z",
+  "command": "pnpm test:native-scene-starter-evidence",
+  "files": [
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-vr/app.png",
+      "sha256": "d3a196bdb20bfaddb57fd80d4c9a08da6140746234258b216e62e3e2a66bdffe"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-vr/editor.png",
+      "sha256": "4a96868625b15760938e048d716fd5310b01a60438afaeef0c0ee1d971540505"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-vr/app-after-reload.png",
+      "sha256": "bd5978cb581674f06f7de75812867dfb6c0dec619f8f758e2a504c6d65c67d74"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-vr/proof.json",
+      "sha256": "43332d50c312646e939a06975e7d904670b33daa7e96021796df894726f31c01"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-ar/app.png",
+      "sha256": "31877d5977489e6454863837df22add76a53c1ffe7efff2f022cf8093f8291a1"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-ar/editor.png",
+      "sha256": "266fd0e3aca966b33a1b466cabd1e8bb4f78af1857a2a85fa86b83e89ced588c"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-ar/app-after-reload.png",
+      "sha256": "7532c180c2388f62c910b32a89f146d924b14565498bd1132090d712dcb89423"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-ar/proof.json",
+      "sha256": "7ff04fc98d49a8000f89e05a7a3c03a436e2d47cbf5a720893fafd73b84b443b"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-browser/app.png",
+      "sha256": "3f35f70fc63b79a5885bf754ce45576d92d95ced62789257237f51a4c025d9aa"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-browser/editor.png",
+      "sha256": "49f544a10f73218909f3ae2754d5d67f060486655c1bb0d45037ae8446f306b4"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-browser/app-after-reload.png",
+      "sha256": "63f54f564bbd7af1c81ae34c87c59bcb0e901b43418b492fa20fa7e21fc89548"
+    },
+    {
+      "path": "docs/test-evidence/native-scene-starters/current/generated-browser/proof.json",
+      "sha256": "ce66106045f016f97a4943de2fd641feec7cbefb6a1a369053cef192c66409a2"
+    }
+  ],
+  "targets": ["generated-vr", "generated-ar", "generated-browser"]
+}

@@ -1,0 +1,2 @@
+# Codex MCP configuration is populated after dependencies are installed.
+# Run `npx @iwsdk/cli adapter sync --tools codex` to register local MCP servers.

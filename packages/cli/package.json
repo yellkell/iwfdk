@@ -1,0 +1,86 @@
+{
+  "name": "@iwsdk/cli",
+  "version": "1.0.1",
+  "description": "Runtime-first CLI for IWSDK dev servers, adapters, and MCP access",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "iwsdk": "bin/iwsdk.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./contract": {
+      "types": "./dist/runtime-contract.d.ts",
+      "import": "./dist/contract.js"
+    },
+    "./runtime-files": {
+      "types": "./dist/runtime-files.d.ts",
+      "import": "./dist/runtime-files.js"
+    },
+    "./runtime-owner": {
+      "types": "./dist/runtime-owner.d.ts",
+      "import": "./dist/runtime-owner.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "contract": [
+        "dist/runtime-contract.d.ts"
+      ],
+      "runtime-files": [
+        "dist/runtime-files.d.ts"
+      ],
+      "runtime-owner": [
+        "dist/runtime-owner.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "bin/iwsdk.js",
+    "dist",
+    "guidance",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "node scripts/gen-version.cjs",
+    "build": "tsc -p tsconfig.json --emitDeclarationOnly && rollup -c",
+    "clean": "rm -rf dist",
+    "test": "npm run build && vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "iwsdk",
+    "cli",
+    "mcp",
+    "runtime",
+    "webxr"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/immersive-web-sdk.git"
+  },
+  "author": "Felix Zhang <fe1ix@meta.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/facebook/immersive-web-sdk/issues"
+  },
+  "homepage": "https://github.com/facebook/immersive-web-sdk#readme",
+  "engines": {
+    "node": ">=20.19.0 <21.0.0-0 || >=22.12.0 <23.0.0-0 || >=24.0.0"
+  },
+  "dependencies": {
+    "semver": "^7.6.3"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@types/ws": "^8.5.13",
+    "@types/semver": "^7.5.8",
+    "vitest": "^4.1.10",
+    "ws": "^8.21.1"
+  }
+}

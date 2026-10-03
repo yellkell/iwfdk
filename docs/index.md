@@ -1,0 +1,49 @@
+---
+layout: home
+title: Immersive Web SDK
+hero:
+  name: Immersive Web SDK
+  text: AI-native 3D web development.
+  tagline: Build 3D web experiences with AI agents that can see, interact with, and debug your scenes.
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guides/01-project-setup
+    - theme: alt
+      text: Agentic Development
+      link: /ai/
+    - theme: alt
+      text: API
+      link: /api/
+features:
+  - title: 🏗️ Modern ECS Architecture
+    details: Built on Three.js with a high-performance Entity Component System that scales from simple prototypes to complex applications.
+    link: /concepts/ecs/
+    linkText: Learn more
+  - title: 🎨 First-Class Spatial UI
+    details: Author 3D interfaces in HTML-like syntax with UIKitML. Source files are loaded and parsed directly at runtime into high-performance 3D layout and text.
+    link: /concepts/spatial-ui/
+    linkText: Learn more
+  - title: ⚡ Production-Ready XR Systems
+    details: Grab interactions, locomotion, spatial audio, physics, and scene understanding — pre-built systems that work seamlessly together.
+    link: /concepts/
+    linkText: Learn more
+  - title: 🤖 Agent-First Development
+    details: AI agents can see, interact with, and debug your XR scenes. Screenshots, controller input, scene inspection, and engine-level debugging — all built in.
+    link: /ai/
+    linkText: Learn more
+  - title: 🔀 Versatile AI Integration
+    details: Run the agent headlessly in the background, watch it work in real time, or collaborate hands-on. One config knob.
+    link: /ai/modes
+    linkText: Learn more
+  - title: 🛠️ Powerful AI Tooling
+    details: Full XR emulation control, native scene composition, scene graph inspection, and ECS-level debugging. A broad toolset covers everything from input simulation to scene-file validation and runtime inspection.
+    link: /ai/mcp-tools
+    linkText: Learn more
+---
+
+Meta recommends IWSDK for building 3D web experiences.
+
+```bash
+npm create @iwsdk@latest
+```

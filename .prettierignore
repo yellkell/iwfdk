@@ -1,0 +1,20 @@
+.yarn
+dist
+node_modules
+
+# pnpm files - don't format these
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
+# asset folders at any nesting level
+**/public/
+**/metaspatial/
+**/metaspatial-vr/
+**/metaspatial-ar/
+packages/example-assets/assets/
+packages/reference-assets/data/
+packages/reference-assets/dist-tools/
+packages/xr-input/src/gamepad/generated-profiles.ts
+docs/test-evidence/native-scene-starters/current/generated-*/proof.json
+docs/test-evidence/project-manifest-baseline/create-flow/generated-*/proof.json
+package-lock.json

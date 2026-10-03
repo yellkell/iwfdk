@@ -1,0 +1,78 @@
+{
+  "name": "@iwsdk/reference",
+  "version": "1.0.1",
+  "description": "Workspace-local reference CLI/MCP server for semantic IWSDK search using externally hosted corpus/model warmup artifacts",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "iwsdk-reference": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./contract": {
+      "types": "./dist/contract.d.ts",
+      "import": "./dist/contract.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "contract": [
+        "dist/contract.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --emitDeclarationOnly && rollup -c",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "iwsdk",
+    "immersive-web-sdk",
+    "webxr",
+    "rag",
+    "semantic-search",
+    "code-search"
+  ],
+  "author": "Felix Zhang <fe1ix@meta.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/immersive-web-sdk.git",
+    "directory": "packages/reference"
+  },
+  "bugs": {
+    "url": "https://github.com/facebook/immersive-web-sdk/issues"
+  },
+  "homepage": "https://github.com/facebook/immersive-web-sdk/tree/main/packages/reference#readme",
+  "dependencies": {
+    "@huggingface/transformers": "^3.1.2",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "tar": "^7.5.22"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/node": "^20.11.0",
+    "rollup": "^4.62.3",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=20.19.0 <21.0.0-0 || >=22.12.0 <23.0.0-0 || >=24.0.0"
+  },
+  "private": false
+}

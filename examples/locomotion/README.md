@@ -1,0 +1,150 @@
+# IWSDK Locomotion Example
+
+This is the official locomotion example project for the WebXR Framework, designed for optimal developer, designer, and tech artist workflow.
+
+## 📁 Project Structure
+
+```
+locomotion/
+├── src/                    # Source code
+│   ├── index.js           # Main application entry point
+│   ├── settings.js        # Settings configuration
+│   ├── test-component.js  # Example component
+├── public/                # Static assets served at root
+│   ├── textures/          # Images and texture files
+│   ├── audio/             # Audio files
+│   └── ui/                # Runtime-loaded UIKitML files
+├── dist/                 # Build output (generated)
+├── index.html           # Main HTML file
+├── vite.config.js       # Vite configuration
+└── package.json         # Project dependencies
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 20.19.0+ and pnpm
+- HTTPS support for WebXR development
+
+### Installation
+
+```bash
+cd locomotion
+pnpm install
+```
+
+### Development
+
+```bash
+# Start development server with HTTPS
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Preview production build locally
+pnpm preview
+```
+
+The development server will start on the HTTPS local URL reported by Vite or `npx @iwsdk/cli dev status` (typically `https://localhost:5173/` when that port is free).
+
+## 📦 Asset Organization
+
+### WebXR-Optimized Asset Handling
+
+This example uses Vite's `public/` directory for local texture/audio assets and
+the shared `@iwsdk/example-assets` catalog for reusable GLTF assets since they
+are:
+
+- Loaded at runtime via URLs (not imported as modules)
+- Large files that shouldn't be bundled or processed
+- Need direct URL access for asset loaders
+
+### Assets Directory Structure
+
+- **Shared stock base** - immutable `@iwsdk/example-assets@0.4.2` CDN delivery,
+  overridable with `VITE_IWSDK_EXAMPLE_ASSET_BASE_URL` for a local mirror
+- **`public/textures/`** - Images, textures, and visual assets (.png, .jpg, etc.)
+- **`public/audio/`** - Sound effects and music files
+
+### Asset Usage
+
+```typescript
+const stockAssetBase =
+  'https://cdn.jsdelivr.net/npm/@iwsdk/example-assets@0.4.2/assets';
+const assets = defineAssets({
+  model: {
+    url: `${stockAssetBase}/environment-desk/environmentDesk.gltf`,
+    type: AssetType.GLTF,
+  },
+  texture: {
+    url: publicAssetUrl('textures/my-texture.png'),
+    type: AssetType.Texture,
+  },
+});
+```
+
+## 🌐 WebXR Development
+
+### HTTPS Requirements
+
+WebXR requires HTTPS for all features to work properly. This example includes:
+
+- Automatic, cached self-signed HTTPS certificates from the IWSDK dev plugin
+- No certificate-authority installation or trust-store changes
+- Proper CORS configuration for asset loading
+
+### Testing on Devices
+
+```bash
+# Find your local IP
+ipconfig getifaddr en0  # macOS
+# or
+hostname -I             # Linux
+
+# Access from VR headset
+https://YOUR_LOCAL_IP:<PORT>
+```
+
+Accept the headset browser's certificate warning when prompted. The managed
+desktop browser accepts the local certificate automatically.
+
+## 🛠 Customization
+
+### Vite Configuration
+
+The `vite.config.js` file includes:
+
+- HTTPS development server setup
+- Static asset copying configuration
+- Build optimization settings
+- Asset handling rules
+
+### Adding New Assets
+
+1. Add reusable GLTF assets to `@iwsdk/example-assets` through its independently
+   verified release process, or place one-off assets in the appropriate
+   `public/` subdirectory.
+2. Pin shared stock assets to an exact CDN version; build local URLs from
+   `import.meta.env.BASE_URL` so subpath production builds resolve them.
+3. Vite serves and copies only the example's local `public/` assets.
+
+## 📋 Scripts
+
+- **`pnpm dev`** - Start development server with HMR and HTTPS
+- **`pnpm build`** - Build for production
+- **`pnpm preview`** - Preview production build locally
+
+## 🔗 Integration
+
+This example is designed to work seamlessly with:
+
+- **Native scene JSON** for declarative environment setup
+- **WebXR browsers** for VR/AR development
+- **Framework tools** for component generation
+- **Asset pipelines** for 3D content creation
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

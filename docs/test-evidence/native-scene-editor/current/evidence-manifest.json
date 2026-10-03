@@ -1,0 +1,188 @@
+{
+  "browser": {
+    "engine": "playwright-chromium"
+  },
+  "commandLog": {
+    "argv": [],
+    "cwd": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk",
+    "script": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk/scripts/check-native-scene-editor-evidence.mjs"
+  },
+  "device": {
+    "editorFixtureDevice": "metaQuest3 default IWSDK dev runtime",
+    "physicalDevice": "not required for automated editor evidence"
+  },
+  "evidenceDir": "/Users/fe1ix/Projects/webxr-dev-platform-iwsdk-restack-audit/immersive-web-sdk/docs/test-evidence/native-scene-editor/current",
+  "files": {
+    "json": [
+      {
+        "bytes": 8913,
+        "file": "proof.json",
+        "sha256": "46b31b55cb7f03b93c13043f0eba454179718ab551ddf2aed2fbe5d3480107a3"
+      },
+      {
+        "bytes": 214860,
+        "file": "network.json",
+        "sha256": "257bf0facc73068300ee1aea5fa25a1962cc00b365be6fc7893e3c1a810388e8"
+      },
+      {
+        "bytes": 40,
+        "file": "console.json",
+        "sha256": "2a61ea4ec8968fb0828a41af12a8e6c525246122dba1ef1b0df34f491658b213"
+      },
+      {
+        "bytes": 728,
+        "file": "scene-before.json",
+        "sha256": "a7ccce7f85288d51a2c31243dd7a3775c21f2418f1f17c058acd4e9e16836a60"
+      },
+      {
+        "bytes": 1116,
+        "file": "scene-after.json",
+        "sha256": "f541c9a95dff087bacf5668055b9b342537df31298ef06c9932f4987c7474c96"
+      },
+      {
+        "bytes": 158,
+        "file": "hierarchy-before.json",
+        "sha256": "7dbb59cbd4c9cd51204405a9124dc1ccba377703afdd485217c7d836e9cbe628"
+      },
+      {
+        "bytes": 290,
+        "file": "hierarchy-after.json",
+        "sha256": "baf94770f39ade104a2133e2b441bf28f2329e65ee4d1db3b9f3ff941bf8b870"
+      },
+      {
+        "bytes": 9805,
+        "file": "proof-after-reload.json",
+        "sha256": "86f0f343944548b14f359b8d783b1dcccc1918180a2476e6e05d2620f39c04b5"
+      },
+      {
+        "bytes": 993,
+        "file": "app-after-reload-proof.json",
+        "sha256": "9015946226fb9c3acc20e8e9f8ac39bb1b73d8807e166b208aca392528879b73"
+      },
+      {
+        "bytes": 3153,
+        "file": "camera-states.json",
+        "sha256": "7d1e2fe9f363a198d90eff7531c0fadee4ec7d5837f8ea58ddbe918343fabc51"
+      },
+      {
+        "bytes": 580,
+        "file": "image-diff.json",
+        "sha256": "b64846ecf9746bd8e4948f18e1140b974225b24c21b0b151d8a21aa29af7bc0d"
+      },
+      {
+        "bytes": 564,
+        "file": "performance.json",
+        "sha256": "003b7fd0119dd685bd0e6618443e5cfb6f9684375dc573ec02354c7c8b52bba0"
+      },
+      {
+        "bytes": 2482,
+        "file": "workspace-proof.json",
+        "sha256": "f7550d2dc74d9a6e57209c91e23516f03ed901e33c754cdb376a3ad352d8781d"
+      }
+    ],
+    "png": [
+      {
+        "bytes": 5323,
+        "file": "editor-top.png",
+        "sha256": "21c1db157da13da254a303b173ca70cfd901573883af2c4a6ecebe9202731686"
+      },
+      {
+        "bytes": 4750,
+        "file": "editor-front.png",
+        "sha256": "5aaee08eecb62a8a01227b8eca1fa33169230e04cd104af8f7fb6f36ecd10f0d"
+      },
+      {
+        "bytes": 4850,
+        "file": "editor-right.png",
+        "sha256": "f4002b9ac187678f327329939937522497eb1a930b211f25624a5e2ad6eaa8d9"
+      },
+      {
+        "bytes": 4727,
+        "file": "editor-quarter.png",
+        "sha256": "a76459f8f31fc0fd89a7f9f522610b7836313f46df8438e277d1aa32e75615e5"
+      },
+      {
+        "bytes": 27137,
+        "file": "app-after-reload.png",
+        "sha256": "95b400b1b2d4173a7b6283b5a9ce633b071b0c541d60c001ac94344a07ff372d"
+      },
+      {
+        "bytes": 98426,
+        "file": "workspace-create-scene.png",
+        "sha256": "a38df102297280ba368e0b3ffb644fcb98a6bd6f5f9f7c482771f7744b5a1f9a"
+      },
+      {
+        "bytes": 91613,
+        "file": "workspace-editor.png",
+        "sha256": "b63ff1e85dd6fe9f8c25922d545006aeb2acace297826238ff28df287dd5f072"
+      },
+      {
+        "bytes": 7915,
+        "file": "workspace-runtime.png",
+        "sha256": "e07321c106acbebd719cf67f13e3465a43994a54dde6221911018415fa3ab5a7"
+      },
+      {
+        "bytes": 40620,
+        "file": "workspace-scene-picker.png",
+        "sha256": "aa3b9ab222b0690dacd696b1d069a6f64154dc9cedce9d28844d25e534de73c6"
+      },
+      {
+        "bytes": 78618,
+        "file": "workspace-split.png",
+        "sha256": "242b26b3a0998fb16f18742baee20cd2cd4695b0261216700c2752e52557a12b"
+      }
+    ]
+  },
+  "generatedAt": "2026-07-31T19:11:04.937Z",
+  "packageVersions": {
+    "root": null,
+    "@iwsdk/cli": "0.4.2",
+    "@iwsdk/core": "0.4.2",
+    "@iwsdk/create": "0.4.2",
+    "@iwsdk/example-assets": "0.4.2",
+    "@iwsdk/scene-composition": "0.4.2",
+    "@iwsdk/vite-plugin-dev": "0.4.2"
+  },
+  "checks": [
+    "parsed proof.json",
+    "parsed network.json",
+    "parsed console.json",
+    "parsed scene-before.json",
+    "parsed scene-after.json",
+    "parsed hierarchy-before.json",
+    "parsed hierarchy-after.json",
+    "parsed proof-after-reload.json",
+    "parsed app-after-reload-proof.json",
+    "parsed camera-states.json",
+    "parsed image-diff.json",
+    "parsed performance.json",
+    "parsed workspace-proof.json",
+    "validated editor-top.png",
+    "validated editor-front.png",
+    "validated editor-right.png",
+    "validated editor-quarter.png",
+    "validated app-after-reload.png",
+    "validated workspace-create-scene.png",
+    "validated workspace-editor.png",
+    "validated workspace-runtime.png",
+    "validated workspace-scene-picker.png",
+    "validated workspace-split.png",
+    "validated initial editor WebGL proof",
+    "validated post-reload editor WebGL proof",
+    "validated app reload proof",
+    "validated network evidence",
+    "validated console evidence",
+    "validated scene mutation evidence",
+    "validated hierarchy evidence",
+    "validated camera and image-diff evidence",
+    "validated performance threshold evidence",
+    "validated managed workspace evidence",
+    "validated screenshot determinism evidence",
+    "validated saved scene, app reload, and hierarchy parity"
+  ],
+  "environment": {
+    "arch": "arm64",
+    "node": "v24.16.0",
+    "platform": "darwin"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "createState": {
+    "view": "editor",
+    "managed": true,
+    "workspace": { "pageId": "workspace-mrzk8ar7-5rorp0", "tabGeneration": 1 },
+    "runtime": {
+      "ready": false,
+      "pageId": "workspace-mrzk8ar7-5rorp0:runtime"
+    },
+    "editor": {
+      "ready": true,
+      "scenePath": "public/scenes/evidence-create-flow.iwsdk.scene.json",
+      "pageId": "workspace-mrzk8ar7-5rorp0:editor",
+      "sceneSessionId": "scene-jy99uo80rwa",
+      "dirty": false
+    }
+  },
+  "pickerState": {
+    "view": "editor",
+    "managed": true,
+    "workspace": { "pageId": "workspace-mrzk8ahv-5yvir0", "tabGeneration": 1 },
+    "runtime": {
+      "ready": false,
+      "pageId": "workspace-mrzk8ahv-5yvir0:runtime"
+    },
+    "editor": {
+      "ready": false,
+      "scenePath": null,
+      "pageId": "workspace-mrzk8ahv-5yvir0:editor",
+      "sceneSessionId": null,
+      "dirty": false
+    }
+  },
+  "viewStates": {
+    "runtime": {
+      "view": "runtime",
+      "managed": true,
+      "workspace": {
+        "pageId": "workspace-mrzk89iq-38tfs7",
+        "tabGeneration": 1
+      },
+      "runtime": {
+        "ready": true,
+        "pageId": "workspace-mrzk89iq-38tfs7:runtime"
+      },
+      "editor": {
+        "ready": true,
+        "scenePath": "public/scenes/editor-smoke.iwsdk.scene.json",
+        "pageId": "workspace-mrzk89iq-38tfs7:editor",
+        "sceneSessionId": "scene-i2g9295lcis",
+        "dirty": false
+      }
+    },
+    "editor": {
+      "view": "editor",
+      "managed": true,
+      "workspace": {
+        "pageId": "workspace-mrzk89iq-38tfs7",
+        "tabGeneration": 1
+      },
+      "runtime": {
+        "ready": true,
+        "pageId": "workspace-mrzk89iq-38tfs7:runtime"
+      },
+      "editor": {
+        "ready": true,
+        "scenePath": "public/scenes/editor-smoke.iwsdk.scene.json",
+        "pageId": "workspace-mrzk89iq-38tfs7:editor",
+        "sceneSessionId": "scene-i2g9295lcis",
+        "dirty": false
+      }
+    },
+    "split": {
+      "view": "split",
+      "managed": true,
+      "workspace": {
+        "pageId": "workspace-mrzk89iq-38tfs7",
+        "tabGeneration": 1
+      },
+      "runtime": {
+        "ready": true,
+        "pageId": "workspace-mrzk89iq-38tfs7:runtime"
+      },
+      "editor": {
+        "ready": true,
+        "scenePath": "public/scenes/editor-smoke.iwsdk.scene.json",
+        "pageId": "workspace-mrzk89iq-38tfs7:editor",
+        "sceneSessionId": "scene-i2g9295lcis",
+        "dirty": false
+      }
+    }
+  }
+}

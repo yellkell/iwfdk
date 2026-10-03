@@ -1,0 +1,2337 @@
+{
+  "app": {
+    "afterReloadScreenshot": {
+      "path": "app-after-reload.png",
+      "stats": {
+        "sampledPixels": 113,
+        "uniqueColors": 32
+      }
+    },
+    "hierarchy": {
+      "name": "(unnamed)",
+      "uuid": "1f09d97c-fe84-4c0d-afec-13c58b34f100",
+      "objectType": "Scene",
+      "entityIndex": 0,
+      "children": [
+        {
+          "name": "(unnamed)",
+          "uuid": "7ca6dd9c-7aa6-4d07-ad78-33e1b2d7e8c2",
+          "objectType": "Group",
+          "entityIndex": 2,
+          "children": [
+            {
+              "name": "xr-origin-head",
+              "uuid": "ef898a7c-c257-4456-93c5-7440cf0d9281",
+              "objectType": "Group",
+              "entityIndex": 4,
+              "children": [
+                {
+                  "name": "(unnamed)",
+                  "uuid": "a6acc616-6f97-4a2b-8944-8837e039d61a",
+                  "objectType": "AudioListener"
+                }
+              ]
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "d0c0477a-e2ab-49ca-8938-bb935a77c664",
+              "objectType": "Group",
+              "entityIndex": 5,
+              "children": [
+                {
+                  "name": "(unnamed)",
+                  "uuid": "0cf7b442-cc93-450b-bf34-dfaa2ddff40f",
+                  "objectType": "Mesh"
+                }
+              ]
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "494459f6-40de-44b1-8284-af981eced617",
+              "objectType": "Group",
+              "entityIndex": 6,
+              "children": [
+                {
+                  "name": "(unnamed)",
+                  "uuid": "3b12a619-ee57-4b02-991c-14dcd6d4b9b5",
+                  "objectType": "Mesh"
+                },
+                {
+                  "name": "(unnamed)",
+                  "uuid": "7136b9a0-dfcb-4ad5-b05c-d96c7bc928d9",
+                  "objectType": "Group",
+                  "children": [
+                    {
+                      "name": "(unnamed)",
+                      "uuid": "0182d6fe-d63d-4ec7-9f09-05194ea8cd99",
+                      "objectType": "Mesh"
+                    },
+                    {
+                      "name": "(unnamed)",
+                      "uuid": "8898153b-1b98-4ae8-8691-b2e93b5ceede",
+                      "objectType": "Mesh"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "d2f0f505-caef-47dc-9a6f-892050c8035d",
+              "objectType": "Group",
+              "entityIndex": 7
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "58bccad9-1782-4180-8706-b8642eb605fc",
+              "objectType": "Group",
+              "entityIndex": 8
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "54595a2d-b353-4d02-ad7a-375c82941918",
+              "objectType": "Group",
+              "entityIndex": 9
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "2b6252d6-82a6-4380-8dc7-55c3eaa14048",
+              "objectType": "Group",
+              "entityIndex": 10
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "b6d3c23a-a584-4df3-949a-c975278cd355",
+              "objectType": "Mesh"
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "b85ad5b1-2162-4424-b6e3-9d6f8a369723",
+              "objectType": "Mesh"
+            },
+            {
+              "name": "(unnamed)",
+              "uuid": "274cf693-6a25-4765-a99f-fd6c19abe39b",
+              "objectType": "PerspectiveCamera",
+              "entityIndex": 3,
+              "children": [
+                {
+                  "name": "(unnamed)",
+                  "uuid": "e3a5e829-efc7-4cb8-8932-895a872c30e6",
+                  "objectType": "Mesh"
+                },
+                {
+                  "name": "(unnamed)",
+                  "uuid": "c34a4a06-a7d7-425f-8658-1476e5bb6cfb",
+                  "objectType": "Group",
+                  "sceneNodeId": "welcome-panel",
+                  "sourceNodeId": "welcome-panel",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "welcome-panel",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "welcome-panel"
+                  },
+                  "assetId": "welcome-panel",
+                  "children": [
+                    {
+                      "name": "(unnamed)",
+                      "uuid": "ab4a3d32-844d-4a55-899d-02a6a7a20701",
+                      "objectType": "Mesh",
+                      "sceneNodeId": "welcome-panel",
+                      "sourceNodeId": "welcome-panel",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "welcome-panel",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "welcome-panel"
+                      },
+                      "assetId": "welcome-panel",
+                      "children": [
+                        {
+                          "name": "(unnamed)",
+                          "uuid": "b7ccdc6e-4e28-4619-ab1e-badf9f8ebb89",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "welcome-panel",
+                          "sourceNodeId": "welcome-panel",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "welcome-panel",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "welcome-panel"
+                          },
+                          "assetId": "welcome-panel",
+                          "children": [
+                            {
+                              "name": "(unnamed)",
+                              "uuid": "12d0fb22-a36d-46bf-a6eb-1368c3807c06",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "welcome-panel",
+                              "sourceNodeId": "welcome-panel",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "welcome-panel",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "welcome-panel"
+                              },
+                              "assetId": "welcome-panel"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "(unnamed)",
+                          "uuid": "21c0971c-c6fc-4ead-964e-2ce5445c4f53",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "welcome-panel",
+                          "sourceNodeId": "welcome-panel",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "welcome-panel",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "welcome-panel"
+                          },
+                          "assetId": "welcome-panel",
+                          "children": [
+                            {
+                              "name": "(unnamed)",
+                              "uuid": "5249ff5c-572f-4a7b-b190-84a3679444dc",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "welcome-panel",
+                              "sourceNodeId": "welcome-panel",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "welcome-panel",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "welcome-panel"
+                              },
+                              "assetId": "welcome-panel"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "(unnamed)",
+                          "uuid": "a25050a0-1b2c-46b6-a22d-14874e0a1677",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "welcome-panel",
+                          "sourceNodeId": "welcome-panel",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "welcome-panel",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "welcome-panel"
+                          },
+                          "assetId": "welcome-panel",
+                          "children": [
+                            {
+                              "name": "(unnamed)",
+                              "uuid": "1ffb5998-729d-4954-a909-0c8e2e424702",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "welcome-panel",
+                              "sourceNodeId": "welcome-panel",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "welcome-panel",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "welcome-panel"
+                              },
+                              "assetId": "welcome-panel"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "(unnamed)",
+                          "uuid": "2d7fa60c-4634-4811-9e5f-27162088be37",
+                          "objectType": "Mesh"
+                        },
+                        {
+                          "name": "(unnamed)",
+                          "uuid": "f20d6d0c-e6a0-43e2-a2a8-aadf41c94d54",
+                          "objectType": "Mesh"
+                        },
+                        {
+                          "name": "(unnamed)",
+                          "uuid": "b55994c1-1f7f-48c7-910f-7febdac4a795",
+                          "objectType": "Mesh"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "(unnamed)",
+          "uuid": "d804f46b-f22e-4d56-abe3-23858f484ef6",
+          "objectType": "Mesh"
+        },
+        {
+          "name": "(unnamed)",
+          "uuid": "0ae63b53-0392-49dd-8c8a-12a062a10c11",
+          "objectType": "Line2"
+        },
+        {
+          "name": "LevelRoot",
+          "uuid": "22677945-7bbe-4a9d-a6de-8c43044d7424",
+          "objectType": "Object3D",
+          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+          "resources": {},
+          "entityIndex": 11,
+          "children": [
+            {
+              "name": "Environment",
+              "uuid": "0b78d00b-3407-4c32-924d-c5f8a2005c83",
+              "objectType": "Group",
+              "sceneNodeId": "environment",
+              "sourceNodeId": "environment",
+              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+              "contentType": "asset",
+              "content": {
+                "asset": "environment-desk",
+                "type": "asset"
+              },
+              "framingRole": "content",
+              "resourceRefs": {
+                "assetId": "environment-desk"
+              },
+              "assetId": "environment-desk",
+              "entityIndex": 12,
+              "children": [
+                {
+                  "name": "floorBase_geo002",
+                  "uuid": "0f3edd7a-8cc3-4624-9d35-749a861c682f",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "environment",
+                  "sourceNodeId": "environment",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "environment-desk",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "environment-desk"
+                  },
+                  "assetId": "environment-desk"
+                },
+                {
+                  "name": "backWall_geo",
+                  "uuid": "a82a3c75-af8b-4376-a475-fe32ecab25a4",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "environment",
+                  "sourceNodeId": "environment",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "environment-desk",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "environment-desk"
+                  },
+                  "assetId": "environment-desk"
+                },
+                {
+                  "name": "ceiling_geo002",
+                  "uuid": "0218f9e7-ae80-4862-9128-5ba5acb21a15",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "environment",
+                  "sourceNodeId": "environment",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "environment-desk",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "environment-desk"
+                  },
+                  "assetId": "environment-desk"
+                },
+                {
+                  "name": "tableSurface_geo",
+                  "uuid": "85affcd5-e0df-4e5b-a22b-256ba1c7bfd4",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "environment",
+                  "sourceNodeId": "environment",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "environment-desk",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "environment-desk"
+                  },
+                  "assetId": "environment-desk"
+                }
+              ]
+            },
+            {
+              "name": "Plant Sansevieria",
+              "uuid": "5d4bb641-b70d-42db-b793-0aa610daa1b1",
+              "objectType": "Group",
+              "sceneNodeId": "plant-sansevieria",
+              "sourceNodeId": "plant-sansevieria",
+              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+              "contentType": "asset",
+              "content": {
+                "asset": "plant-sansevieria",
+                "type": "asset"
+              },
+              "framingRole": "content",
+              "resourceRefs": {
+                "assetId": "plant-sansevieria"
+              },
+              "assetId": "plant-sansevieria",
+              "entityIndex": 13,
+              "children": [
+                {
+                  "name": "PlantSansevieria",
+                  "uuid": "685d79cb-e9f9-4a77-aef9-43e3c25ea241",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "plant-sansevieria",
+                  "sourceNodeId": "plant-sansevieria",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "plant-sansevieria",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "plant-sansevieria"
+                  },
+                  "assetId": "plant-sansevieria"
+                }
+              ]
+            },
+            {
+              "name": "Robot",
+              "uuid": "1708616b-13e6-4458-bad5-88ce8910fb3a",
+              "objectType": "Group",
+              "sceneNodeId": "robot",
+              "sourceNodeId": "robot",
+              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+              "contentType": "asset",
+              "content": {
+                "asset": "robot",
+                "type": "asset"
+              },
+              "framingRole": "content",
+              "resourceRefs": {
+                "assetId": "robot"
+              },
+              "assetId": "robot",
+              "entityIndex": 14,
+              "children": [
+                {
+                  "name": "Robot_01",
+                  "uuid": "c27d580d-34dc-48b0-87b7-147f3804ddb2",
+                  "objectType": "Object3D",
+                  "sceneNodeId": "robot",
+                  "sourceNodeId": "robot",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "robot",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "robot"
+                  },
+                  "assetId": "robot",
+                  "children": [
+                    {
+                      "name": "Head",
+                      "uuid": "0a2aea47-60bc-46e4-9cf2-ebab8a10c118",
+                      "objectType": "Object3D",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot",
+                      "children": [
+                        {
+                          "name": "Ball_geo",
+                          "uuid": "256670ef-665a-4492-bd33-d7ffa68f2599",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        },
+                        {
+                          "name": "Face_Case_geo",
+                          "uuid": "4052bdd8-766c-4355-8f69-004547cc834b",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        },
+                        {
+                          "name": "Face_Screen_geo",
+                          "uuid": "a327ee90-9533-4039-8614-e8ec1ac58641",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Lower_Sphere",
+                      "uuid": "42e614b6-b71c-49c8-8c7e-e60ba7cd5b57",
+                      "objectType": "Object3D",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot",
+                      "children": [
+                        {
+                          "name": "Inner_geo",
+                          "uuid": "a204a67b-b62e-48be-bb97-da66976d4b6c",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        },
+                        {
+                          "name": "Outer_geo",
+                          "uuid": "47f40ef7-8b22-4f8a-8951-9a761cd9645a",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Middle_Section_geo",
+                      "uuid": "1d331328-4b9e-4b8f-af5c-f8efd676a6d4",
+                      "objectType": "Mesh",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot"
+                    },
+                    {
+                      "name": "Shoulder_L_geo",
+                      "uuid": "8204640d-b001-4278-b8fd-246f228ebfe2",
+                      "objectType": "Mesh",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot",
+                      "children": [
+                        {
+                          "name": "Arm",
+                          "uuid": "af21bf6c-9491-448f-9baa-557514ba0db0",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot",
+                          "children": [
+                            {
+                              "name": "Finger_L1",
+                              "uuid": "5cb297ca-e15e-495a-bdc2-4f13fb8715b4",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "robot",
+                              "sourceNodeId": "robot",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "robot",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "robot"
+                              },
+                              "assetId": "robot"
+                            },
+                            {
+                              "name": "Finger_L2",
+                              "uuid": "5da70530-2c3c-4d0b-a917-e42f623d33f3",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "robot",
+                              "sourceNodeId": "robot",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "robot",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "robot"
+                              },
+                              "assetId": "robot"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Shoulder_R_geo",
+                      "uuid": "6762c5a3-d3b9-419c-b6cf-14f5bbdecdfb",
+                      "objectType": "Mesh",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot",
+                      "children": [
+                        {
+                          "name": "Arm001",
+                          "uuid": "584c48f7-1ab7-4a6a-8a6a-1a56ead16799",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot",
+                          "children": [
+                            {
+                              "name": "Finger_R1",
+                              "uuid": "3eea71bf-68f5-41ad-900c-8c269e4e4bc6",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "robot",
+                              "sourceNodeId": "robot",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "robot",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "robot"
+                              },
+                              "assetId": "robot"
+                            },
+                            {
+                              "name": "Finger_R2",
+                              "uuid": "a6243d0d-3ed6-47aa-92d5-79128332c424",
+                              "objectType": "Mesh",
+                              "sceneNodeId": "robot",
+                              "sourceNodeId": "robot",
+                              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                              "contentType": "asset",
+                              "content": {
+                                "asset": "robot",
+                                "type": "asset"
+                              },
+                              "framingRole": "content",
+                              "resourceRefs": {
+                                "assetId": "robot"
+                              },
+                              "assetId": "robot"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Thrusters_geo",
+                      "uuid": "f5440708-6a48-4061-ad7c-af2091f54ab5",
+                      "objectType": "Mesh",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot"
+                    },
+                    {
+                      "name": "Top_Body",
+                      "uuid": "988058e1-f360-4fb6-abbd-b58af2642f6e",
+                      "objectType": "Object3D",
+                      "sceneNodeId": "robot",
+                      "sourceNodeId": "robot",
+                      "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                      "contentType": "asset",
+                      "content": {
+                        "asset": "robot",
+                        "type": "asset"
+                      },
+                      "framingRole": "content",
+                      "resourceRefs": {
+                        "assetId": "robot"
+                      },
+                      "assetId": "robot",
+                      "children": [
+                        {
+                          "name": "Back_geo",
+                          "uuid": "7f5bbcc9-560b-4f2b-9cc0-9330fc4bb507",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        },
+                        {
+                          "name": "Body_Case_geo",
+                          "uuid": "9de5adbd-8b8e-4c81-a80c-875688eb1491",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        },
+                        {
+                          "name": "Body_Screen_geo",
+                          "uuid": "32e9268d-7431-44da-a7ed-89696cab9ccd",
+                          "objectType": "Mesh",
+                          "sceneNodeId": "robot",
+                          "sourceNodeId": "robot",
+                          "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                          "contentType": "asset",
+                          "content": {
+                            "asset": "robot",
+                            "type": "asset"
+                          },
+                          "framingRole": "content",
+                          "resourceRefs": {
+                            "assetId": "robot"
+                          },
+                          "assetId": "robot"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "(unnamed)",
+                  "uuid": "0d6c57b1-24cb-466c-b97c-6c572ea1f583",
+                  "objectType": "Group",
+                  "children": [
+                    {
+                      "name": "(unnamed)",
+                      "uuid": "6bf881e6-76c4-409e-9370-75d28c7951f2",
+                      "objectType": "Audio"
+                    },
+                    {
+                      "name": "(unnamed)",
+                      "uuid": "207d8b70-3c9f-4ae0-b1ca-09f7a0280b68",
+                      "objectType": "Audio"
+                    },
+                    {
+                      "name": "(unnamed)",
+                      "uuid": "bf1b3651-0378-4be7-8000-a6961f91251f",
+                      "objectType": "Audio"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Welcome Panel",
+              "uuid": "1b866abf-0f3c-45a1-a0a6-4011db461de2",
+              "objectType": "Group",
+              "sceneNodeId": "welcome-panel",
+              "sourceNodeId": "welcome-panel",
+              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+              "contentType": "asset",
+              "content": {
+                "asset": "welcome-panel",
+                "type": "asset"
+              },
+              "framingRole": "content",
+              "resourceRefs": {
+                "assetId": "welcome-panel"
+              },
+              "assetId": "welcome-panel",
+              "entityIndex": 15
+            },
+            {
+              "name": "WebXR Banner",
+              "uuid": "837cdb89-f12a-44d0-b63a-da699ec0e529",
+              "objectType": "Group",
+              "sceneNodeId": "webxr-banner",
+              "sourceNodeId": "webxr-banner",
+              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+              "contentType": "asset",
+              "content": {
+                "asset": "webxr-banner",
+                "type": "asset"
+              },
+              "framingRole": "content",
+              "resourceRefs": {
+                "assetId": "webxr-banner"
+              },
+              "assetId": "webxr-banner",
+              "entityIndex": 16,
+              "children": [
+                {
+                  "name": "mesh_0",
+                  "uuid": "46d511c1-995e-4f3e-b40b-94972ea812f1",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "webxr-banner",
+                  "sourceNodeId": "webxr-banner",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "webxr-banner",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "webxr-banner"
+                  },
+                  "assetId": "webxr-banner"
+                }
+              ]
+            },
+            {
+              "name": "Scaffold Added Plant",
+              "uuid": "12314939-a5aa-4c91-99b3-9c474c1f437e",
+              "objectType": "Group",
+              "sceneNodeId": "scaffold-added-plant",
+              "sourceNodeId": "scaffold-added-plant",
+              "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+              "contentType": "asset",
+              "content": {
+                "asset": "plant-sansevieria",
+                "type": "asset"
+              },
+              "framingRole": "content",
+              "resourceRefs": {
+                "assetId": "plant-sansevieria"
+              },
+              "assetId": "plant-sansevieria",
+              "entityIndex": 17,
+              "children": [
+                {
+                  "name": "PlantSansevieria",
+                  "uuid": "1a03eae5-ca0e-419b-8bd5-4703426ab548",
+                  "objectType": "Mesh",
+                  "sceneNodeId": "scaffold-added-plant",
+                  "sourceNodeId": "scaffold-added-plant",
+                  "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+                  "contentType": "asset",
+                  "content": {
+                    "asset": "plant-sansevieria",
+                    "type": "asset"
+                  },
+                  "framingRole": "content",
+                  "resourceRefs": {
+                    "assetId": "plant-sansevieria"
+                  },
+                  "assetId": "plant-sansevieria"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "(unnamed)",
+          "uuid": "3f542be9-21cb-461e-9e7c-fb270d72c912",
+          "objectType": "Mesh"
+        }
+      ]
+    },
+    "initialScreenshot": {
+      "path": "app.png",
+      "stats": {
+        "sampledPixels": 119,
+        "uniqueColors": 32
+      }
+    },
+    "runtimeComponents": {
+      "AudioSource": {
+        "total": 1
+      },
+      "DistanceGrabbable": {
+        "total": 1
+      },
+      "LocomotionEnvironment": {
+        "total": 1
+      },
+      "RayInteractable": {
+        "total": 3
+      },
+      "Robot": {
+        "total": 1
+      },
+      "ScreenSpace": {
+        "total": 1
+      }
+    }
+  },
+  "browser": {
+    "baseUrl": "https://127.0.0.1:64466",
+    "mode": "vr",
+    "target": "vr",
+    "scenePath": "public/scenes/main.iwsdk.scene.json"
+  },
+  "editor": {
+    "proofBefore": {
+      "assetLoads": [],
+      "builtInObjects": [
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 7,
+          "target": "player",
+          "transform": {
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 28,
+          "target": "level-root",
+          "transform": {
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 1,
+          "target": "camera",
+          "transform": {
+            "position": [
+              0,
+              1.7,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 1,
+          "target": "head",
+          "transform": {
+            "position": [
+              0,
+              1.7,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 1,
+          "target": "left-target-ray",
+          "transform": {
+            "position": [
+              -0.26,
+              1.35,
+              -0.32
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 1,
+          "target": "left-grip",
+          "transform": {
+            "position": [
+              -0.24,
+              1.28,
+              -0.24
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 1,
+          "target": "right-target-ray",
+          "transform": {
+            "position": [
+              0.26,
+              1.35,
+              -0.32
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        },
+        {
+          "materialOpacity": 0.32,
+          "meshCount": 1,
+          "target": "right-grip",
+          "transform": {
+            "position": [
+              0.24,
+              1.28,
+              -0.24
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          },
+          "wireframeMaterialCount": 0
+        }
+      ],
+      "canvasHeight": 640,
+      "canvasWidth": 960,
+      "cameraHeight": null,
+      "cameraLookAt": [
+        0,
+        0,
+        0
+      ],
+      "cameraPosition": [
+        4,
+        3,
+        4
+      ],
+      "cameraProjection": "perspective",
+      "cameraViewId": null,
+      "contributions": {
+        "count": 0,
+        "items": [],
+        "slots": {
+          "bottomPanel.tab": 0,
+          "inspector.global": 0,
+          "inspector.pinned": 0,
+          "inspector.section": 0,
+          "sidebar.bottom": 0,
+          "sidebar.top": 0,
+          "toolbar.center": 0,
+          "toolbar.left": 0,
+          "toolbar.right": 0,
+          "viewport.overlay": 0
+        }
+      },
+      "documentHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+      "layout": {
+        "canvas": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "static",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "auto"
+        },
+        "bottomPanel": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "4"
+        },
+        "contributionSlots": {
+          "bottomPanel.tab": null,
+          "inspector.global": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "inspector.pinned": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "inspector.section": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "sidebar.bottom": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "sidebar.top": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "toolbar.center": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "toolbar.left": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "toolbar.right": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "auto",
+            "position": "static",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "auto"
+          },
+          "viewport.overlay": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "pointerEvents": "none",
+            "position": "absolute",
+            "resize": "none",
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "zIndex": "3"
+          }
+        },
+        "leftPanel": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "5"
+        },
+        "orientationGizmo": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "none",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "6"
+        },
+        "rightPanel": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "5"
+        },
+        "statusStrip": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "4"
+        },
+        "toolbar": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "4"
+        },
+        "viewport": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "auto"
+        },
+        "window": {
+          "height": 720,
+          "width": 960
+        }
+      },
+      "materialCount": 35,
+      "meshCount": 35,
+      "nodeObjectCount": 5,
+      "objectHierarchy": [
+        {
+          "assetId": "environment-desk",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [
+            0,
+            -0.1069,
+            0
+          ],
+          "nodeId": "environment",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+          "sourceNodeId": "environment",
+          "worldPosition": [
+            0,
+            -0.1069,
+            0
+          ]
+        },
+        {
+          "assetId": "plant-sansevieria",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [
+            1.2,
+            0.85,
+            -1.8
+          ],
+          "nodeId": "plant-sansevieria",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+          "sourceNodeId": "plant-sansevieria",
+          "worldPosition": [
+            1.2,
+            0.85,
+            -1.8
+          ]
+        },
+        {
+          "assetId": "robot",
+          "contentType": "asset",
+          "fallback": "audio-source-helper",
+          "helperType": "audio-source",
+          "localPosition": [
+            -1.2,
+            0.95,
+            -1.8
+          ],
+          "nodeId": "robot",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+          "sourceNodeId": "robot",
+          "worldPosition": [
+            -1.2,
+            0.95,
+            -1.8
+          ]
+        },
+        {
+          "assetId": "welcome-panel",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [
+            0,
+            1.6,
+            -2
+          ],
+          "nodeId": "welcome-panel",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+          "sourceNodeId": "welcome-panel",
+          "worldPosition": [
+            0,
+            1.6,
+            -2
+          ]
+        },
+        {
+          "assetId": "webxr-banner",
+          "contentType": "asset",
+          "fallback": null,
+          "helperType": null,
+          "localPosition": [
+            0,
+            1,
+            1.8
+          ],
+          "nodeId": "webxr-banner",
+          "parentNodeId": null,
+          "runtimeHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+          "sourceNodeId": "webxr-banner",
+          "worldPosition": [
+            0,
+            1,
+            1.8
+          ]
+        }
+      ],
+      "orbitControls": true,
+      "orientationGizmo": {
+        "animating": false,
+        "axisCount": 6,
+        "clickTargets": [
+          {
+            "view": "right",
+            "x": 84.5985412968837,
+            "y": 69.39902507534208
+          },
+          {
+            "view": "top",
+            "x": 55.9999999858559,
+            "y": 20.26926625465097
+          },
+          {
+            "view": "front",
+            "x": 27.401458793905213,
+            "y": 69.39902586737854
+          },
+          {
+            "view": "left",
+            "x": 27.401458703116308,
+            "y": 42.60097492465792
+          },
+          {
+            "view": "bottom",
+            "x": 56.00000001414409,
+            "y": 91.73073374534904
+          },
+          {
+            "view": "back",
+            "x": 84.59854120609478,
+            "y": 42.60097413262146
+          }
+        ],
+        "draggable": true,
+        "renderer": "shared-webgl",
+        "widget": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "pointerEvents": "auto",
+          "position": "absolute",
+          "resize": "none",
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "zIndex": "1000"
+        },
+        "webgl": true
+      },
+      "renderer": "iwsdk-webgl",
+      "rendererCamera": {
+        "isOrthographicCamera": false,
+        "isPerspectiveCamera": true,
+        "type": "PerspectiveCamera"
+      },
+      "renderStats": {
+        "available": true,
+        "calls": 37,
+        "frameTimeSamplesMs": [
+          5.5,
+          180,
+          0.5
+        ],
+        "lines": 122,
+        "environment": {
+          "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+          "devicePixelRatio": 1,
+          "emulatedUserAgent": "Mozilla/5.0 (X11; Linux x86_64; Quest 3) AppleWebKit/537.36 (KHTML, like Gecko) OculusBrowser/33.0.0.x.x.x Chrome/126.0.6478.122 VR Safari/537.36",
+          "emulationProfile": {
+            "active": true,
+            "device": "metaQuest3",
+            "runtime": "IWER"
+          },
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+          "hostPlatform": "macOS",
+          "hostUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+          "renderer": "IWSDK WebGL",
+          "visibility": {
+            "method": "threejs-first-hit-sampling-v1",
+            "occlusion": "conservative-cpu-first-hit",
+            "sampleGrid": "3x3-projected-bounds+overhead-lower-frame",
+            "uncertainObjectsIncluded": false
+          }
+        },
+        "geometryCount": 25,
+        "points": 0,
+        "programs": 14,
+        "materialCount": 9,
+        "meshCount": 25,
+        "nodeCount": 5,
+        "objectCount": 42,
+        "shadowCasters": 0,
+        "sceneAssets": [
+          {
+            "id": "environment-desk",
+            "meshCount": 4
+          },
+          {
+            "id": "plant-sansevieria",
+            "meshCount": 1
+          },
+          {
+            "id": "robot",
+            "meshCount": 20
+          },
+          {
+            "id": "welcome-panel",
+            "meshCount": 1
+          },
+          {
+            "id": "webxr-banner",
+            "meshCount": 1
+          }
+        ],
+        "textures": 17,
+        "triangles": 35258,
+        "visibleNodeIds": [
+          "environment",
+          "plant-sansevieria",
+          "robot",
+          "welcome-panel"
+        ],
+        "framingBounds": {
+          "max": [
+            8.6218,
+            4.1295,
+            7.0411
+          ],
+          "min": [
+            -8.6218,
+            -1.2865,
+            -8.7158
+          ],
+          "size": [
+            17.2435,
+            5.416,
+            15.7569
+          ]
+        },
+        "worldBounds": {
+          "max": [
+            8.6218,
+            4.1295,
+            7.0411
+          ],
+          "min": [
+            -8.6218,
+            -1.2865,
+            -8.7158
+          ],
+          "size": [
+            17.2435,
+            5.416,
+            15.7569
+          ]
+        }
+      },
+      "referenceMode": "hidden",
+      "rendererGlobals": {
+        "background": null,
+        "clearAlpha": 1,
+        "clearColor": "#101418",
+        "exposure": 1,
+        "fog": null,
+        "shadows": false,
+        "toneMapping": 0
+      },
+      "resourceState": {
+        "proof": [],
+        "staged": null
+      },
+      "reviewLens": "final",
+      "runtimeHash": "sha256:c64713f11d500e72ff11ebae59c77cbbfa77a8ca47263914846e401500f4bb4e",
+      "hoverBounds": null,
+      "selectionBounds": null,
+      "selectedRuntime": {
+        "assetStatus": "none",
+        "assetUrl": null,
+        "bounds": null,
+        "componentCount": 0,
+        "components": [],
+        "fallback": null,
+        "helperType": null,
+        "materialCount": 0,
+        "meshCount": 0,
+        "nodeId": null,
+        "objectCount": 0,
+        "ready": false
+      },
+      "transformControls": {
+        "attachedNodeId": null,
+        "mode": "translate",
+        "snapping": {
+          "applied": {
+            "rotationSnapDeg": null,
+            "scaleSnap": null,
+            "translationSnap": null
+          },
+          "enabled": false,
+          "rotationDeg": 15,
+          "scale": 0.1,
+          "translation": 0.25
+        },
+        "dragging": false,
+        "space": "local",
+        "visible": false
+      },
+      "uses2DRenderer": false,
+      "webgl": true,
+      "webglContextType": "WebGL2RenderingContext",
+      "worldReady": true
+    },
+    "screenshot": {
+      "path": "editor.png",
+      "stats": {
+        "sampledPixels": 80,
+        "uniqueColors": 32
+      }
+    },
+    "toolResult": {
+      "saved": {
+        "bytes": 3327,
+        "correction": null,
+        "documentHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+        "path": "public/scenes/main.iwsdk.scene.json",
+        "previousRevision": "sha256:7d32cd0bf9fd6da7985ae29f3246fccac988c117a8baee2f0d3026bdb68b86da",
+        "revision": "sha256:7d32cd0bf9fd6da7985ae29f3246fccac988c117a8baee2f0d3026bdb68b86da",
+        "runtimeHash": "sha256:ab5688cf5e8814958de2d6e8dc9cafc50110758a482aca3b31a284ed878258b4",
+        "savedAt": "2026-07-31T14:52:37.382Z",
+        "workflowPhase": null,
+        "writtenRevision": "sha256:7d32cd0bf9fd6da7985ae29f3246fccac988c117a8baee2f0d3026bdb68b86da",
+        "dirty": false,
+        "lifecycle": {
+          "schemaValid": "passed",
+          "capabilityCompatible": "passed",
+          "resourcesReady": "not-run",
+          "editorCommitted": "not-run",
+          "runtimeProven": "not-run"
+        }
+      },
+      "screenshotViews": [
+        {
+          "imageDataLength": 181868,
+          "mimeType": "image/png",
+          "view": "top"
+        },
+        {
+          "imageDataLength": 141052,
+          "mimeType": "image/png",
+          "view": "front"
+        },
+        {
+          "imageDataLength": 144168,
+          "mimeType": "image/png",
+          "view": "right"
+        },
+        {
+          "imageDataLength": 168072,
+          "mimeType": "image/png",
+          "view": "quarter"
+        }
+      ],
+      "validation": {
+        "valid": true,
+        "issues": [],
+        "lifecycle": {
+          "schemaValid": "passed",
+          "capabilityCompatible": "passed",
+          "resourcesReady": "not-run",
+          "editorCommitted": "not-run",
+          "runtimeProven": "not-run"
+        }
+      }
+    }
+  },
+  "network": {
+    "app": {
+      "assetResponses": {
+        "environment-desk": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "plant-sansevieria": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "robot": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ]
+      },
+      "badResponses": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    "editor": {
+      "assetResponses": {
+        "environment-desk": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "plant-sansevieria": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "robot": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ]
+      },
+      "badResponses": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        "GET https://127.0.0.1:64466/?__iwsdk_preview_reload=ms92aft7 net::ERR_ABORTED",
+        "GET https://127.0.0.1:64466/@iwer-injection-runtime net::ERR_ABORTED",
+        "GET https://127.0.0.1:64466/src/index.ts net::ERR_ABORTED",
+        "GET https://127.0.0.1:64466/node_modules/vite/dist/client/env.mjs net::ERR_ABORTED",
+        "GET https://127.0.0.1:64466/__iwsdk/editor/document?scene=public%2Fscenes%2Fmain.iwsdk.scene.json&mode=composed net::ERR_ABORTED"
+      ]
+    }
+  },
+  "scene": {
+    "after": {
+      "components": {
+        "com.iwsdk.components.DomeGradient": {
+          "equator": [
+            0.6584,
+            0.7084,
+            0.7913,
+            1
+          ],
+          "ground": [
+            0.807,
+            0.7758,
+            0.7454,
+            1
+          ],
+          "intensity": 1,
+          "sky": [
+            0.2423,
+            0.6172,
+            0.8308,
+            1
+          ]
+        },
+        "com.iwsdk.components.IBLGradient": {
+          "equator": [
+            0.6584,
+            0.7084,
+            0.7913,
+            1
+          ],
+          "ground": [
+            0.807,
+            0.7758,
+            0.7454,
+            1
+          ],
+          "intensity": 1,
+          "sky": [
+            0.6902,
+            0.749,
+            0.7843,
+            1
+          ]
+        }
+      },
+      "nodes": [
+        {
+          "components": {
+            "LocomotionEnvironment": {}
+          },
+          "content": {
+            "asset": "environment-desk",
+            "type": "asset"
+          },
+          "id": "environment",
+          "name": "Environment",
+          "transform": {
+            "position": [
+              0,
+              -0.106921583,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              180,
+              0
+            ]
+          }
+        },
+        {
+          "components": {
+            "DistanceGrabbable": {
+              "movementMode": "MoveFromTarget"
+            },
+            "RayInteractable": {}
+          },
+          "content": {
+            "asset": "plant-sansevieria",
+            "type": "asset"
+          },
+          "id": "plant-sansevieria",
+          "name": "Plant Sansevieria",
+          "transform": {
+            "position": [
+              1.2,
+              0.85,
+              -1.8
+            ]
+          }
+        },
+        {
+          "components": {
+            "AudioSource": {
+              "maxInstances": 3,
+              "playbackMode": "fade-restart",
+              "src": "./audio/chime.mp3"
+            },
+            "RayInteractable": {},
+            "Robot": {}
+          },
+          "content": {
+            "asset": "robot",
+            "type": "asset"
+          },
+          "id": "robot",
+          "name": "Robot",
+          "transform": {
+            "position": [
+              -1.2,
+              0.95,
+              -1.8
+            ],
+            "scale": 0.5
+          }
+        },
+        {
+          "components": {
+            "RayInteractable": {},
+            "ScreenSpace": {
+              "height": "40%",
+              "left": "20px",
+              "top": "20px"
+            }
+          },
+          "content": {
+            "asset": "welcome-panel",
+            "type": "asset"
+          },
+          "id": "welcome-panel",
+          "name": "Welcome Panel",
+          "transform": {
+            "position": [
+              0,
+              1.6,
+              -2
+            ],
+            "scale": [
+              1.8,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "components": {},
+          "content": {
+            "asset": "webxr-banner",
+            "type": "asset"
+          },
+          "id": "webxr-banner",
+          "name": "WebXR Banner",
+          "transform": {
+            "position": [
+              0,
+              1,
+              1.8
+            ],
+            "rotationDeg": [
+              0,
+              180,
+              0
+            ]
+          }
+        },
+        {
+          "content": {
+            "asset": "plant-sansevieria",
+            "type": "asset"
+          },
+          "id": "scaffold-added-plant",
+          "name": "Scaffold Added Plant",
+          "transform": {
+            "position": [
+              0.25,
+              0.2,
+              -1.25
+            ],
+            "rotationDeg": [
+              0,
+              20,
+              0
+            ],
+            "scale": 1.1
+          }
+        }
+      ],
+      "resources": {},
+      "units": "meters",
+      "version": "iwsdk.scene.v1"
+    },
+    "before": {
+      "version": "iwsdk.scene.v1",
+      "units": "meters",
+      "components": {
+        "com.iwsdk.components.DomeGradient": {
+          "sky": [
+            0.2423,
+            0.6172,
+            0.8308,
+            1
+          ],
+          "equator": [
+            0.6584,
+            0.7084,
+            0.7913,
+            1
+          ],
+          "ground": [
+            0.807,
+            0.7758,
+            0.7454,
+            1
+          ],
+          "intensity": 1
+        },
+        "com.iwsdk.components.IBLGradient": {
+          "sky": [
+            0.6902,
+            0.749,
+            0.7843,
+            1
+          ],
+          "equator": [
+            0.6584,
+            0.7084,
+            0.7913,
+            1
+          ],
+          "ground": [
+            0.807,
+            0.7758,
+            0.7454,
+            1
+          ],
+          "intensity": 1
+        }
+      },
+      "resources": {},
+      "nodes": [
+        {
+          "id": "environment",
+          "name": "Environment",
+          "content": {
+            "type": "asset",
+            "asset": "environment-desk"
+          },
+          "transform": {
+            "position": [
+              0,
+              -0.106921583,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              180,
+              0
+            ]
+          },
+          "components": {
+            "LocomotionEnvironment": {}
+          }
+        },
+        {
+          "id": "plant-sansevieria",
+          "name": "Plant Sansevieria",
+          "content": {
+            "type": "asset",
+            "asset": "plant-sansevieria"
+          },
+          "transform": {
+            "position": [
+              1.2,
+              0.85,
+              -1.8
+            ]
+          },
+          "components": {
+            "RayInteractable": {},
+            "DistanceGrabbable": {
+              "movementMode": "MoveFromTarget"
+            }
+          }
+        },
+        {
+          "id": "robot",
+          "name": "Robot",
+          "content": {
+            "type": "asset",
+            "asset": "robot"
+          },
+          "transform": {
+            "position": [
+              -1.2,
+              0.95,
+              -1.8
+            ],
+            "scale": 0.5
+          },
+          "components": {
+            "AudioSource": {
+              "src": "./audio/chime.mp3",
+              "maxInstances": 3,
+              "playbackMode": "fade-restart"
+            },
+            "RayInteractable": {},
+            "Robot": {}
+          }
+        },
+        {
+          "id": "welcome-panel",
+          "name": "Welcome Panel",
+          "content": {
+            "type": "asset",
+            "asset": "welcome-panel"
+          },
+          "transform": {
+            "position": [
+              0,
+              1.6,
+              -2
+            ],
+            "scale": [
+              1.8,
+              1,
+              1
+            ]
+          },
+          "components": {
+            "RayInteractable": {},
+            "ScreenSpace": {
+              "top": "20px",
+              "left": "20px",
+              "height": "40%"
+            }
+          }
+        },
+        {
+          "id": "webxr-banner",
+          "name": "WebXR Banner",
+          "content": {
+            "type": "asset",
+            "asset": "webxr-banner"
+          },
+          "transform": {
+            "position": [
+              0,
+              1,
+              1.8
+            ],
+            "rotationDeg": [
+              0,
+              180,
+              0
+            ]
+          },
+          "components": {}
+        }
+      ]
+    }
+  }
+}

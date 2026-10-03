@@ -1,0 +1,469 @@
+#!/usr/bin/env node --no-warnings
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * Dev server lifecycle script for the IWSDK test orchestrator.
+ *
+ * Usage:
+ *   node scripts/test-servers.mjs start   — start 9 dev servers, wait for ready, output port map JSON
+ *   node scripts/test-servers.mjs ports   — read .mcp.json files, output port map JSON
+ *   node scripts/test-servers.mjs stop    — kill all dev servers (process-group + port fallback)
+ */
+
+import {
+  existsSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  readlinkSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
+import { execFileSync, execSync, spawn } from 'node:child_process';
+import { resolve, dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
+const EXAMPLES = join(ROOT, 'examples');
+const CLI_ENTRYPOINT = join(ROOT, 'packages', 'cli', 'bin', 'iwsdk.js');
+
+const ALL_DIRS = [
+  'poke',
+  'poke-ecs',
+  'poke-environment',
+  'poke-level',
+  'poke-ui',
+  'audio',
+  'grab',
+  'locomotion',
+  'physics',
+];
+
+const command = process.argv[2];
+
+if (!command || !['start', 'ports', 'stop'].includes(command)) {
+  console.error('Usage: node scripts/test-servers.mjs <start|ports|stop>');
+  process.exit(1);
+}
+
+/**
+ * Path to the pidfile that records the process-group id of a dev server.
+ * Spawned children are detached, so `child.pid` is also the pgid; persisting
+ * it lets `stop` fan SIGTERM out to npm → iwsdk → vite → esbuild even when
+ * the server never reaches command-ready and has no port to look up.
+ */
+function pidfilePath(dir) {
+  return join(EXAMPLES, dir, '.iwsdk', 'runtime', 'server.pid');
+}
+
+function readPgid(dir) {
+  const p = pidfilePath(dir);
+  if (!existsSync(p)) return null;
+  try {
+    const n = parseInt(readFileSync(p, 'utf8').trim(), 10);
+    return Number.isFinite(n) && n > 1 ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+function writePgid(dir, pgid) {
+  const p = pidfilePath(dir);
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, String(pgid));
+}
+
+function unlinkPgid(dir) {
+  try {
+    unlinkSync(pidfilePath(dir));
+  } catch {
+    // already gone
+  }
+}
+
+/**
+ * Verify a pgid still belongs to the dev server we spawned in `expectedCwd`
+ * before signaling. Linux recycles pids, so a stale pidfile from an aborted
+ * run could point at an unrelated process group.
+ */
+function isOurProcessGroup(pgid, expectedCwd) {
+  let cwd;
+  if (process.platform === 'linux') {
+    try {
+      cwd = readlinkSync(`/proc/${pgid}/cwd`);
+    } catch {
+      return false;
+    }
+  } else {
+    try {
+      const output = execFileSync(
+        'lsof',
+        ['-a', '-p', String(pgid), '-d', 'cwd', '-Fn'],
+        { encoding: 'utf8' },
+      );
+      cwd = output
+        .split('\n')
+        .find((line) => line.startsWith('n'))
+        ?.slice(1);
+    } catch {
+      return false;
+    }
+  }
+  if (cwd == null || resolve(cwd) !== resolve(expectedCwd)) return false;
+
+  try {
+    const argv =
+      process.platform === 'linux'
+        ? readFileSync(`/proc/${pgid}/cmdline`, 'utf8')
+            .split('\0')
+            .filter(Boolean)
+        : execFileSync('ps', ['-p', String(pgid), '-o', 'command='], {
+            encoding: 'utf8',
+          })
+            .trim()
+            .split(/\s+/);
+    if (argv.length === 0) return false;
+    return argv.some((arg) => /(^|\/)npm($|\s)/.test(arg));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * SIGTERM the process group; if anything survives ~2s, SIGKILL.
+ * Returns false if the group is dead or the pid reuse guard rejects it.
+ */
+function killGroup(pgid, expectedCwd) {
+  if (!isOurProcessGroup(pgid, expectedCwd)) return false;
+
+  try {
+    process.kill(-pgid, 'SIGTERM');
+  } catch {
+    return false;
+  }
+
+  const deadline = Date.now() + 2_000;
+  while (Date.now() < deadline) {
+    try {
+      process.kill(-pgid, 0);
+    } catch {
+      return true;
+    }
+    execSync('sleep 0.1');
+  }
+
+  try {
+    process.kill(-pgid, 'SIGKILL');
+  } catch {
+    // gone between checks
+  }
+  return true;
+}
+
+function readSession(dir) {
+  const sessionPath = join(EXAMPLES, dir, '.iwsdk', 'runtime', 'session.json');
+  if (!existsSync(sessionPath)) return null;
+  try {
+    return JSON.parse(readFileSync(sessionPath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function readSessionPort(dir) {
+  const port = parseInt(readSession(dir)?.port, 10);
+  return Number.isFinite(port) && port > 0 ? port : null;
+}
+
+function hasReadyManagedClient(session, role) {
+  return (
+    session?.browser?.connected === true &&
+    Array.isArray(session.browser.clients) &&
+    session.browser.clients.some(
+      (client) =>
+        client?.commandReady === true &&
+        client.deviceClass === 'managed' &&
+        client.role === role,
+    )
+  );
+}
+
+/**
+ * Return the runtime port once the managed editor can accept semantic browser
+ * commands. The workspace initially loads only the editor; its application
+ * iframe is created when a browser command asks for the runtime surface.
+ */
+function readEditorReadyPort(dir) {
+  const session = readSession(dir);
+  const port = parseInt(session?.port, 10);
+  if (!Number.isFinite(port) || port <= 0) return null;
+  return hasReadyManagedClient(session, 'editor') ? port : null;
+}
+
+/**
+ * Return the runtime port only after both managed pages form a command path.
+ * Checking the app client explicitly prevents a stale aggregate readiness bit
+ * from making the test orchestrator race the application iframe startup.
+ */
+function readPort(dir) {
+  const session = readSession(dir);
+  const port = parseInt(session?.port, 10);
+  if (!Number.isFinite(port) || port <= 0) return null;
+  if (session.browser?.commandReady !== true) return null;
+  return hasReadyManagedClient(session, 'editor') &&
+    hasReadyManagedClient(session, 'app')
+    ? port
+    : null;
+}
+
+/**
+ * Read ports from all dirs, return { dir: port } map.
+ */
+function readAllPorts(readPortForDir = readPort) {
+  const ports = {};
+  for (const dir of ALL_DIRS) {
+    const port = readPortForDir(dir);
+    if (port) ports[dir] = port;
+  }
+  return ports;
+}
+
+function runIwsdk(dir, args) {
+  return new Promise((resolve) => {
+    const child = spawn(process.execPath, [CLI_ENTRYPOINT, ...args], {
+      cwd: join(EXAMPLES, dir),
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (chunk) => (stdout += chunk));
+    child.stderr.on('data', (chunk) => (stderr += chunk));
+    child.on('error', (error) =>
+      resolve({ code: 1, stdout, stderr: error.message }),
+    );
+    child.on('close', (code) => resolve({ code, stdout, stderr }));
+  });
+}
+
+async function activateRuntimeView(dir) {
+  const screenshotPath = `/tmp/iwsdk-test-runtime-${dir}.png`;
+  try {
+    unlinkSync(screenshotPath);
+  } catch {
+    // No prior readiness capture.
+  }
+  const switched = await runIwsdk(dir, [
+    'browser',
+    'screenshot',
+    '--output-file',
+    screenshotPath,
+  ]);
+  try {
+    unlinkSync(screenshotPath);
+  } catch {
+    // A failed command may not have produced a capture.
+  }
+  return switched.code === 0
+    ? { dir, ok: true }
+    : {
+        dir,
+        ok: false,
+        reason: switched.stderr.trim() || switched.stdout.trim(),
+      };
+}
+
+async function activateRuntimeViews() {
+  console.error('Switching managed workspaces to runtime view...');
+  const results = await Promise.all(ALL_DIRS.map(activateRuntimeView));
+  const failed = results.filter((result) => !result.ok);
+  if (failed.length > 0) {
+    for (const result of failed) {
+      console.error(`  ${result.dir}: ${result.reason}`);
+    }
+    return false;
+  }
+  console.error(`All ${results.length} runtime views ready.`);
+  return true;
+}
+
+if (command === 'ports') {
+  const ports = readAllPorts();
+  const missing = ALL_DIRS.filter((d) => !ports[d]);
+  if (missing.length > 0) {
+    console.error(`Missing .mcp.json for: ${missing.join(', ')}`);
+  }
+  // Output to stdout as JSON (this is what the orchestrator parses)
+  console.log(JSON.stringify(ports, null, 2));
+}
+
+if (command === 'start') {
+  // Sweep leftover process groups from a prior aborted run before spawning.
+  let swept = 0;
+  for (const dir of ALL_DIRS) {
+    const pgid = readPgid(dir);
+    if (pgid && killGroup(pgid, join(EXAMPLES, dir))) {
+      swept++;
+      console.error(`  ${dir}: swept stale process group ${pgid}`);
+    }
+    unlinkPgid(dir);
+  }
+  if (swept > 0) console.error(`Swept ${swept} stale dev server(s).`);
+
+  // Remove stale runtime session files so we only consider freshly registered servers.
+  for (const dir of ALL_DIRS) {
+    const sessionPath = join(
+      EXAMPLES,
+      dir,
+      '.iwsdk',
+      'runtime',
+      'session.json',
+    );
+    if (existsSync(sessionPath)) unlinkSync(sessionPath);
+  }
+
+  // Start all servers
+  console.error('Starting 9 dev servers...');
+  const children = [];
+  for (const dir of ALL_DIRS) {
+    const cwd = join(EXAMPLES, dir);
+    if (!existsSync(cwd)) {
+      console.error(`  ${dir}: SKIP (not found)`);
+      continue;
+    }
+
+    const logPath = `/tmp/iwsdk-dev-${dir}.log`;
+    const logFd = openSync(logPath, 'w');
+
+    const child = spawn(
+      'npm',
+      ['run', 'dev', '--', '--ai-mode', 'agent', '--timeout', '180000'],
+      {
+        cwd,
+        detached: true,
+        env: process.env,
+        stdio: ['ignore', logFd, logFd],
+      },
+    );
+    child.unref();
+    writePgid(dir, child.pid);
+    children.push({ dir, pid: child.pid });
+    console.error(`  ${dir}: started (pid ${child.pid})`);
+  }
+
+  // The managed workspace starts on its editor surface. Wait only for that
+  // command path first, then use a semantic browser operation to initialize
+  // the application iframe before requiring aggregate command readiness.
+  console.error('Waiting for server ports and managed editors...');
+  const startTime = Date.now();
+  const TIMEOUT = 60_000;
+  const POLL_INTERVAL = 1_000;
+  let editorsReady = false;
+
+  while (Date.now() - startTime < TIMEOUT) {
+    const ports = readAllPorts(readEditorReadyPort);
+    const ready = Object.keys(ports).length;
+    if (ready === ALL_DIRS.length) {
+      editorsReady = true;
+      console.error(`All ${ready} managed editors ready.`);
+      break;
+    }
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL));
+  }
+
+  if (!editorsReady) {
+    const ports = readAllPorts(readEditorReadyPort);
+    const missing = ALL_DIRS.filter((d) => !ports[d]);
+    console.error(
+      `TIMEOUT: ${missing.length} managed editor(s) not ready: ${missing.join(', ')}`,
+    );
+    console.error('Check logs: /tmp/iwsdk-dev-<name>.log');
+    console.log(JSON.stringify(ports, null, 2));
+    process.exit(1);
+  }
+
+  const bootstrapSucceeded = await activateRuntimeViews();
+
+  console.error('Waiting for managed application runtimes...');
+  const runtimeStartTime = Date.now();
+  while (Date.now() - runtimeStartTime < TIMEOUT) {
+    const ports = readAllPorts();
+    const ready = Object.keys(ports).length;
+    if (ready === ALL_DIRS.length) {
+      if (!bootstrapSucceeded && !(await activateRuntimeViews())) {
+        process.exit(1);
+      }
+      console.error(`All ${ready} servers ready.`);
+      // Output port map to stdout as JSON
+      console.log(JSON.stringify(ports, null, 2));
+      process.exit(0);
+    }
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL));
+  }
+
+  const ports = readAllPorts();
+  const missing = ALL_DIRS.filter((d) => !ports[d]);
+  console.error(
+    `TIMEOUT: ${missing.length} application runtime(s) not ready: ${missing.join(', ')}`,
+  );
+  console.error('Check logs: /tmp/iwsdk-dev-<name>.log');
+  console.log(JSON.stringify(ports, null, 2));
+  process.exit(1);
+}
+
+if (command === 'stop') {
+  let killed = 0;
+
+  for (const dir of ALL_DIRS) {
+    const pgid = readPgid(dir);
+    if (pgid && killGroup(pgid, join(EXAMPLES, dir))) {
+      console.log(`${dir}: killed process group ${pgid}`);
+      killed++;
+    }
+    unlinkPgid(dir);
+  }
+
+  const ports = Object.fromEntries(
+    ALL_DIRS.map((dir) => [dir, readSessionPort(dir)]).filter(
+      ([, port]) => port != null,
+    ),
+  );
+  for (const [dir, port] of Object.entries(ports)) {
+    try {
+      const pids = execSync(`lsof -t -i :${port} 2>/dev/null`, {
+        encoding: 'utf8',
+      })
+        .trim()
+        .split('\n')
+        .filter(Boolean);
+
+      for (const pid of pids) {
+        try {
+          process.kill(parseInt(pid, 10), 'SIGTERM');
+        } catch {
+          // already dead
+        }
+      }
+      if (pids.length > 0) {
+        console.log(
+          `${dir} (port ${port}): killed ${pids.length} leftover process(es) via port`,
+        );
+        killed++;
+      }
+    } catch {
+      // lsof returned nothing — server already stopped
+    }
+  }
+
+  if (killed === 0) {
+    console.log('No servers were running.');
+  } else {
+    console.log(`Stopped ${killed} server(s).`);
+  }
+}

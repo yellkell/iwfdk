@@ -1,0 +1,35 @@
+<style>
+  .panel-container {
+    align-items: flex-start;
+    background-color: #09090b;
+    border-color: #27272a;
+    border-radius: 16px;
+    border-width: 1px;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    width: 344px;
+  }
+
+  .heading {
+    color: #fafafa;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: left;
+  }
+
+  .sub-heading {
+    color: #a1a1aa;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    margin-top: 10px;
+    text-align: left;
+    width: 100%;
+  }
+</style>
+<div class="panel-container">
+  <span class="heading">One Hand Grabbable</span>
+  <span class="sub-heading">Grab the plant with a controller trigger or a hand pinch. Both ray and proximity interactions are supported.</span>
+</div>

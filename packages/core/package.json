@@ -1,0 +1,105 @@
+{
+  "name": "@iwsdk/core",
+  "version": "1.0.1",
+  "description": "Javascript WebXR Runtime for Emulation",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "lighting": [
+        "dist/lighting/index.d.ts"
+      ],
+      "project": [
+        "dist/project/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./lighting": {
+      "types": "./dist/lighting/index.d.ts",
+      "import": "./dist/lighting/index.js"
+    },
+    "./project": {
+      "types": "./dist/project/index.d.ts",
+      "import": "./dist/project/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "dist/index.js",
+    "dist/asset/**",
+    "dist/audio/**",
+    "dist/camera/**",
+    "dist/depth/**",
+    "dist/ecs/**",
+    "dist/environment/**",
+    "dist/environment-raycast/**",
+    "dist/grab/**",
+    "dist/init/**",
+    "dist/input/**",
+    "dist/layers/**",
+    "dist/lighting/**",
+    "dist/level/**",
+    "dist/locomotion/**",
+    "dist/mcp/**",
+    "dist/runtime/**",
+    "dist/scene-understanding/**",
+    "dist/transform/**",
+    "dist/ui/**",
+    "dist/vendor/**",
+    "dist/visibility/**"
+  ],
+  "scripts": {
+    "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "build": "rollup -c",
+    "doc": "typedoc",
+    "format": "prettier --write ./src/**/*",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/immersive-web-sdk.git"
+  },
+  "keywords": [],
+  "author": "Felix Zhang <fe1ix@meta.com>",
+  "contributor": "Jianmin Zheng <zjm@meta.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/facebook/immersive-web-sdk/issues"
+  },
+  "homepage": "https://github.com/facebook/immersive-web-sdk#readme",
+  "dependencies": {
+    "@babylonjs/havok": "^1.3.10",
+    "@drawcall/uikitml": "0.1.8",
+    "@iwsdk/locomotor": "workspace:*",
+    "@iwsdk/scene-composition": "workspace:*",
+    "@iwsdk/xr-input": "workspace:*",
+    "@pmndrs/handle": "^6.6.16",
+    "@pmndrs/pointer-events": "^6.6.22",
+    "@pmndrs/uikit": "^1.0.74",
+    "@preact/signals-core": "^1.11.0",
+    "@types/three": "^0.181.0",
+    "@types/webxr": "^0.5.0",
+    "elics": "^3.4.1",
+    "three": "npm:super-three@0.181.0",
+    "three-mesh-bvh": "^0.9.1"
+  },
+  "engines": {
+    "node": ">=20.19.0 <21.0.0-0 || >=22.12.0 <23.0.0-0 || >=24.0.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.10",
+    "vitest": "^4.1.10"
+  }
+}

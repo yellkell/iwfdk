@@ -1,0 +1,25 @@
+{
+  "first": {
+    "camera": {
+      "fov": 35,
+      "lookAt": [0, 0, 0],
+      "position": [0, 8, 0],
+      "projection": "perspective",
+      "view": "top"
+    },
+    "hash": "de21895720cdba16a9a61c031fe620a7eb8f9c65bc02273b9be895e47c92bd48",
+    "imageDataLength": 5840
+  },
+  "matches": false,
+  "second": {
+    "camera": {
+      "fov": 35,
+      "lookAt": [0, 0, 0],
+      "position": [0, 2, 8],
+      "projection": "perspective",
+      "view": "front"
+    },
+    "hash": "82694ad1d169471dbeeb3b0359cfdc6f6a036d0673979655b4654cbf55acc2bd",
+    "imageDataLength": 4736
+  }
+}
