@@ -187,7 +187,8 @@ everything has been seen (the terminal lists what is still missing) or after
 | `recording.json`               | the raw capture; `frame-models calibrate DIR` re-runs the calibration offline                       |
 
 **2. Load in the app.** Serve the directory with the app and load it before
-entering XR:
+entering XR (the URL may be absolute or relative to the page; controllers
+already connected switch on their next connection):
 
 ```ts
 import { loadFrameControllerModels } from '@iwsdk/core';

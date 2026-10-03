@@ -116,16 +116,15 @@ export function parseFrameControllerModels(
 }
 
 /**
- * The valve-frame profile with the real models: each layout points at the
- * extracted GLB and carries its calibration, and the per-component visual
- * responses are dropped because {@link FrameControllerVisual} animates the
- * runtime's own nodes.
+ * The valve-frame profile with the real models: each layout with a model
+ * names its GLB (relative to the models directory) and carries its
+ * calibration, and its per-component visual responses are dropped because
+ * {@link FrameControllerVisual} animates the runtime's own nodes. A hand
+ * without a model keeps the generic layout.
  */
 export function frameProfileWithModels(
   models: FrameControllerModels,
-  baseUrl: string,
 ): InputProfile {
-  const base = baseUrl.replace(/\/+$/, '');
   const layouts: InputProfile['layouts'] = {};
   for (const hand of ['left', 'right'] as const) {
     const layout = VALVE_FRAME_PROFILE.layouts[hand];
@@ -145,7 +144,7 @@ export function frameProfileWithModels(
       ...layout,
       components,
       rootNodeName: '',
-      assetPath: `${base}/${model.asset}`,
+      assetPath: model.asset,
       frameModel: model,
     };
     layouts[hand] = withModel;
@@ -154,24 +153,41 @@ export function frameProfileWithModels(
 }
 
 /**
+ * Use `models`, served from `baseUrl` (absolute, or relative to the page),
+ * for every `valve-frame` controller connected from now on.
+ */
+export function registerFrameControllerModels(
+  models: FrameControllerModels,
+  baseUrl: string,
+): void {
+  registerInputProfile(frameProfileWithModels(models), {
+    assetBasePath: baseUrl.replace(/\/+$/, '') || '.',
+    selectVisualClass: (layout) =>
+      (layout as FrameModelLayout).frameModel
+        ? (FrameControllerVisual as unknown as VisualConstructor<FrameControllerVisual>)
+        : undefined,
+  });
+}
+
+/**
  * Fetch extracted Frame controller models from `baseUrl` (the directory
- * holding `frame-controller-models.json`, `left.glb` and `right.glb`) and use
- * them for every `valve-frame` controller connected from now on.
+ * holding `frame-controller-models.json`, `left.glb` and `right.glb`,
+ * absolute or relative to the page) and use them for every `valve-frame`
+ * controller connected from now on. Controllers already connected switch on
+ * their next connection.
  */
 export async function loadFrameControllerModels(
   baseUrl: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<FrameControllerModels> {
-  const url = `${baseUrl.replace(/\/+$/, '')}/${FRAME_MODELS_FILE}`;
+  const base = baseUrl.replace(/\/+$/, '') || '.';
+  const url = `${base}/${FRAME_MODELS_FILE}`;
   const response = await fetchImpl(url);
   if (!response.ok) {
     throw new Error(`${url}: ${response.status} ${response.statusText}`);
   }
   const models = parseFrameControllerModels(await response.json());
-  registerInputProfile(frameProfileWithModels(models, baseUrl), {
-    visualClass:
-      FrameControllerVisual as unknown as VisualConstructor<FrameControllerVisual>,
-  });
+  registerFrameControllerModels(models, base);
   return models;
 }
 
@@ -253,9 +269,21 @@ export class FrameControllerVisual extends BaseControllerVisual {
       return;
     }
 
-    const find = (name: string) =>
-      asset.getObjectByName(PropertyBinding.sanitizeNodeName(name)) ??
-      asset.getObjectByName(name);
+    // GLTFLoader sanitizes node names and suffixes duplicates, keeping the
+    // original in userData.name.
+    const find = (name: string) => {
+      let found: Object3D | undefined;
+      asset.traverse((o) => {
+        if (!found && o.userData?.name === name) {
+          found = o;
+        }
+      });
+      return (
+        found ??
+        asset.getObjectByName(PropertyBinding.sanitizeNodeName(name)) ??
+        asset.getObjectByName(name)
+      );
+    };
     for (const [name, visible] of Object.entries(model.visibleAtRest)) {
       const node = find(name);
       if (node) {
@@ -270,7 +298,12 @@ export class FrameControllerVisual extends BaseControllerVisual {
       if (!node || !indices) {
         continue;
       }
-      if (animation.kind === 'button' && indices.button !== undefined) {
+      if (
+        animation.kind === 'button' &&
+        indices.button !== undefined &&
+        animation.property !== 'x' &&
+        animation.property !== 'y'
+      ) {
         this.bound.push({
           kind: 'button',
           node,
@@ -318,16 +351,21 @@ export class FrameControllerVisual extends BaseControllerVisual {
           deltas,
         });
       } else if (animation.kind === 'visibility') {
+        const axis =
+          animation.property === 'x'
+            ? indices.xAxis
+            : animation.property === 'y'
+              ? indices.yAxis
+              : undefined;
+        const isAxis = animation.property === 'x' || animation.property === 'y';
+        if (isAxis ? axis === undefined : indices.button === undefined) {
+          continue;
+        }
         this.bound.push({
           kind: 'visibility',
           node,
-          index: indices.button,
-          axis:
-            animation.property === 'x'
-              ? indices.xAxis
-              : animation.property === 'y'
-                ? indices.yAxis
-                : undefined,
+          index: isAxis ? undefined : indices.button,
+          axis,
           property: animation.property,
           visibleWhenActive: animation.visibleWhenActive,
         });
@@ -348,7 +386,11 @@ export class FrameControllerVisual extends BaseControllerVisual {
             ? button?.pressed
               ? 1
               : 0
-            : (button?.value ?? 0);
+            : b.property === 'touched'
+              ? button?.touched
+                ? 1
+                : 0
+              : (button?.value ?? 0);
         b.node.position.lerpVectors(b.rest.p, b.pressed.p, v);
         b.node.quaternion.slerpQuaternions(b.rest.q, b.pressed.q, v);
       } else if (b.kind === 'stick') {

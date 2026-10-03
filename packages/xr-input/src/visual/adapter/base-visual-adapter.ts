@@ -77,12 +77,18 @@ export abstract class XRInputVisualAdapter {
     protected assetLoader: XRAssetLoader,
   ) {}
 
+  /** The profile's visual unless the app chose one, else the default. */
+  private resolveVisualClass(): VisualConstructor<VisualImplementation> {
+    return (
+      (!this.explicitVisualClass && this.inputConfig?.visualClass) ||
+      this.visualClass
+    );
+  }
+
   protected connectVisual() {
     if (this.inputConfig) {
       const { inputSource, layout } = this.inputConfig;
-      const visualClass =
-        (!this.explicitVisualClass && this.inputConfig.visualClass) ||
-        this.visualClass;
+      const visualClass = this.resolveVisualClass();
       XRInputVisualAdapter.createVisual(
         visualClass,
         inputSource,
@@ -96,7 +102,8 @@ export abstract class XRInputVisualAdapter {
         if (
           visual &&
           inputSource === this._inputSource &&
-          visual.constructor === visualClass
+          // Re-resolved: the app may have switched visuals during the load.
+          visual.constructor === this.resolveVisualClass()
         ) {
           this.visual = visual;
           this.visual.xrInput = this;
@@ -193,7 +200,9 @@ export abstract class XRInputVisualAdapter {
       visualClass.assetPath ??
       `${DEFAULT_PROFILES_PATH}/${profileId}/${inputSource.handedness}.glb`;
     const assetKeyPrefix = visualClass.assetKeyPrefix;
-    const assetKey = `${assetKeyPrefix}-${profileId}-${inputSource.handedness}`;
+    // The asset path is part of the key: a registered profile can point the
+    // same profile id at different models.
+    const assetKey = `${assetKeyPrefix}-${profileId}-${inputSource.handedness}-${assetPath}`;
     let visual: T;
     if (this.visualCache.has(assetKey)) {
       visual = this.visualCache.get(assetKey) as T;

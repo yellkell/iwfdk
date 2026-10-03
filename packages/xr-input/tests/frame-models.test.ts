@@ -18,6 +18,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   FrameControllerVisual,
   frameProfileWithModels,
+  registerFrameControllerModels,
   loadFrameControllerModels,
   parseFrameControllerModels,
   type FrameControllerModels,
@@ -28,6 +29,7 @@ import {
   registerInputProfile,
 } from '../src/gamepad/input-profiles.js';
 import { VALVE_FRAME_PROFILE } from '../src/gamepad/profiles/valve-frame.js';
+import { XRInputVisualAdapter } from '../src/visual/adapter/base-visual-adapter.js';
 import { XRControllerVisualAdapter } from '../src/visual/adapter/controller-visual-adapter.js';
 import { AnimatedController } from '../src/visual/impl/animated-controller.js';
 import type { XRAssetLoader } from '../src/xr-input-manager.js';
@@ -79,7 +81,7 @@ function source(handedness: 'left' | 'right', gamepad: Pad = pad()) {
 }
 
 function visual(hand: 'left' | 'right', gamepad: Pad) {
-  const profile = frameProfileWithModels(FIXTURE, '/models');
+  const profile = frameProfileWithModels(FIXTURE);
   const v = new FrameControllerVisual(
     new Scene(),
     new PerspectiveCamera(),
@@ -113,6 +115,7 @@ function animation(kind: string, nodeName: string) {
 
 afterEach(() => {
   registerInputProfile(VALVE_FRAME_PROFILE);
+  XRInputVisualAdapter.visualCache.clear();
 });
 
 describe('frame-controller-models.json', () => {
@@ -138,9 +141,9 @@ describe('frame-controller-models.json', () => {
   });
 
   it('builds a valve-frame profile pointing at the models', () => {
-    const profile = frameProfileWithModels(FIXTURE, 'https://cdn.test/m/');
+    const profile = frameProfileWithModels(FIXTURE);
     const right = profile.layouts.right as any;
-    expect(right.assetPath).toBe('https://cdn.test/m/right.glb');
+    expect(right.assetPath).toBe('right.glb');
     expect(right.frameModel).toBe(FIXTURE.hands.right);
     expect(right.components['a-button'].gamepadIndices.button).toBe(4);
     for (const c of Object.values(right.components) as any[]) {
@@ -278,24 +281,230 @@ describe('controller adapter', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
 
-  it('uses the profile visual for Frame controllers', async () => {
-    registerInputProfile(frameProfileWithModels(FIXTURE, '/m'), {
-      visualClass: FrameControllerVisual as any,
-    });
+  it('uses the profile visual for Frame controllers only', async () => {
+    registerFrameControllerModels(FIXTURE, '/m');
     const a = adapter();
     a.connect(source('right'));
     await settle();
     expect(a.visual).toBeInstanceOf(FrameControllerVisual);
+
+    const b = adapter();
+    b.connect({
+      profiles: ['oculus-touch-v3'],
+      handedness: 'right',
+      gamepad: pad(),
+    } as unknown as XRInputSource);
+    await settle();
+    expect(b.visual).toBeInstanceOf(AnimatedController);
   });
 
   it('keeps an app-chosen visual', async () => {
-    registerInputProfile(frameProfileWithModels(FIXTURE, '/m'), {
-      visualClass: FrameControllerVisual as any,
-    });
+    registerFrameControllerModels(FIXTURE, '/m');
     const a = adapter();
     a.updateVisualImplementation(AnimatedController);
     a.connect(source('right'));
     await settle();
     expect(a.visual).toBeInstanceOf(AnimatedController);
+  });
+
+  it('drops a Frame visual that finishes loading after the app switches', async () => {
+    registerFrameControllerModels(FIXTURE, '/m');
+    const space = new Group();
+    const a = new XRControllerVisualAdapter(
+      space,
+      'right',
+      true,
+      AnimatedController,
+      new Scene(),
+      new PerspectiveCamera(),
+      loader,
+    );
+    a.connect(source('right'));
+    a.updateVisualImplementation(AnimatedController);
+    await settle();
+    expect(a.visual).toBeInstanceOf(AnimatedController);
+    expect(space.children).toEqual([a.visual!.model]);
+  });
+
+  it('does not reuse a cached visual across model directories', async () => {
+    registerFrameControllerModels(FIXTURE, '/one');
+    const a = adapter();
+    a.connect(source('right'));
+    await settle();
+    registerFrameControllerModels(FIXTURE, '/two');
+    const b = adapter();
+    b.connect(source('right'));
+    await settle();
+    expect(b.visual).toBeInstanceOf(FrameControllerVisual);
+    expect(b.visual).not.toBe(a.visual);
+  });
+});
+
+describe('registerFrameControllerModels', () => {
+  it('resolves model URLs against the page for relative bases', () => {
+    registerFrameControllerModels(FIXTURE, 'frame-models/');
+    expect(loadInputProfile(source('left')).assetPath).toBe(
+      'frame-models/left.glb',
+    );
+    registerFrameControllerModels(FIXTURE, 'https://cdn.test/m');
+    expect(loadInputProfile(source('right')).assetPath).toBe(
+      'https://cdn.test/m/right.glb',
+    );
+  });
+
+  it('keeps the default visual for a hand without a model', () => {
+    registerFrameControllerModels(
+      { ...FIXTURE, hands: { right: FIXTURE.hands.right } },
+      '/m',
+    );
+    expect(loadInputProfile(source('right')).visualClass).toBe(
+      FrameControllerVisual,
+    );
+    const left = loadInputProfile(source('left'));
+    expect(left.visualClass).toBeUndefined();
+    expect(left.assetPath).toMatch(/generic-trigger-squeeze-thumbstick/);
+  });
+});
+
+/** A hand-made model with awkward names, nesting and a rotated stick. */
+describe('FrameControllerVisual with a hand-made model', () => {
+  const restQ = new Quaternion().setFromAxisAngle(
+    new Vector3(0, 1, 0),
+    Math.PI / 6,
+  );
+  const tilt = (axis: Vector3, deg: number) =>
+    new Quaternion().setFromAxisAngle(axis, (deg * Math.PI) / 180);
+  const X = new Vector3(1, 0, 0);
+  const Z = new Vector3(0, 0, 1);
+  const pose = (q: Quaternion, p = [0, 0.01, 0]): FramePose => ({
+    position: p as [number, number, number],
+    orientation: [q.x, q.y, q.z, q.w],
+  });
+  // Full deflection is the rest orientation followed by a local tilt.
+  const right = restQ.clone().multiply(tilt(Z, -15));
+  const up = restQ.clone().multiply(tilt(X, -15));
+
+  const models: FrameControllerModels = {
+    ...FIXTURE,
+    hands: {
+      right: {
+        ...FIXTURE.hands.right!,
+        nodeNames: ['stick.top', 'a touch'],
+        visibleAtRest: { 'a touch': true },
+        animations: [
+          {
+            kind: 'stick',
+            node: 'stick.top',
+            component: 'xr-standard-thumbstick',
+            rest: pose(restQ),
+            right: pose(right),
+            up: pose(up),
+            // Left and down never reached: mirrored from right and up.
+            left: null,
+            down: null,
+            confidence: 1,
+          },
+          {
+            kind: 'button',
+            node: 'a touch',
+            component: 'a-button',
+            property: 'touched',
+            rest: pose(new Quaternion(), [0, 0, 0]),
+            pressed: pose(new Quaternion(), [0, 0.002, 0]),
+            confidence: 1,
+          },
+        ],
+      },
+    },
+  };
+
+  function build(gamepad: Pad) {
+    // As GLTFLoader leaves it: sanitized names, a collision suffix, the
+    // original name in userData, and the stick nested under a parent.
+    const scene = new Group();
+    const parent = new Object3D();
+    parent.position.set(0.1, 0, 0);
+    scene.add(parent);
+    const decoy = new Object3D();
+    decoy.name = 'stick_top';
+    decoy.userData.name = 'stick_top';
+    const stick = new Object3D();
+    stick.name = 'stick_top_1';
+    stick.userData.name = 'stick.top';
+    parent.add(decoy, stick);
+    const touch = new Object3D();
+    touch.name = 'a_touch';
+    touch.userData.name = 'a touch';
+    scene.add(touch);
+
+    const v = new FrameControllerVisual(
+      new Scene(),
+      new PerspectiveCamera(),
+      scene,
+      frameProfileWithModels(models).layouts.right!,
+    );
+    v.init();
+    v.connect(source('right', gamepad), true);
+    return { v, stick, decoy, touch };
+  }
+
+  const expectQ = (o: Object3D, q: Quaternion) =>
+    expect(o.quaternion.angleTo(q)).toBeLessThan(1e-3);
+
+  it('finds nodes by their original glTF names', () => {
+    const gamepad = pad();
+    const { v, stick, decoy } = build(gamepad);
+    gamepad.axes[2] = 1;
+    v.update();
+    expectQ(stick, right);
+    expect(decoy.quaternion.equals(new Quaternion())).toBe(true);
+  });
+
+  it('applies tilts in the node frame for every direction', () => {
+    const gamepad = pad();
+    const { v, stick } = build(gamepad);
+
+    gamepad.axes[2] = 1;
+    v.update();
+    expectQ(stick, right);
+
+    gamepad.axes[2] = -1; // Mirrored from right.
+    v.update();
+    expectQ(stick, restQ.clone().multiply(tilt(Z, 15)));
+
+    gamepad.axes[2] = 0;
+    gamepad.axes[3] = -1;
+    v.update();
+    expectQ(stick, up);
+
+    gamepad.axes[3] = 1; // Mirrored from up.
+    v.update();
+    expectQ(stick, restQ.clone().multiply(tilt(X, 15)));
+
+    gamepad.axes[2] = 0.5;
+    gamepad.axes[3] = 0;
+    v.update();
+    expectQ(stick, restQ.clone().multiply(tilt(Z, -7.5)));
+
+    gamepad.axes[2] = 0.7;
+    gamepad.axes[3] = -0.7;
+    v.update();
+    expectQ(
+      stick,
+      restQ.clone().multiply(tilt(Z, -10.5)).multiply(tilt(X, -10.5)),
+    );
+    // Local pose: the parent's offset is not baked in.
+    expect(stick.position.toArray()).toEqual([0, 0.01, 0]);
+  });
+
+  it('drives touch-property buttons from touch', () => {
+    const gamepad = pad();
+    const { v, touch } = build(gamepad);
+    gamepad.buttons[4] = { pressed: false, touched: true, value: 0 };
+    v.update();
+    expect(touch.position.y).toBeCloseTo(0.002, 6);
+    gamepad.buttons[4].touched = false;
+    v.update();
+    expect(touch.position.y).toBeCloseTo(0, 6);
   });
 });

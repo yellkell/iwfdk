@@ -67,12 +67,20 @@ export interface RegisterInputProfileOptions {
    * `updateVisualImplementation()` call still takes precedence.
    */
   visualClass?: VisualConstructor<VisualImplementation>;
+  /**
+   * Per-layout alternative to `visualClass`; returning `undefined` keeps the
+   * adapter's default for that layout.
+   */
+  selectVisualClass?: (
+    layout: InputLayout,
+  ) => VisualConstructor<VisualImplementation> | undefined;
 }
 
 type RegisteredInputProfile = {
   profile: InputProfile;
   assetBasePath?: string;
   visualClass?: VisualConstructor<VisualImplementation>;
+  selectVisualClass?: RegisterInputProfileOptions['selectVisualClass'];
 };
 
 const registeredProfiles = new Map<string, RegisteredInputProfile>();
@@ -91,6 +99,7 @@ export function registerInputProfile(
     profile,
     assetBasePath: options.assetBasePath,
     visualClass: options.visualClass,
+    selectVisualClass: options.selectVisualClass,
   });
 }
 
@@ -209,10 +218,8 @@ export async function fetchProfile(
 
 export function loadInputProfile(inputSource: XRInputSource) {
   const profileId = inputSource.profiles[0];
-  const { profile, assetBasePath, visualClass } = resolveProfileSync(
-    inputSource,
-    DEFAULT_PROFILE,
-  );
+  const { profile, assetBasePath, visualClass, selectVisualClass } =
+    resolveProfileSync(inputSource, DEFAULT_PROFILE);
   const layout = profile.layouts[inputSource.handedness];
   if (!layout) {
     throw new DOMException('No applicable layout found', 'NotSupportedError');
@@ -227,6 +234,6 @@ export function loadInputProfile(inputSource: XRInputSource) {
       layout.assetPath,
       assetBasePath,
     ),
-    visualClass,
+    visualClass: selectVisualClass ? selectVisualClass(layout) : visualClass,
   };
 }
