@@ -28,6 +28,7 @@ import {
   type PinchJoints,
   type PinchState,
 } from './pinch.js';
+import { isSteamFrameBrowser } from './platform.js';
 
 /**
  * How the browser exposes the controllers:
@@ -366,7 +367,7 @@ function detectLayout(gamepads: FrameGamepads, userAgent: string): FrameLayout {
   if (profiles.includes(VALVE_FRAME_PROFILE_ID)) {
     return 'frame';
   }
-  if (/Linux (aarch64|arm64)/i.test(userAgent)) {
+  if (isSteamFrameBrowser(userAgent)) {
     return 'remapped';
   }
   return 'other';

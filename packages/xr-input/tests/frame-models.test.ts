@@ -17,6 +17,7 @@ import {
 import { afterEach, describe, expect, it } from 'vitest';
 import {
   FrameControllerVisual,
+  frameEmulationProfileWithModels,
   frameProfileWithModels,
   registerFrameControllerModels,
   loadFrameControllerModels,
@@ -25,8 +26,10 @@ import {
   type FramePose,
 } from '../src/frame/models.js';
 import {
+  DEFAULT_PROFILES_PATH,
   loadInputProfile,
   registerInputProfile,
+  unregisterInputProfile,
 } from '../src/gamepad/input-profiles.js';
 import { VALVE_FRAME_PROFILE } from '../src/gamepad/profiles/valve-frame.js';
 import { XRInputVisualAdapter } from '../src/visual/adapter/base-visual-adapter.js';
@@ -115,6 +118,7 @@ function animation(kind: string, nodeName: string) {
 
 afterEach(() => {
   registerInputProfile(VALVE_FRAME_PROFILE);
+  unregisterInputProfile('oculus-touch');
   XRInputVisualAdapter.visualCache.clear();
 });
 
@@ -506,5 +510,66 @@ describe('FrameControllerVisual with a hand-made model', () => {
     gamepad.buttons[4].touched = false;
     v.update();
     expect(touch.position.y).toBeCloseTo(0, 6);
+  });
+});
+
+describe('Frame controllers under SteamVR Touch emulation', () => {
+  const touch = (handedness: 'left' | 'right', gamepad: Pad = pad()) =>
+    ({
+      profiles: ['oculus-touch', 'generic-trigger-squeeze-thumbstick'],
+      handedness,
+      gamepad,
+    }) as unknown as XRInputSource;
+
+  it('shows the real models on a Frame browser', () => {
+    registerFrameControllerModels(FIXTURE, '/m', { emulation: true });
+    const config = loadInputProfile(touch('right'));
+    expect(config.visualClass).toBe(FrameControllerVisual);
+    expect(config.assetPath).toBe('/m/right.glb');
+    // Touch emulation's own gamepad indices.
+    expect(config.layout.components['a-button'].gamepadIndices.button).toBe(4);
+    expect((config.layout as any).frameModel).toBe(FIXTURE.hands.right);
+  });
+
+  it('leaves Touch controllers alone elsewhere', () => {
+    registerFrameControllerModels(FIXTURE, '/m', { emulation: false });
+    const config = loadInputProfile(touch('right'));
+    expect(config.visualClass).toBeUndefined();
+    expect(config.assetPath).toBe(
+      `${DEFAULT_PROFILES_PATH}/oculus-touch/right.glb`,
+    );
+  });
+
+  it('keeps the Touch model for a hand without a Frame model', () => {
+    registerFrameControllerModels(
+      { ...FIXTURE, hands: { right: FIXTURE.hands.right } },
+      '/m',
+      { emulation: true },
+    );
+    const left = loadInputProfile(touch('left'));
+    expect(left.visualClass).toBeUndefined();
+    expect(left.assetPath).toBe(
+      `${DEFAULT_PROFILES_PATH}/oculus-touch/left.glb`,
+    );
+  });
+
+  it('animates the components the emulation exposes', () => {
+    const gamepad = pad();
+    const v = new FrameControllerVisual(
+      new Scene(),
+      new PerspectiveCamera(),
+      asset(),
+      frameEmulationProfileWithModels(FIXTURE, 'oculus-touch').layouts.right!,
+    );
+    v.init();
+    v.connect(touch('right', gamepad), true);
+    gamepad.buttons[0].value = 1;
+    gamepad.buttons[4] = { pressed: true, touched: true, value: 1 };
+    gamepad.axes[2] = 1;
+    v.update();
+    expectPose(node(v, 'trigger'), animation('button', 'trigger').pressed);
+    expectPose(node(v, 'button_a'), animation('button', 'button_a').pressed);
+    expectPose(node(v, 'stick'), animation('stick', 'stick').right);
+    expect(node(v, 'a_touch_dot').visible).toBe(true);
   });
 });

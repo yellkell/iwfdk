@@ -15,6 +15,11 @@ import {
   Vector3,
 } from 'three';
 import {
+  getProfile as getGeneratedProfile,
+  PROFILES_LIST,
+} from '../gamepad/generated-profiles.js';
+import {
+  DEFAULT_PROFILES_PATH,
   registerInputProfile,
   type InputLayout,
   type InputProfile,
@@ -22,6 +27,10 @@ import {
 import { VALVE_FRAME_PROFILE } from '../gamepad/profiles/valve-frame.js';
 import type { VisualConstructor } from '../visual/adapter/base-visual-adapter.js';
 import { BaseControllerVisual } from '../visual/impl/base-impl.js';
+import {
+  FRAME_EMULATION_PROFILE_IDS,
+  isSteamFrameBrowser,
+} from './platform.js';
 
 /**
  * Real Steam Frame controller models, extracted from SteamVR with
@@ -153,32 +162,99 @@ export function frameProfileWithModels(
 }
 
 /**
+ * `profileId` (a profile SteamVR's Touch emulation reports for the Frame
+ * controllers) with the real Frame models: the layouts keep the emulated
+ * profile's gamepad indices, so only components the emulation exposes under
+ * the same name (trigger, grip, thumbstick, A and B) animate. A hand without
+ * a model keeps the profile's own model.
+ */
+export function frameEmulationProfileWithModels(
+  models: FrameControllerModels,
+  profileId: string,
+): InputProfile {
+  const entry = PROFILES_LIST[profileId];
+  if (!entry) {
+    throw new Error(`Unknown input profile ${profileId}`);
+  }
+  const base = getGeneratedProfile(entry.path) as InputProfile;
+  const layouts: InputProfile['layouts'] = {};
+  for (const [hand, layout] of Object.entries(base.layouts) as [
+    XRHandedness,
+    InputLayout,
+  ][]) {
+    const model = hand === 'none' ? undefined : models.hands[hand];
+    if (!model) {
+      // Absolute, so the models directory does not capture it.
+      layouts[hand] = {
+        ...layout,
+        assetPath: `${DEFAULT_PROFILES_PATH}/${profileId}/${layout.assetPath}`,
+      };
+      continue;
+    }
+    const components: InputLayout['components'] = {};
+    for (const [id, config] of Object.entries(layout.components)) {
+      components[id] = { ...config, visualResponses: {} };
+    }
+    const withModel: FrameModelLayout = {
+      ...layout,
+      components,
+      rootNodeName: '',
+      assetPath: model.asset,
+      frameModel: model,
+    };
+    layouts[hand] = withModel;
+  }
+  return { ...base, layouts };
+}
+
+export interface FrameControllerModelOptions {
+  /**
+   * Also show the models when the controllers are reported through
+   * SteamVR's Touch emulation (a Frame browser without the IWFDK Chromium
+   * patch). Defaults to {@link isSteamFrameBrowser}.
+   */
+  emulation?: boolean;
+}
+
+/**
  * Use `models`, served from `baseUrl` (absolute, or relative to the page),
- * for every `valve-frame` controller connected from now on.
+ * for the Frame controllers connected from now on.
  */
 export function registerFrameControllerModels(
   models: FrameControllerModels,
   baseUrl: string,
+  { emulation = isSteamFrameBrowser() }: FrameControllerModelOptions = {},
 ): void {
-  registerInputProfile(frameProfileWithModels(models), {
+  const options = {
     assetBasePath: baseUrl.replace(/\/+$/, '') || '.',
-    selectVisualClass: (layout) =>
+    selectVisualClass: (layout: InputLayout) =>
       (layout as FrameModelLayout).frameModel
         ? (FrameControllerVisual as unknown as VisualConstructor<FrameControllerVisual>)
         : undefined,
-  });
+  };
+  registerInputProfile(frameProfileWithModels(models), options);
+  if (emulation) {
+    for (const id of FRAME_EMULATION_PROFILE_IDS) {
+      registerInputProfile(
+        frameEmulationProfileWithModels(models, id),
+        options,
+      );
+    }
+  }
 }
 
 /**
  * Fetch extracted Frame controller models from `baseUrl` (the directory
  * holding `frame-controller-models.json`, `left.glb` and `right.glb`,
- * absolute or relative to the page) and use them for every `valve-frame`
- * controller connected from now on. Controllers already connected switch on
+ * absolute or relative to the page) and use them for the Frame controllers
+ * connected from now on: `valve-frame` controllers, and on a Steam Frame
+ * browser also controllers reported through SteamVR's Touch emulation. Controllers already connected switch on
  * their next connection.
  */
 export async function loadFrameControllerModels(
   baseUrl: string,
   fetchImpl: typeof fetch = fetch,
+  options: FrameControllerModelOptions = {},
 ): Promise<FrameControllerModels> {
   const base = baseUrl.replace(/\/+$/, '') || '.';
   const url = `${base}/${FRAME_MODELS_FILE}`;
@@ -187,7 +263,7 @@ export async function loadFrameControllerModels(
     throw new Error(`${url}: ${response.status} ${response.statusText}`);
   }
   const models = parseFrameControllerModels(await response.json());
-  registerFrameControllerModels(models, base);
+  registerFrameControllerModels(models, base, options);
   return models;
 }
 

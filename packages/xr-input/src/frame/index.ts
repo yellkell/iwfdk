@@ -9,4 +9,5 @@ export * from './bindings.js';
 export * from './frame-input.js';
 export * from './hysteresis.js';
 export * from './pinch.js';
+export * from './platform.js';
 export * from './models.js';

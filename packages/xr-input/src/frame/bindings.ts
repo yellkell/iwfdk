@@ -16,13 +16,11 @@ import { InputComponent } from '../gamepad/stateful-gamepad.js';
  * - **valve-frame** (browser with the IWFDK Chromium patch): every control is
  *   physical, laid out as on the hardware: A/B/X/Y and menu on the right,
  *   D-pad and view on the left.
- * - **Touch-style** (oculus-touch, meta-quest-touch-*, pico-4, ...; also
- *   what an unpatched browser on a Frame reports, since SteamVR presents the
- *   Frame controllers as emulated Touch controllers without
- *   XR_VALVE_frame_controller_interaction): A/B on the right, X/Y and menu on
- *   the left; the D-pad is emulated from the left stick.
- * - **valve-index**: A on the right; the left A stands in for X, as FramePlayer
- *   binds Index controllers. Chromium exposes no B, menu or view for Index.
+ * - **Touch emulation** (a Frame whose browser lacks the patch: without
+ *   XR_VALVE_frame_controller_interaction SteamVR presents the Frame
+ *   controllers as `oculus-touch`; the same mapping serves Touch-style
+ *   controllers elsewhere): A/B on the right, X/Y and menu on the left as
+ *   the emulation exposes them; the D-pad is emulated from the left stick.
  */
 export type FrameButtonId =
   | 'a'
@@ -61,12 +59,10 @@ export const FRAME_BUTTON_SOURCES: Readonly<
   x: [
     ['right', InputComponent.X_Button],
     ['left', InputComponent.X_Button],
-    ['left', InputComponent.A_Button],
   ],
   y: [
     ['right', InputComponent.Y_Button],
     ['left', InputComponent.Y_Button],
-    ['left', InputComponent.B_Button],
   ],
   menu: [
     ['right', InputComponent.Menu],

@@ -213,47 +213,6 @@ describe('FrameInput on valve-frame', () => {
   });
 });
 
-describe('FrameInput on valve-index', () => {
-  it('uses left A as X and emulates the D-pad from the left stick', () => {
-    const { pads, gamepads, sync } = rig(
-      ['valve-index', 'generic-trigger-squeeze-touchpad-thumbstick'],
-      5,
-    );
-    const input = new FrameInput({ userAgent: 'X11; Linux aarch64' });
-    press(pads.right, 4);
-    press(pads.left, 4);
-    pads.left.axes[3] = -0.9; // Stick pushed up (gamepad y is down-positive).
-    sync();
-    input.update(gamepads);
-
-    expect(input.layout).toBe('remapped');
-    expect(input.a.pressed && input.x.pressed).toBe(true);
-    expect(input.b.pressed || input.y.pressed || input.menu.pressed).toBe(
-      false,
-    );
-    expect(input.dpadEmulated).toBe(true);
-    expect(input.dpad.up.justPressed).toBe(true);
-    expect(input.left.thumbstick.y).toBeCloseTo(-0.9);
-
-    pads.left.axes[3] = -0.6; // Held above the release threshold.
-    sync();
-    input.update(gamepads);
-    expect(input.dpad.up.pressed).toBe(true);
-    pads.left.axes[3] = -0.3;
-    sync();
-    input.update(gamepads);
-    expect(input.dpad.up.justReleased).toBe(true);
-  });
-
-  it('reports a desktop Index as other', () => {
-    const { gamepads, sync } = rig(['valve-index'], 5);
-    const input = new FrameInput({ userAgent: 'X11; Linux x86_64' });
-    sync();
-    input.update(gamepads);
-    expect(input.layout).toBe('other');
-  });
-});
-
 describe('FrameInput on an unpatched Frame browser', () => {
   it('maps SteamVR Touch emulation and emulates the D-pad', () => {
     const { pads, gamepads, sync } = rig(
@@ -270,6 +229,33 @@ describe('FrameInput on an unpatched Frame browser', () => {
     expect(input.a.pressed && input.y.pressed).toBe(true);
     expect(input.dpadEmulated && input.dpad.right.pressed).toBe(true);
     expect(input.left.shoulder.pressed || input.view.pressed).toBe(false);
+  });
+
+  it('emulates the D-pad with hysteresis', () => {
+    const { pads, gamepads, sync } = rig(['oculus-touch'], 7);
+    const input = new FrameInput({ userAgent: 'X11; Linux aarch64' });
+    pads.left.axes[3] = -0.9; // Stick pushed up (gamepad y is down-positive).
+    sync();
+    input.update(gamepads);
+    expect(input.dpad.up.justPressed).toBe(true);
+    expect(input.left.thumbstick.y).toBeCloseTo(-0.9);
+
+    pads.left.axes[3] = -0.6; // Held above the release threshold.
+    sync();
+    input.update(gamepads);
+    expect(input.dpad.up.pressed).toBe(true);
+    pads.left.axes[3] = -0.3;
+    sync();
+    input.update(gamepads);
+    expect(input.dpad.up.justReleased).toBe(true);
+  });
+
+  it('reports Touch controllers elsewhere as other', () => {
+    const { gamepads, sync } = rig(['oculus-touch-v3'], 7);
+    const input = new FrameInput({ userAgent: 'X11; Linux x86_64' });
+    sync();
+    input.update(gamepads);
+    expect(input.layout).toBe('other');
   });
 });
 

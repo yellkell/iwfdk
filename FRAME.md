@@ -119,16 +119,17 @@ or `none`. `frame.dpadEmulated` is true while the D-pad comes from the stick.
 
 ### Ported from FramePlayer
 
-| FramePlayer (`crates/xr/src`, `feat/implement-outline`)              | IWFDK (`packages/xr-input/src/frame`)                                                           |
-| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `bindings.rs`: Frame/Index binding tiers, X/Y from left A/B on Index | `bindings.ts`: `FRAME_BUTTON_SOURCES` priority lists                                            |
-| `input.rs` `Button`, `analog_press`, `stick_to_dpad`                 | `hysteresis.ts` (same thresholds: select 0.75/0.6, grip 0.7/0.5, D-pad 0.7 with release at 70%) |
-| `input.rs` `InputState`                                              | `frame-input.ts` `FrameInput`                                                                   |
-| `pinch.rs`                                                           | `pinch.ts` (same 10/25/80 mm thresholds)                                                        |
+| FramePlayer (`crates/xr/src`, `feat/implement-outline`)             | IWFDK (`packages/xr-input/src/frame`)                                                           |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `bindings.rs`: Frame binding table and its Touch emulation fallback | `bindings.ts`: `FRAME_BUTTON_SOURCES` priority lists                                            |
+| `input.rs` `Button`, `analog_press`, `stick_to_dpad`                | `hysteresis.ts` (same thresholds: select 0.75/0.6, grip 0.7/0.5, D-pad 0.7 with release at 70%) |
+| `input.rs` `InputState`                                             | `frame-input.ts` `FrameInput`                                                                   |
+| `pinch.rs`                                                          | `pinch.ts` (same 10/25/80 mm thresholds)                                                        |
 
 The Rust unit tests for these are ported in
-`packages/xr-input/tests/frame-input.test.ts`. FramePlayer's own binding
-table guesses `bumper/click`; Valve's profile names it `shoulder/click`.
+`packages/xr-input/tests/frame-input.test.ts`. Everything targets the Frame
+controllers: there is no Index-specific mapping, and the only other case
+handled specially is SteamVR's Touch emulation of the Frame controllers.
 
 ## 3. The `valve-frame` gamepad layout
 
@@ -196,12 +197,17 @@ import { loadFrameControllerModels } from '@iwsdk/core';
 await loadFrameControllerModels('/frame-models');
 ```
 
-From then on every `valve-frame` controller uses `FrameControllerVisual`:
-the GLB placed at its recorded offset from the grip pose, triggers and
-buttons interpolating between their recorded poses, sticks tilting per
-direction, and touch indicators showing with touch. Other controllers, and
-Frame controllers when no models were loaded, keep the default visual. An app
-that calls `updateVisualImplementation()` keeps its own visual.
+From then on the Frame controllers use `FrameControllerVisual`: the GLB
+placed at its recorded offset from the grip pose, triggers and buttons
+interpolating between their recorded poses, sticks tilting per direction,
+and touch indicators showing with touch. That covers `valve-frame`
+controllers and, on a Steam Frame browser without the Chromium patch, the
+same controllers reported through SteamVR's Touch emulation
+(`oculus-touch`), so the headset always shows Frame controllers, never Touch
+controllers. Pass `{ emulation: false }` as the third argument to skip the
+emulation case. Other headsets' controllers keep the default visual, as do
+Frame controllers when no models were loaded. An app that calls
+`updateVisualImplementation()` keeps its own visual.
 
 **Licensing.** The models are Valve's assets, served by SteamVR to
 applications running on the user's device; their redistribution terms are
@@ -211,9 +217,11 @@ that in mind. The OpenXR specification also asks applications not to ship
 models in place of the runtime's; the WebXR route has no other way to show
 them, so re-extract after SteamVR updates the controllers.
 
-**Limits.** Animation follows only the inputs the WebXR gamepad exposes, so
-it needs the patched browser (`valve-frame`); under Touch emulation the
-generic visual is used. A control not exercised during capture stays at
+**Limits.** Animation follows only the inputs the WebXR gamepad exposes.
+With the patched browser (`valve-frame`) that is every control. Under Touch
+emulation it is the trigger, grip, thumbstick, A and B; the D-pad, X/Y,
+shoulders, menu and view stay at rest because the emulation does not expose
+them under their own names. A control not exercised during capture stays at
 rest (the tool's summary and `missingCoverage` list them).
 
 ## 5. Browser build
@@ -284,7 +292,7 @@ and `scripts/check-headers.mjs` (accepts the IWFDK header).
    compare against SteamVR's own controller rendering.
 2. **A Chromium build** with patch 0004, then `device_unittests` and an
    on-headset run: `frame.layout === 'frame'` and every button lights up.
-3. **What an unpatched browser reports** (Touch emulation is expected from
-   Valve's documentation) and that the `remapped` user-agent heuristic
-   (`Linux aarch64`) matches the Frame browser.
+3. **What an unpatched browser reports** (`oculus-touch` is expected from
+   Valve's documentation of Touch emulation) and that `isSteamFrameBrowser()`
+   (`Linux aarch64` in the user agent) matches the Frame browser.
 4. **Pinch thresholds** against Frame hand-tracking noise.
