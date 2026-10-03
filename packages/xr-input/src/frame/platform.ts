@@ -7,6 +7,13 @@
 
 const ARM_LINUX_USER_AGENT = /Linux (aarch64|arm64)/i;
 
+/**
+ * Other headsets' browsers run Chromium on ARM too and may present as Linux
+ * (Meta Quest Browser's user agent says "X11; Linux x86_64; Quest"). IWFDK
+ * changes how it renders on a Steam Frame, so these must never match.
+ */
+const OTHER_HEADSET_BROWSER = /OculusBrowser|Quest|Pico|Android|Wolvic/i;
+
 interface UserAgentDataValues {
   platform?: string;
   architecture?: string;
@@ -41,7 +48,10 @@ export function detectSteamFrameBrowser(): Promise<boolean> {
           'platform',
           'architecture',
         ]);
-        armLinux = platform === 'Linux' && architecture === 'arm';
+        armLinux =
+          platform === 'Linux' &&
+          architecture === 'arm' &&
+          !OTHER_HEADSET_BROWSER.test(globalThis.navigator?.userAgent ?? '');
         return (
           armLinux || isSteamFrameBrowser(globalThis.navigator?.userAgent ?? '')
         );
@@ -61,6 +71,8 @@ export function detectSteamFrameBrowser(): Promise<boolean> {
  * the IWFDK Chromium patch, SteamVR presents the Frame controllers as
  * emulated Touch controllers, and this is how IWFDK still knows they are
  * Frame controllers. No other WebXR headset browser runs on ARM64 Linux.
+ * `@iwsdk/core` also uses it to avoid the Frame browsers' rendering
+ * problems (see FRAME.md, "Making a WebXR app great on the Steam Frame").
  *
  * With `userAgent` given, only that string is checked. Without it, the
  * result of {@link detectSteamFrameBrowser} is used once it has resolved
@@ -68,11 +80,18 @@ export function detectSteamFrameBrowser(): Promise<boolean> {
  */
 export function isSteamFrameBrowser(userAgent?: string): boolean {
   if (userAgent !== undefined) {
-    return ARM_LINUX_USER_AGENT.test(userAgent);
+    return isArmLinuxUserAgent(userAgent);
   }
   return (
     armLinux === true ||
-    ARM_LINUX_USER_AGENT.test(globalThis.navigator?.userAgent ?? '')
+    isArmLinuxUserAgent(globalThis.navigator?.userAgent ?? '')
+  );
+}
+
+function isArmLinuxUserAgent(userAgent: string): boolean {
+  return (
+    ARM_LINUX_USER_AGENT.test(userAgent) &&
+    !OTHER_HEADSET_BROWSER.test(userAgent)
   );
 }
 
