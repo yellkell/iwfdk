@@ -32,14 +32,15 @@ import {
 /**
  * How the browser exposes the controllers:
  * - `frame`: the `valve-frame` profile; every control is physical.
- * - `index-remap`: `valve-index` on an ARM64 Linux browser, i.e. a Steam Frame
- *   whose browser lacks the IWFDK Chromium patch, so SteamVR remaps it onto
- *   the Index profile. Only trigger, grip, stick and one face button per hand
- *   come through. [verify] the heuristic on a Frame.
+ * - `remapped`: another controller profile on an ARM64 Linux browser, i.e. a
+ *   Steam Frame whose browser lacks the IWFDK Chromium patch. SteamVR then
+ *   presents the Frame controllers as emulated Touch controllers, so the
+ *   D-pad, shoulder buttons and view are lost. [verify] the user-agent
+ *   heuristic on a Frame.
  * - `other`: any other controller; mapped by component as far as it goes.
  * - `none`: no gamepad-bearing input source.
  */
-export type FrameLayout = 'frame' | 'index-remap' | 'other' | 'none';
+export type FrameLayout = 'frame' | 'remapped' | 'other' | 'none';
 
 export class FrameControllerState {
   /** A gamepad is connected for this hand. */
@@ -54,7 +55,8 @@ export class FrameControllerState {
   squeeze = 0;
   /** Grip as a button, with hysteresis. */
   readonly grip = new FrameButton();
-  readonly bumper = new FrameButton();
+  /** Shoulder button (bumper). */
+  readonly shoulder = new FrameButton();
   /** Gamepad API convention: x right, **y down**, each -1…1. */
   readonly thumbstick = { x: 0, y: 0 };
   readonly thumbstickButton = new FrameButton();
@@ -68,7 +70,7 @@ export class FrameControllerState {
     this.thumbstick.y = 0;
     this.select.reset();
     this.grip.reset();
-    this.bumper.reset();
+    this.shoulder.reset();
     this.thumbstickButton.reset();
   }
 }
@@ -106,7 +108,7 @@ const DEFAULTS = {
 
 /**
  * Steam Frame controller semantics on top of WebXR gamepads: per-hand
- * trigger/grip/bumper/stick and the gamepad-style A/B/X/Y, menu, view and
+ * trigger/grip/shoulder/stick and the gamepad-style A/B/X/Y, menu, view and
  * D-pad, regardless of which profile the browser reports. Port of
  * FramePlayer's `fp-xr` `InputState`.
  */
@@ -326,9 +328,9 @@ export class FrameInput {
       state.squeeze > 0.05,
     );
 
-    state.bumper.update(
-      gamepad.getButtonPressed(InputComponent.Bumper),
-      gamepad.getButtonTouched(InputComponent.Bumper),
+    state.shoulder.update(
+      gamepad.getButtonPressed(InputComponent.Shoulder),
+      gamepad.getButtonTouched(InputComponent.Shoulder),
     );
 
     const stick = gamepad.getAxesValues(InputComponent.Thumbstick);
@@ -355,20 +357,17 @@ export class FrameInput {
 }
 
 function detectLayout(gamepads: FrameGamepads, userAgent: string): FrameLayout {
-  const profiles = [gamepads.left, gamepads.right]
-    .map((gamepad) => gamepad?.inputSource?.profiles[0])
-    .filter((id): id is string => id !== undefined);
   if (!gamepads.left && !gamepads.right) {
     return 'none';
   }
+  const profiles = [gamepads.left, gamepads.right]
+    .map((gamepad) => gamepad?.inputSource?.profiles[0])
+    .filter((id): id is string => id !== undefined);
   if (profiles.includes(VALVE_FRAME_PROFILE_ID)) {
     return 'frame';
   }
-  if (
-    profiles.includes('valve-index') &&
-    /Linux (aarch64|arm64)/i.test(userAgent)
-  ) {
-    return 'index-remap';
+  if (/Linux (aarch64|arm64)/i.test(userAgent)) {
+    return 'remapped';
   }
   return 'other';
 }

@@ -1,47 +1,47 @@
-From 11252f95042f827fbb74a3258eff6ab4b867d80d Mon Sep 17 00:00:00 2001
+From 4300e6b45268ed4adbf992ab2e58445f9d0eb7ae Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Sat, 3 Oct 2026 00:43:32 +0000
 Subject: [PATCH] vr: expose Steam Frame controllers to WebXR
 
 Add the /interaction_profiles/valve/frame_controller_valve OpenXR
-interaction profile, reported to pages as "valve-frame" with a
-"generic-trigger-squeeze-thumbstick" fallback.
+interaction profile from XR_VALVE_frame_controller_interaction, reported
+to pages as "valve-frame" with a "generic-trigger-squeeze-thumbstick"
+fallback. Component paths follow Valve's published profile
+(ValveSoftware/Unity, SteamFrameControllerProfile.cs).
 
 The Frame splits a full gamepad across two controllers: A/B/X/Y and a
 menu button on the right, a D-pad and a view button on the left, and a
-bumper, grip, trigger and thumbstick on both. Without a Frame profile
-SteamVR remaps the controllers onto the Index profile, which exposes A
-and B only, so X/Y, the D-pad, the bumpers, view and menu are lost.
+shoulder button, grip, trigger and thumbstick on both. Without the
+profile SteamVR presents the controllers as emulated Touch controllers,
+so the D-pad, shoulder buttons and view are lost.
 
 Gamepad layout (xr-standard, then fixed Frame slots so the indices do
 not shift when a component is unbound):
   0 trigger, 1 squeeze, 2 touchpad placeholder, 3 thumbstick
-  right: 4 A, 5 B, 6 X, 7 Y, 8 bumper, 9 menu
-  left:  4 D-pad up, 5 down, 6 left, 7 right, 8 bumper, 9 view
+  right: 4 A, 5 B, 6 X, 7 Y, 8 shoulder, 9 menu
+  left:  4 D-pad up, 5 down, 6 left, 7 right, 8 shoulder, 9 view
 
 The Frame menu button gets its own button type (kAppMenu) instead of
 kMenu, which OpenXRInputHelper treats as the exit gesture; on the Frame
 the system button and SteamVR dashboard already end a session.
 
-The Frame's component paths are not publicly documented, and runtimes
-that predate the Frame do not know the profile. Every other profile's
-bindings remain fatal, but a rejected Frame suggestion is retried with
-the paths that mirror the Index controller, and then skipped, so input
-keeps working through the runtime's remapping.
+Suggesting bindings stays fatal for every other profile, but a rejected
+Frame suggestion is skipped so input keeps working through the
+runtime's remapping.
 
 Bug: none
 Test: device_unittests --gtest_filter='OpenXrInteractionProfilesTest.*'
 ---
  device/BUILD.gn                               |   1 +
  device/vr/openxr/openxr_controller.cc         |  63 +++++++++++
- device/vr/openxr/openxr_input_helper.cc       |  88 +++++++++++++--
- .../openxr/openxr_interaction_profile_paths.h |   2 +
- .../vr/openxr/openxr_interaction_profiles.cc  | 100 ++++++++++++++++++
- .../vr/openxr/openxr_interaction_profiles.h   |  24 ++++-
- .../openxr_interaction_profiles_unittest.cc   |  93 ++++++++++++++++
+ device/vr/openxr/openxr_input_helper.cc       |  42 ++++++--
+ .../openxr/openxr_interaction_profile_paths.h |   5 +
+ .../vr/openxr/openxr_interaction_profiles.cc  |  98 +++++++++++++++++
+ .../vr/openxr/openxr_interaction_profiles.h   |  16 ++-
+ .../openxr_interaction_profiles_unittest.cc   | 101 ++++++++++++++++++
  device/vr/openxr/test/openxr_test_helper.cc   |   3 +
  .../openxr_interaction_profile_type.mojom     |   1 +
- 9 files changed, 366 insertions(+), 9 deletions(-)
+ 9 files changed, 321 insertions(+), 9 deletions(-)
  create mode 100644 device/vr/openxr/openxr_interaction_profiles_unittest.cc
 
 diff --git a/device/BUILD.gn b/device/BUILD.gn
@@ -57,7 +57,7 @@ index 2cdc91e2..c9e00d8f 100644
        ]
        deps += [ "//third_party/openxr:openxr_core_headers" ]
 diff --git a/device/vr/openxr/openxr_controller.cc b/device/vr/openxr/openxr_controller.cc
-index 1b53776e..3463433f 100644
+index 1b53776e..f2fa1706 100644
 --- a/device/vr/openxr/openxr_controller.cc
 +++ b/device/vr/openxr/openxr_controller.cc
 @@ -8,6 +8,7 @@
@@ -78,9 +78,9 @@ index 1b53776e..3463433f 100644
  }
  
 +// Gamepad slots 4-9 of a Steam Frame controller, after the xr-standard
-+// trigger, squeeze, touchpad (placeholder) and thumbstick. The layout is fixed
-+// so that the "valve-frame" input profile's indices hold even when the runtime
-+// accepted only the core bindings; unbound slots read as released.
++// trigger, squeeze, touchpad (placeholder) and thumbstick. Fixed so that the
++// "valve-frame" input profile's indices never shift; slots 4-7 are the four
++// face buttons (A/B/X/Y on the right, the D-pad on the left).
 +constexpr OpenXrButtonType kValveFrameLeftSlots[] = {
 +    OpenXrButtonType::kDpadUp,   OpenXrButtonType::kDpadDown,
 +    OpenXrButtonType::kDpadLeft, OpenXrButtonType::kDpadRight,
@@ -162,29 +162,20 @@ index 1b53776e..3463433f 100644
  
    std::unordered_map<OpenXrButtonActionType, XrAction>& cur_button =
 diff --git a/device/vr/openxr/openxr_input_helper.cc b/device/vr/openxr/openxr_input_helper.cc
-index 1c9ef8a8..7371e2a9 100644
+index 1c9ef8a8..5a6da2b0 100644
 --- a/device/vr/openxr/openxr_input_helper.cc
 +++ b/device/vr/openxr/openxr_input_helper.cc
-@@ -4,11 +4,18 @@
+@@ -4,6 +4,9 @@
  
  #include "device/vr/openxr/openxr_input_helper.h"
  
-+#include <string>
-+#include <string_view>
 +#include <vector>
 +
 +#include "base/logging.h"
-+#include "base/strings/string_util.h"
  #include "base/trace_event/trace_event.h"
  #include "device/gamepad/public/cpp/gamepad.h"
  #include "device/vr/openxr/openxr_api_wrapper.h"
- #include "device/vr/openxr/openxr_extension_helper.h"
- #include "device/vr/openxr/openxr_hand_utils.h"
-+#include "device/vr/openxr/openxr_interaction_profiles.h"
- #include "device/vr/openxr/openxr_util.h"
- #include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
- #include "device/vr/public/mojom/vr_service.mojom.h"
-@@ -18,6 +25,56 @@
+@@ -18,6 +21,23 @@
  
  namespace device {
  
@@ -203,45 +194,12 @@ index 1c9ef8a8..7371e2a9 100644
 +                                             &profile_suggested_bindings);
 +}
 +
-+// Returns the subset of `bindings` whose component paths are in the Steam
-+// Frame core set (see IsValveFrameCoreComponentPath()).
-+std::vector<XrActionSuggestedBinding> GetValveFrameCoreBindings(
-+    XrInstance instance,
-+    const std::vector<XrActionSuggestedBinding>& bindings) {
-+  static constexpr std::string_view kHandPrefixes[] = {"/user/hand/left",
-+                                                       "/user/hand/right"};
-+  std::vector<XrActionSuggestedBinding> core;
-+  for (const XrActionSuggestedBinding& binding : bindings) {
-+    uint32_t length = 0;
-+    if (XR_FAILED(
-+            xrPathToString(instance, binding.binding, 0, &length, nullptr)) ||
-+        length == 0) {
-+      continue;
-+    }
-+    std::string path(length, '\0');
-+    if (XR_FAILED(xrPathToString(instance, binding.binding, length, &length,
-+                                 path.data()))) {
-+      continue;
-+    }
-+    path.resize(length - 1);  // Drop the terminator.
-+    for (std::string_view prefix : kHandPrefixes) {
-+      if (base::StartsWith(path, prefix) &&
-+          IsValveFrameCoreComponentPath(
-+              std::string_view(path).substr(prefix.size()))) {
-+        core.push_back(binding);
-+        break;
-+      }
-+    }
-+  }
-+  return core;
-+}
-+
 +}  // namespace
 +
  XrResult OpenXRInputHelper::CreateOpenXRInputHelper(
      XrInstance instance,
      const std::string& system_name,
-@@ -74,15 +131,30 @@ XrResult OpenXRInputHelper::Initialize(
+@@ -74,15 +94,21 @@ XrResult OpenXRInputHelper::Initialize(
      controller_states_[i].squeeze_button_pressed = false;
    }
  
@@ -261,52 +219,37 @@ index 1c9ef8a8..7371e2a9 100644
 +      RETURN_IF_XR_FAILED(result);
 +      continue;
 +    }
-+    // The Steam Frame controller's component paths are not publicly
-+    // documented, and runtimes that predate the Frame do not know the profile
-+    // at all. A rejected suggestion has no effect, so retry with the paths
-+    // that mirror the Index controller, and failing that skip the profile:
-+    // the runtime then maps the controllers onto another suggested profile
-+    // instead of input failing as a whole.
++    // The Steam Frame profile is new; if a runtime rejects it, skip it so the
++    // runtime maps the controllers onto another suggested profile instead of
++    // input failing as a whole.
 +    if (XR_FAILED(result)) {
 +      DLOG(WARNING) << __func__ << ": Steam Frame bindings rejected (" << result
-+                    << "), retrying with core bindings";
-+      result = SuggestProfileBindings(
-+          instance, it->first, GetValveFrameCoreBindings(instance, it->second));
-+    }
-+    if (XR_FAILED(result)) {
-+      DLOG(WARNING) << __func__ << ": Steam Frame profile unsupported ("
-+                    << result << ")";
++                    << ")";
 +    }
    }
  
    std::vector<XrActionSet> action_sets(controller_states_.size());
 diff --git a/device/vr/openxr/openxr_interaction_profile_paths.h b/device/vr/openxr/openxr_interaction_profile_paths.h
-index d994641a..f4ce821c 100644
+index d994641a..9149e3a4 100644
 --- a/device/vr/openxr/openxr_interaction_profile_paths.h
 +++ b/device/vr/openxr/openxr_interaction_profile_paths.h
-@@ -15,6 +15,8 @@ inline constexpr char kOculusTouchInteractionProfilePath[] =
+@@ -15,6 +15,11 @@ inline constexpr char kOculusTouchInteractionProfilePath[] =
      "/interaction_profiles/oculus/touch_controller";
  inline constexpr char kValveIndexInteractionProfilePath[] =
      "/interaction_profiles/valve/index_controller";
 +inline constexpr char kValveFrameInteractionProfilePath[] =
 +    "/interaction_profiles/valve/frame_controller_valve";
++// Not in the Khronos registry yet; SteamVR on the Steam Frame provides it.
++inline constexpr char kValveFrameControllerInteractionExtensionName[] =
++    "XR_VALVE_frame_controller_interaction";
  inline constexpr char kHTCViveInteractionProfilePath[] =
      "/interaction_profiles/htc/vive_controller";
  inline constexpr char kSamsungOdysseyInteractionProfilePath[] =
 diff --git a/device/vr/openxr/openxr_interaction_profiles.cc b/device/vr/openxr/openxr_interaction_profiles.cc
-index 6d950ce8..a9a5d342 100644
+index 6d950ce8..881d191e 100644
 --- a/device/vr/openxr/openxr_interaction_profiles.cc
 +++ b/device/vr/openxr/openxr_interaction_profiles.cc
-@@ -4,6 +4,8 @@
- 
- #include "device/vr/openxr/openxr_interaction_profiles.h"
- 
-+#include <algorithm>
-+
- #include "base/no_destructor.h"
- #include "device/vr/openxr/openxr_interaction_profile_paths.h"
- #include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
-@@ -94,6 +96,10 @@ GetOpenXrInputProfilesMap() {
+@@ -94,6 +94,10 @@ GetOpenXrInputProfilesMap() {
             {{"",
               {"valve-index", "generic-trigger-squeeze-touchpad-thumbstick"}}}},
  
@@ -317,16 +260,17 @@ index 6d950ce8..a9a5d342 100644
            // Vive
            {OpenXrInteractionProfileType::kHTCVive,
             {{"", {"htc-vive", "generic-trigger-squeeze-touchpad"}}}},
-@@ -325,6 +331,91 @@ GetOpenXrControllerInteractionProfiles() {
+@@ -325,6 +329,100 @@ GetOpenXrControllerInteractionProfiles() {
             }},
            // Valve Index
  
 +          // Valve Steam Frame
-+          // TODO: Verify every component path against SteamVR on a Frame.
-+          // Paths follow the Index profile's naming where the hardware matches.
++          // Component paths from Valve's published profile
++          // (ValveSoftware/Unity, SteamFrameControllerProfile.cs). The system
++          // button is reserved by the runtime and not bound.
 +          {OpenXrInteractionProfileType::kValveFrame,
 +           kValveFrameInteractionProfilePath,
-+           /*required_extension=*/"",
++           /*required_extension=*/kValveFrameControllerInteractionExtensionName,
 +           /*common_button_maps=*/
 +           {
 +               {OpenXrButtonType::kTrigger,
@@ -337,8 +281,9 @@ index 6d950ce8..a9a5d342 100644
 +                }},
 +               {OpenXrButtonType::kSqueeze,
 +                {
-+                    {OpenXrButtonActionType::kPress, "/input/squeeze/value"},
++                    {OpenXrButtonActionType::kPress, "/input/squeeze/click"},
 +                    {OpenXrButtonActionType::kValue, "/input/squeeze/value"},
++                    {OpenXrButtonActionType::kTouch, "/input/squeeze/touch"},
 +                }},
 +               {OpenXrButtonType::kThumbstick,
 +                {
@@ -347,7 +292,8 @@ index 6d950ce8..a9a5d342 100644
 +                }},
 +               {OpenXrButtonType::kShoulder,
 +                {
-+                    {OpenXrButtonActionType::kPress, "/input/bumper/click"},
++                    {OpenXrButtonActionType::kPress, "/input/shoulder/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/shoulder/touch"},
 +                }},
 +           },
 +           /*left_button_maps=*/
@@ -355,22 +301,27 @@ index 6d950ce8..a9a5d342 100644
 +               {OpenXrButtonType::kDpadUp,
 +                {
 +                    {OpenXrButtonActionType::kPress, "/input/dpad_up/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/dpad_up/touch"},
 +                }},
 +               {OpenXrButtonType::kDpadDown,
 +                {
 +                    {OpenXrButtonActionType::kPress, "/input/dpad_down/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/dpad_down/touch"},
 +                }},
 +               {OpenXrButtonType::kDpadLeft,
 +                {
 +                    {OpenXrButtonActionType::kPress, "/input/dpad_left/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/dpad_left/touch"},
 +                }},
 +               {OpenXrButtonType::kDpadRight,
 +                {
 +                    {OpenXrButtonActionType::kPress, "/input/dpad_right/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/dpad_right/touch"},
 +                }},
 +               {OpenXrButtonType::kView,
 +                {
 +                    {OpenXrButtonActionType::kPress, "/input/view/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/view/touch"},
 +                }},
 +           },
 +           /*right_button_maps=*/
@@ -398,6 +349,7 @@ index 6d950ce8..a9a5d342 100644
 +               {OpenXrButtonType::kAppMenu,
 +                {
 +                    {OpenXrButtonActionType::kPress, "/input/menu/click"},
++                    {OpenXrButtonActionType::kTouch, "/input/menu/touch"},
 +                }},
 +           },
 +           /*axis_maps=*/
@@ -409,34 +361,11 @@ index 6d950ce8..a9a5d342 100644
            // HTC Vive
            {OpenXrInteractionProfileType::kHTCVive,
             kHTCViveInteractionProfilePath,
-@@ -505,4 +596,13 @@ GetOpenXrControllerInteractionProfiles() {
-   return *kOpenXrControllerInteractionProfiles;
- }
- 
-+bool IsValveFrameCoreComponentPath(std::string_view component_path) {
-+  static constexpr std::string_view kCorePaths[] = {
-+      "/input/grip/pose",        "/input/aim/pose",      "/input/trigger/value",
-+      "/input/trigger/click",    "/input/squeeze/value", "/input/thumbstick",
-+      "/input/thumbstick/click", "/input/a/click",       "/input/b/click",
-+  };
-+  return std::ranges::contains(kCorePaths, component_path);
-+}
-+
- }  // namespace device
 diff --git a/device/vr/openxr/openxr_interaction_profiles.h b/device/vr/openxr/openxr_interaction_profiles.h
-index 94ff0535..1b7a889c 100644
+index 94ff0535..683bc4a7 100644
 --- a/device/vr/openxr/openxr_interaction_profiles.h
 +++ b/device/vr/openxr/openxr_interaction_profiles.h
-@@ -5,6 +5,8 @@
- #ifndef DEVICE_VR_OPENXR_OPENXR_INTERACTION_PROFILES_H_
- #define DEVICE_VR_OPENXR_OPENXR_INTERACTION_PROFILES_H_
- 
-+#include <string_view>
-+
- #include "base/containers/flat_map.h"
- #include "base/stl_util.h"
- #include "device/gamepad/public/cpp/gamepad.h"
-@@ -35,7 +37,19 @@ enum class OpenXrButtonType {
+@@ -35,7 +35,19 @@ enum class OpenXrButtonType {
    kGrasp = 7,
    kShoulder = 8,
    kMenu = 9,
@@ -457,7 +386,7 @@ index 94ff0535..1b7a889c 100644
  };
  
  enum class OpenXrAxisType {
-@@ -117,6 +131,7 @@ struct OpenXrControllerInteractionProfile {
+@@ -117,6 +129,7 @@ struct OpenXrControllerInteractionProfile {
  // Khronos simple controller.
  // Oculus touch controller.
  // Valve index controller.
@@ -465,26 +394,20 @@ index 94ff0535..1b7a889c 100644
  // HTC vive controller
  // HP Reverb G2 controller
  // MSFT Hand Interaction
-@@ -127,6 +142,13 @@ GetOpenXrControllerInteractionProfiles();
+@@ -127,6 +140,7 @@ GetOpenXrControllerInteractionProfiles();
  const base::flat_map<device::mojom::OpenXrInteractionProfileType,
                       std::vector<OpenXrSystemInputProfiles>>&
  GetOpenXrInputProfilesMap();
 +
-+// Component paths (relative to /user/hand/<side>) of the Steam Frame controller
-+// profile that mirror Index components and are near certain to be accepted.
-+// The Frame's remaining component paths are not publicly documented; if the
-+// runtime rejects the full Frame binding set, bindings are suggested again
-+// using only these paths.
-+bool IsValveFrameCoreComponentPath(std::string_view component_path);
  }  // namespace device
  
  #endif  // DEVICE_VR_OPENXR_OPENXR_INTERACTION_PROFILES_H_
 diff --git a/device/vr/openxr/openxr_interaction_profiles_unittest.cc b/device/vr/openxr/openxr_interaction_profiles_unittest.cc
 new file mode 100644
-index 00000000..168bfa7d
+index 00000000..b9f78c45
 --- /dev/null
 +++ b/device/vr/openxr/openxr_interaction_profiles_unittest.cc
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,101 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -547,33 +470,41 @@ index 00000000..168bfa7d
 +  }
 +}
 +
-+TEST(OpenXrInteractionProfilesTest, ValveFrameCorePathsAreFramePaths) {
++TEST(OpenXrInteractionProfilesTest, ValveFramePaths) {
 +  const OpenXrControllerInteractionProfile* frame =
 +      FindProfile(OpenXrInteractionProfileType::kValveFrame);
 +  ASSERT_NE(frame, nullptr);
-+  std::set<std::string> paths = ComponentPaths(frame->common_button_maps);
-+  paths.merge(ComponentPaths(frame->right_button_maps));
-+  for (const auto& axis_map : frame->axis_maps) {
-+    paths.insert(axis_map.path);
-+  }
++  EXPECT_EQ(frame->required_extension,
++            kValveFrameControllerInteractionExtensionName);
 +
-+  // Every core path the input helper may retry with is one the profile
-+  // actually suggests (poses are suggested by OpenXrController directly).
-+  for (const char* core :
-+       {"/input/trigger/value", "/input/trigger/click", "/input/squeeze/value",
-+        "/input/thumbstick", "/input/thumbstick/click", "/input/a/click",
-+        "/input/b/click"}) {
-+    EXPECT_TRUE(IsValveFrameCoreComponentPath(core)) << core;
-+    EXPECT_TRUE(paths.contains(core)) << core;
-+  }
-+  EXPECT_TRUE(IsValveFrameCoreComponentPath("/input/grip/pose"));
-+  EXPECT_TRUE(IsValveFrameCoreComponentPath("/input/aim/pose"));
++  const std::set<std::string> common =
++      ComponentPaths(frame->common_button_maps);
++  const std::set<std::string> left = ComponentPaths(frame->left_button_maps);
++  const std::set<std::string> right = ComponentPaths(frame->right_button_maps);
 +
-+  // Guessed Frame-only components are not in the core set.
-+  for (const char* guessed :
-+       {"/input/x/click", "/input/bumper/click", "/input/menu/click",
-+        "/input/view/click", "/input/dpad_up/click", "/input/trigger/touch"}) {
-+    EXPECT_FALSE(IsValveFrameCoreComponentPath(guessed)) << guessed;
++  for (const char* path :
++       {"/input/trigger/click", "/input/trigger/value", "/input/trigger/touch",
++        "/input/squeeze/click", "/input/squeeze/value", "/input/squeeze/touch",
++        "/input/shoulder/click", "/input/shoulder/touch",
++        "/input/thumbstick/click", "/input/thumbstick/touch"}) {
++    EXPECT_TRUE(common.contains(path)) << path;
++  }
++  // Face buttons: A/B/X/Y and menu on the right, the D-pad and view on the
++  // left.
++  for (const char* path : {"/input/a/click", "/input/b/click", "/input/x/click",
++                           "/input/y/click", "/input/menu/click"}) {
++    EXPECT_TRUE(right.contains(path)) << path;
++    EXPECT_FALSE(left.contains(path)) << path;
++  }
++  for (const char* path : {"/input/dpad_up/click", "/input/dpad_down/click",
++                           "/input/dpad_left/click", "/input/dpad_right/click",
++                           "/input/view/click"}) {
++    EXPECT_TRUE(left.contains(path)) << path;
++    EXPECT_FALSE(right.contains(path)) << path;
++  }
++  // The system button is reserved by the runtime.
++  for (const auto* paths : {&common, &left, &right}) {
++    EXPECT_FALSE(paths->contains("/input/system/click"));
 +  }
 +}
 +

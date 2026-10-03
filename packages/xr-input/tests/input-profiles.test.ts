@@ -160,7 +160,7 @@ describe('valve-frame profile', () => {
         InputComponent.B_Button,
         InputComponent.X_Button,
         InputComponent.Y_Button,
-        InputComponent.Bumper,
+        InputComponent.Shoulder,
         InputComponent.Menu,
       ].map((id) => index('right', id)),
     ).toEqual([4, 5, 6, 7, 8, 9]);
@@ -170,7 +170,7 @@ describe('valve-frame profile', () => {
         InputComponent.DpadDown,
         InputComponent.DpadLeft,
         InputComponent.DpadRight,
-        InputComponent.Bumper,
+        InputComponent.Shoulder,
         InputComponent.View,
       ].map((id) => index('left', id)),
     ).toEqual([4, 5, 6, 7, 8, 9]);

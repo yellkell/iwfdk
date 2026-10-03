@@ -29,7 +29,7 @@ import type {
  * | 5     | D-pad down  | B      |
  * | 6     | D-pad left  | X      |
  * | 7     | D-pad right | Y      |
- * | 8     | bumper      | bumper |
+ * | 8     | shoulder    | shoulder |
  * | 9     | view        | menu   |
  *
  * Axes: 0/1 touchpad placeholder, 2/3 thumbstick.
@@ -53,7 +53,7 @@ export const ValveFrameGamepadIndex = {
   Slot6: 6,
   /** Right: Y. Left: D-pad right. */
   Slot7: 7,
-  Bumper: 8,
+  Shoulder: 8,
   /** Right: menu. Left: view. */
   Slot9: 9,
   ThumbstickXAxis: 2,
@@ -123,7 +123,7 @@ function layout(
           ...animated('xr_standard_thumbstick', 'yAxis', '_yaxis'),
         },
       },
-      bumper: button(ValveFrameGamepadIndex.Bumper, 'bumper'),
+      shoulder: button(ValveFrameGamepadIndex.Shoulder, 'shoulder'),
       ...buttons,
     },
     gamepadMapping: 'xr-standard',

@@ -165,7 +165,7 @@ describe('FrameInput on valve-frame', () => {
     press(pads.right, 7); // Y
     press(pads.right, 9); // menu
     press(pads.left, 5); // D-pad down
-    press(pads.left, 8); // left bumper
+    press(pads.left, 8); // left shoulder
     press(pads.left, 9); // view
     sync();
     input.update(gamepads);
@@ -177,8 +177,8 @@ describe('FrameInput on valve-frame', () => {
     );
     expect(input.b.pressed || input.x.pressed).toBe(false);
     expect(input.dpad.down.pressed && !input.dpad.up.pressed).toBe(true);
-    expect(input.view.pressed && input.left.bumper.pressed).toBe(true);
-    expect(input.right.bumper.pressed).toBe(false);
+    expect(input.view.pressed && input.left.shoulder.pressed).toBe(true);
+    expect(input.right.shoulder.pressed).toBe(false);
     expect(input.left.profileId).toBe('valve-frame');
 
     press(pads.right, 4, false);
@@ -213,7 +213,7 @@ describe('FrameInput on valve-frame', () => {
   });
 });
 
-describe('FrameInput on valve-index (Frame remapped by SteamVR)', () => {
+describe('FrameInput on valve-index', () => {
   it('uses left A as X and emulates the D-pad from the left stick', () => {
     const { pads, gamepads, sync } = rig(
       ['valve-index', 'generic-trigger-squeeze-touchpad-thumbstick'],
@@ -226,7 +226,7 @@ describe('FrameInput on valve-index (Frame remapped by SteamVR)', () => {
     sync();
     input.update(gamepads);
 
-    expect(input.layout).toBe('index-remap');
+    expect(input.layout).toBe('remapped');
     expect(input.a.pressed && input.x.pressed).toBe(true);
     expect(input.b.pressed || input.y.pressed || input.menu.pressed).toBe(
       false,
@@ -251,6 +251,25 @@ describe('FrameInput on valve-index (Frame remapped by SteamVR)', () => {
     sync();
     input.update(gamepads);
     expect(input.layout).toBe('other');
+  });
+});
+
+describe('FrameInput on an unpatched Frame browser', () => {
+  it('maps SteamVR Touch emulation and emulates the D-pad', () => {
+    const { pads, gamepads, sync } = rig(
+      ['oculus-touch', 'generic-trigger-squeeze-thumbstick'],
+      7,
+    );
+    const input = new FrameInput({ userAgent: 'X11; Linux aarch64' });
+    press(pads.right, 4); // A
+    press(pads.left, 5); // Y
+    pads.left.axes[2] = 0.9; // Stick right.
+    sync();
+    input.update(gamepads);
+    expect(input.layout).toBe('remapped');
+    expect(input.a.pressed && input.y.pressed).toBe(true);
+    expect(input.dpadEmulated && input.dpad.right.pressed).toBe(true);
+    expect(input.left.shoulder.pressed || input.view.pressed).toBe(false);
   });
 });
 

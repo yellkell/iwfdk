@@ -43,7 +43,7 @@ export function normalizeCanvasPointerEventsOptions(
 export class InputManager {
   public readonly xr: XRInputManager;
   /**
-   * Steam Frame controller semantics (A/B/X/Y, menu, view, D-pad, bumpers,
+   * Steam Frame controller semantics (A/B/X/Y, menu, view, D-pad, shoulders,
    * pinch) over whichever profile the browser reports. See docs/FRAME.md.
    */
   public readonly frame: FrameInput;

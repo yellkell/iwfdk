@@ -21,7 +21,7 @@ export enum InputComponent {
   Thumbrest = 'thumbrest',
   Menu = 'menu',
   // Steam Frame controllers (valve-frame profile).
-  Bumper = 'bumper',
+  Shoulder = 'shoulder',
   View = 'view',
   DpadUp = 'dpad-up',
   DpadDown = 'dpad-down',
