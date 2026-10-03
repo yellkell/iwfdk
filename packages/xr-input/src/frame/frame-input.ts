@@ -223,10 +223,7 @@ export class FrameInput {
       this.buttons.dpadRight.update(this.dpadEmulation[3], false);
     }
 
-    this.layout = detectLayout(
-      gamepads,
-      this.options.userAgent ?? globalThis.navigator?.userAgent ?? '',
-    );
+    this.layout = detectLayout(gamepads, this.options.userAgent);
   }
 
   /**
@@ -359,7 +356,10 @@ export class FrameInput {
   }
 }
 
-function detectLayout(gamepads: FrameGamepads, userAgent: string): FrameLayout {
+function detectLayout(
+  gamepads: FrameGamepads,
+  userAgent: string | undefined,
+): FrameLayout {
   if (!gamepads.left && !gamepads.right) {
     return 'none';
   }
