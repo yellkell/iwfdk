@@ -13,8 +13,20 @@ import {
   stickToDpad,
 } from '../src/frame/hysteresis.js';
 import { PinchDetector, type PinchJoints } from '../src/frame/pinch.js';
-import { loadInputProfile } from '../src/gamepad/input-profiles.js';
-import { StatefulGamepad } from '../src/gamepad/stateful-gamepad.js';
+import {
+  getRegisteredInputProfile,
+  loadInputProfile,
+  registerInputProfile,
+  unregisterInputProfile,
+} from '../src/gamepad/input-profiles.js';
+import {
+  VALVE_FRAME_PROFILE_ID,
+  ValveFrameButtonCount,
+} from '../src/gamepad/profiles/valve-frame.js';
+import {
+  InputComponent,
+  StatefulGamepad,
+} from '../src/gamepad/stateful-gamepad.js';
 
 // Ports of FramePlayer's fp-xr unit tests (crates/xr/src/{input,pinch}.rs).
 
@@ -112,9 +124,17 @@ type Pad = {
   axes: number[];
 };
 
+/** What the patched Frame browser reports (patches 0004 and 0006). */
+const FRAME_PROFILES = [
+  'valve-frame',
+  'oculus-touch-v3',
+  'oculus-touch',
+  'generic-trigger-squeeze-thumbstick',
+];
+
 function rig(
   profiles: string[],
-  buttonCount: number,
+  buttonCount: number | Readonly<Record<'left' | 'right', number>>,
 ): {
   pads: Record<'left' | 'right', Pad>;
   gamepads: Record<'left' | 'right', StatefulGamepad>;
@@ -124,11 +144,19 @@ function rig(
   const gamepads = {} as Record<'left' | 'right', StatefulGamepad>;
   for (const handedness of ['left', 'right'] as const) {
     const pad: Pad = {
-      buttons: Array.from({ length: buttonCount }, () => ({
-        pressed: false,
-        touched: false,
-        value: 0,
-      })),
+      buttons: Array.from(
+        {
+          length:
+            typeof buttonCount === 'number'
+              ? buttonCount
+              : buttonCount[handedness],
+        },
+        () => ({
+          pressed: false,
+          touched: false,
+          value: 0,
+        }),
+      ),
       axes: [0, 0, 0, 0],
     };
     const inputSource = {
@@ -155,18 +183,16 @@ function press(pad: Pad, index: number, pressed = true) {
 
 describe('FrameInput on valve-frame', () => {
   it('maps every Frame control to its physical source', () => {
-    const { pads, gamepads, sync } = rig(
-      ['valve-frame', 'generic-trigger-squeeze-thumbstick'],
-      10,
-    );
+    const { pads, gamepads, sync } = rig(FRAME_PROFILES, ValveFrameButtonCount);
     const input = new FrameInput({ userAgent: 'X11; Linux aarch64' });
 
     press(pads.right, 4); // A
-    press(pads.right, 7); // Y
-    press(pads.right, 9); // menu
-    press(pads.left, 5); // D-pad down
-    press(pads.left, 8); // left shoulder
-    press(pads.left, 9); // view
+    press(pads.right, 8); // Y
+    press(pads.left, 5); // Y, mirrored by the browser
+    press(pads.right, 10); // menu
+    press(pads.left, 8); // D-pad down
+    press(pads.left, 11); // left shoulder
+    press(pads.left, 12); // view
     sync();
     input.update(gamepads);
 
@@ -182,13 +208,48 @@ describe('FrameInput on valve-frame', () => {
     expect(input.left.profileId).toBe('valve-frame');
 
     press(pads.right, 4, false);
+    press(pads.right, 9); // right shoulder
     sync();
     input.update(gamepads);
     expect(input.a.justReleased).toBe(true);
+    expect(input.right.shoulder.justPressed).toBe(true);
+  });
+
+  it('reads X/Y from the right controller, not the left mirror', () => {
+    const { pads, gamepads, sync } = rig(FRAME_PROFILES, ValveFrameButtonCount);
+    const input = new FrameInput();
+    // Only the mirror: not a real press on the Frame.
+    press(pads.left, 4);
+    sync();
+    input.update(gamepads);
+    expect(input.x.pressed).toBe(false);
+
+    press(pads.right, 7); // X
+    sync();
+    input.update(gamepads);
+    expect(input.x.justPressed).toBe(true);
+    // The left D-pad shares slot 7's index but not the controller.
+    expect(input.dpad.up.pressed).toBe(false);
+  });
+
+  it('serves Touch component ids at the Touch indices', () => {
+    // What code written for Quest controllers reads on the Frame gamepad.
+    const { pads, gamepads, sync } = rig(FRAME_PROFILES, ValveFrameButtonCount);
+    press(pads.right, 5); // B
+    press(pads.right, 7); // X
+    press(pads.left, 4); // ...mirrored into the left X slot.
+    sync();
+    expect(gamepads.right.getButtonPressed(InputComponent.B_Button)).toBe(true);
+    expect(gamepads.right.getButtonPressed(InputComponent.X_Button)).toBe(true);
+    expect(gamepads.left.getButtonPressed(InputComponent.X_Button)).toBe(true);
+    expect(gamepads.left.getButtonPressed(InputComponent.Y_Button)).toBe(false);
   });
 
   it('derives select and grip with hysteresis', () => {
-    const { pads, gamepads, sync } = rig(['valve-frame'], 10);
+    const { pads, gamepads, sync } = rig(
+      ['valve-frame'],
+      ValveFrameButtonCount,
+    );
     const input = new FrameInput();
     pads.right.buttons[0] = { pressed: false, touched: true, value: 0.8 };
     pads.right.buttons[1] = { pressed: false, touched: false, value: 0.72 };
@@ -274,9 +335,44 @@ describe('FrameInput on Touch-style controllers', () => {
   });
 });
 
+describe('FrameInput on the Frame through its Touch fallback', () => {
+  const profile = getRegisteredInputProfile(VALVE_FRAME_PROFILE_ID)!;
+
+  it('keeps Touch A/B/X/Y when valve-frame is not registered', () => {
+    // The browser reports oculus-touch-v3 next, laid out to match: without
+    // the valve-frame profile, A/B/X/Y still work and the D-pad is emulated.
+    unregisterInputProfile(VALVE_FRAME_PROFILE_ID);
+    try {
+      const { pads, gamepads, sync } = rig(
+        FRAME_PROFILES,
+        ValveFrameButtonCount,
+      );
+      const input = new FrameInput();
+      press(pads.right, 4); // A
+      press(pads.right, 7); // X on the right...
+      press(pads.left, 4); // ...mirrored into the left X slot.
+      // D-pad down: not in the Touch layout. (Slot 7, D-pad up, is Touch
+      // v3's left menu, so it would read as menu here.)
+      press(pads.left, 8);
+      sync();
+      input.update(gamepads);
+      expect(input.layout).toBe('frame');
+      expect(input.a.pressed && input.x.pressed).toBe(true);
+      expect(input.b.pressed || input.y.pressed).toBe(false);
+      expect(input.dpadEmulated).toBe(true);
+      expect(input.dpad.down.pressed).toBe(false);
+    } finally {
+      registerInputProfile(profile);
+    }
+  });
+});
+
 describe('FrameInput without controllers', () => {
   it('resets state when a gamepad disappears', () => {
-    const { pads, gamepads, sync } = rig(['valve-frame'], 10);
+    const { pads, gamepads, sync } = rig(
+      ['valve-frame'],
+      ValveFrameButtonCount,
+    );
     const input = new FrameInput();
     press(pads.right, 4);
     pads.right.axes[2] = 0.5;

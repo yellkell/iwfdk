@@ -25,12 +25,12 @@ shoulder button and thumbstick, with touch sensing on every button.
 
 ## 1. Why a fork
 
-| Layer                             | Problem                                                                                                                                                                  | IWFDK change                                                                                                                                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Browser (Chromium OpenXR backend) | Chromium has no Frame interaction profile, so SteamVR presents the controllers as emulated Touch controllers. The D-pad, shoulder buttons and view never reach the page. | `platform/chromium/patches/0004-*`: enables `XR_VALVE_frame_controller_interaction` and reports the controllers as `valve-frame` with a fixed 10-button gamepad layout. |
-| Input profile                     | No `valve-frame` profile exists in `@webxr-input-profiles`, and IWSDK only resolves profiles baked in from that package.                                                 | `registerInputProfile()` in `@iwsdk/xr-input`; `valve-frame` registered by default.                                                                                     |
-| SDK input semantics               | IWSDK reads controllers per hand and per component; Frame apps think in gamepad terms (A/B/X/Y, D-pad, menu/view) and must also work on an unpatched browser.            | `FrameInput`: a port of FramePlayer's `fp-xr` input layer, exposed as `world.input.frame`, plus a `frame` binding source for input actions.                             |
-| Controller models                 | The real models come from the OpenXR runtime (`XR_EXT_render_model`), which a page cannot reach; no Frame model exists in `@webxr-input-profiles`.                       | `tools/frame-models` extracts them on the headset with their animation; `loadFrameControllerModels()` shows and animates them ([section 4](#4-real-controller-models)). |
+| Layer                             | Problem                                                                                                                                                                  | IWFDK change                                                                                                                                                                                                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Browser (Chromium OpenXR backend) | Chromium has no Frame interaction profile, so SteamVR presents the controllers as emulated Touch controllers. The D-pad, shoulder buttons and view never reach the page. | `platform/chromium/patches/0004-*` and `0006-*`: enable `XR_VALVE_frame_controller_interaction` and report the controllers as `valve-frame`, then `oculus-touch-v3`, with a fixed gamepad layout whose first slots match Meta Touch ([section 3](#3-the-valve-frame-gamepad-layout)). |
+| Input profile                     | No `valve-frame` profile exists in `@webxr-input-profiles`, and IWSDK only resolves profiles baked in from that package.                                                 | `registerInputProfile()` in `@iwsdk/xr-input`; `valve-frame` registered by default.                                                                                                                                                                                                   |
+| SDK input semantics               | IWSDK reads controllers per hand and per component; Frame apps think in gamepad terms (A/B/X/Y, D-pad, menu/view) and must also work on an unpatched browser.            | `FrameInput`: a port of FramePlayer's `fp-xr` input layer, exposed as `world.input.frame`, plus a `frame` binding source for input actions.                                                                                                                                           |
+| Controller models                 | The real models come from the OpenXR runtime (`XR_EXT_render_model`), which a page cannot reach; no Frame model exists in `@webxr-input-profiles`.                       | `tools/frame-models` extracts them on the headset with their animation; `loadFrameControllerModels()` shows and animates them ([section 4](#4-real-controller-models)).                                                                                                               |
 
 Package names stay `@iwsdk/*` for now so upstream merges stay mechanical (see
 [Tracking upstream](#6-tracking-upstream)). New code is under
@@ -94,6 +94,13 @@ this.input.xr.gamepads.left?.getButtonDown(InputComponent.DpadUp);
 this.input.xr.gamepads.right?.getButtonPressed(InputComponent.X_Button);
 ```
 
+Code written for Quest controllers needs no Frame branch for A/B/X/Y: the
+Frame gamepad follows the Touch layout in its first slots, and the browser
+mirrors the right controller's X/Y into the left gamepad, so
+`gamepads.left?.getButtonPressed(InputComponent.X_Button)` reads the Frame's
+X. On the Frame that press also shows on the right `X_Button`; `FrameInput`
+reads the right one only.
+
 Haptics: `frame.vibrate('right', 0.5, 40)` is best effort and returns `false`
 when the browser exposes no actuator. Controller haptics are not wired up in
 the community Frame Chromium build.
@@ -103,15 +110,15 @@ the community Frame Chromium build.
 `FrameInput` resolves every control from the first candidate component
 present in the active profile (`packages/xr-input/src/frame/bindings.ts`):
 
-| Control              | `valve-frame` (patched browser) | Touch emulation (unpatched browser on a Frame) and Touch-style controllers |
-| -------------------- | ------------------------------- | -------------------------------------------------------------------------- |
-| A / B                | right A / B                     | right A / B                                                                |
-| X / Y                | right X / Y                     | left X / Y                                                                 |
-| Menu                 | right menu                      | left menu, if exposed                                                      |
-| View                 | left view                       | —                                                                          |
-| D-pad                | left D-pad                      | emulated from the left stick                                               |
-| Shoulder             | per hand                        | —                                                                          |
-| Trigger, grip, stick | per hand                        | per hand                                                                   |
+| Control              | `valve-frame` (patched browser)   | Touch emulation (unpatched browser on a Frame) and Touch-style controllers |
+| -------------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| A / B                | right A / B                       | right A / B                                                                |
+| X / Y                | right X / Y (not the left mirror) | left X / Y                                                                 |
+| Menu                 | right menu                        | left menu, if exposed                                                      |
+| View                 | left view                         | —                                                                          |
+| D-pad                | left D-pad                        | emulated from the left stick                                               |
+| Shoulder             | per hand                          | —                                                                          |
+| Trigger, grip, stick | per hand                          | per hand                                                                   |
 
 `frame.layout` reports which case applies: `frame`, `remapped` (any other
 profile on an ARM64 Linux browser, i.e. a Frame without the patch), `other`
@@ -133,26 +140,42 @@ handled specially is SteamVR's Touch emulation of the Frame controllers.
 
 ## 3. The `valve-frame` gamepad layout
 
-Fixed by the Chromium patch, so indices never shift (unbound slots read
-released):
+Fixed by the Chromium patches (0004, laid out for Quest compatibility by
+0006), so indices never shift (unbound slots and placeholders read
+released). Slots 0-6 follow Meta Touch (`oculus-touch-v3`); the Frame-only
+controls follow from slot 7:
 
-| Index | Left                 | Right                |
-| ----- | -------------------- | -------------------- |
-| 0     | trigger              | trigger              |
-| 1     | squeeze (grip)       | squeeze (grip)       |
-| 2     | touchpad placeholder | touchpad placeholder |
-| 3     | thumbstick click     | thumbstick click     |
-| 4     | D-pad up             | A                    |
-| 5     | D-pad down           | B                    |
-| 6     | D-pad left           | X                    |
-| 7     | D-pad right          | Y                    |
-| 8     | shoulder             | shoulder             |
-| 9     | view                 | menu                 |
+| Index | Left                                   | Right                 |
+| ----- | -------------------------------------- | --------------------- |
+| 0     | trigger                                | trigger               |
+| 1     | squeeze (grip)                         | squeeze (grip)        |
+| 2     | touchpad placeholder                   | touchpad placeholder  |
+| 3     | thumbstick click                       | thumbstick click      |
+| 4     | X (mirrored from the right controller) | A                     |
+| 5     | Y (mirrored from the right controller) | B                     |
+| 6     | thumbrest placeholder                  | thumbrest placeholder |
+| 7     | D-pad up                               | X                     |
+| 8     | D-pad down                             | Y                     |
+| 9     | D-pad left                             | shoulder              |
+| 10    | D-pad right                            | menu                  |
+| 11    | shoulder                               |                       |
+| 12    | view                                   |                       |
 
-Axes 0/1 are the touchpad placeholder and axes 2/3 the thumbstick. The profile
-reports `["valve-frame", "generic-trigger-squeeze-thumbstick"]`, so other
-WebXR libraries fall back to the generic layout. Without extracted models the
-visual is the generic trigger/squeeze/thumbstick controller.
+The left gamepad has 13 buttons, the right 11. Axes 0/1 are the touchpad
+placeholder and axes 2/3 the thumbstick. The Frame has X/Y on the right
+controller, where Touch has them on the left, so the browser copies the right
+controller's X/Y into left slots 4/5; the Frame's left controller has no
+buttons there.
+
+The profile reports
+`["valve-frame", "oculus-touch-v3", "oculus-touch", "generic-trigger-squeeze-thumbstick"]`.
+IWFDK resolves `valve-frame`; libraries without it (three.js, older IWSDK)
+fall back to the Touch profile, models and button layout, so pages written for
+Quest controllers work: trigger, grip, stick, A/B on the right and X/Y on the
+left. One mismatch: `oculus-touch-v3` puts the left menu at slot 7, which is
+the Frame's D-pad up, so such pages see D-pad up as the left menu button.
+Without extracted models IWFDK's visual is the generic
+trigger/squeeze/thumbstick controller.
 
 ## 4. Real controller models
 
@@ -228,14 +251,19 @@ rest (the tool's summary and `missingCoverage` list them).
 
 The Frame's WebXR browser is the community arm64 Chromium build
 ([saphid/chromium-webxr-steam-frame](https://github.com/saphid/chromium-webxr-steam-frame)).
-Two patch sets apply on top of it:
+Two patch sets apply on top of it, in file-name order:
 
-1. **FramePlayer sandbox patches** (`frameplayer` repo, `docs/webxr/patches`
-   0001-0003, `docs/project-outline` branch): let WebXR run with the seccomp
-   sandbox on.
-2. **IWFDK controller patch** (`platform/chromium/patches/0004`): this repo.
+1. **FramePlayer patches** (`frameplayer` repo, `docs/webxr/patches`,
+   `docs/project-outline` branch): 0001-0003 let WebXR run with the seccomp
+   sandbox on; 0005 fixes black and one-eyed rendering.
+2. **IWFDK controller patches** (`platform/chromium/patches`, this repo):
+   0004 adds the Frame controllers; 0006 makes their gamepad
+   Quest-compatible and applies on top of 0004.
 
-They touch different files and apply in either order:
+0006 is the same file in both repos (written and verified on a Frame in
+FramePlayer, 2026-10-03): FramePlayer's build script copies both sets into
+one directory, so it is applied once. The two sets otherwise touch different
+files.
 
 ```sh
 platform/chromium/apply-chromium-patches.sh /path/to/chromium/src
@@ -259,6 +287,18 @@ What patch 0004 does:
 - **Non-fatal.** Chromium aborts all controller input if the runtime rejects
   any suggested binding. A rejected Frame profile is skipped instead, so the
   controllers fall back to Touch emulation.
+
+What patch 0006 does:
+
+- **Touch fallback profiles.** `oculus-touch-v3` and `oculus-touch` follow
+  `valve-frame`, so pages and libraries that don't know the Frame show Touch
+  models and use the Touch button layout.
+- **Touch layout first.** Slots 4-6 are A/X, B/Y and a thumbrest placeholder
+  as on Touch; the Frame-only controls move to fixed slots from 7
+  ([section 3](#3-the-valve-frame-gamepad-layout)).
+- **X/Y mirrored to the left.** `OpenXRInputHelper` copies the right
+  controller's X/Y into the left gamepad's slots 4 and 5, where Touch has
+  them.
 
 Generated against `chromium/main` `2255089d4176` (2026-10-02); applies cleanly
 there. The profile table and its unit test were compiled and run against

@@ -32,7 +32,9 @@ import { isSteamFrameBrowser } from './platform.js';
 
 /**
  * How the browser exposes the controllers:
- * - `frame`: the `valve-frame` profile; every control is physical.
+ * - `frame`: the `valve-frame` profile; every control is physical. Its
+ *   gamepad also follows the Touch layout in slots 0-6 (patch 0006), so
+ *   Touch-only code works there too; `FrameInput` reads the Frame slots.
  * - `remapped`: another controller profile on an ARM64 Linux browser, i.e. a
  *   Steam Frame whose browser lacks the IWFDK Chromium patch. SteamVR then
  *   presents the Frame controllers as emulated Touch controllers, so the

@@ -66,7 +66,7 @@ type Pad = {
 
 function pad(): Pad {
   return {
-    buttons: Array.from({ length: 10 }, () => ({
+    buttons: Array.from({ length: 13 }, () => ({
       pressed: false,
       touched: false,
       value: 0,
@@ -250,8 +250,8 @@ describe('FrameControllerVisual', () => {
     const v = visual('left', gamepad);
     gamepad.buttons[4] = { pressed: true, touched: true, value: 1 };
     v.update();
-    // Slot 4 is D-pad up on the left; the left layout has no a-button, so
-    // the node keeps its asset pose.
+    // Slot 4 is the mirrored X on the left; the left layout has no
+    // a-button, so the node keeps its asset pose.
     expect(node(v, 'button_a').position.length()).toBe(0);
     // Shared components still animate.
     gamepad.buttons[0].value = 1;

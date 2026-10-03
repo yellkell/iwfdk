@@ -6,6 +6,7 @@
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { getProfile as getGeneratedProfile } from '../src/gamepad/generated-profiles.js';
 import {
   DEFAULT_PROFILES_PATH,
   fetchProfile,
@@ -18,6 +19,7 @@ import {
 } from '../src/gamepad/input-profiles.js';
 import {
   VALVE_FRAME_PROFILE,
+  ValveFrameButtonCount,
   ValveFrameGamepadIndex,
 } from '../src/gamepad/profiles/valve-frame.js';
 import { InputComponent } from '../src/gamepad/stateful-gamepad.js';
@@ -153,7 +155,7 @@ describe('valve-frame profile', () => {
   it('matches the Chromium patch slot layout', () => {
     const index = (hand: 'left' | 'right', id: string) =>
       VALVE_FRAME_PROFILE.layouts[hand]!.components[id]?.gamepadIndices.button;
-    // platform/chromium/patches/0004: kValveFrame{Left,Right}Slots.
+    // platform/chromium/patches/0006: kValveFrame{Left,Right}Slots, from 4.
     expect(
       [
         InputComponent.A_Button,
@@ -163,9 +165,11 @@ describe('valve-frame profile', () => {
         InputComponent.Shoulder,
         InputComponent.Menu,
       ].map((id) => index('right', id)),
-    ).toEqual([4, 5, 6, 7, 8, 9]);
+    ).toEqual([4, 5, 7, 8, 9, 10]);
     expect(
       [
+        InputComponent.X_Button,
+        InputComponent.Y_Button,
         InputComponent.DpadUp,
         InputComponent.DpadDown,
         InputComponent.DpadLeft,
@@ -173,7 +177,9 @@ describe('valve-frame profile', () => {
         InputComponent.Shoulder,
         InputComponent.View,
       ].map((id) => index('left', id)),
-    ).toEqual([4, 5, 6, 7, 8, 9]);
+    ).toEqual([4, 5, 7, 8, 9, 10, 11, 12]);
+    expect(index('left', InputComponent.A_Button)).toBeUndefined();
+    expect(index('right', InputComponent.View)).toBeUndefined();
     for (const hand of ['left', 'right'] as const) {
       const components = VALVE_FRAME_PROFILE.layouts[hand]!.components;
       expect(components[InputComponent.Trigger].gamepadIndices.button).toBe(0);
@@ -183,6 +189,40 @@ describe('valve-frame profile', () => {
         xAxis: ValveFrameGamepadIndex.ThumbstickXAxis,
         yAxis: ValveFrameGamepadIndex.ThumbstickYAxis,
       });
+      // The patch emits every slot: the highest index is the last button.
+      const buttons = Object.values(components).map(
+        (c) => c.gamepadIndices.button!,
+      );
+      expect(Math.max(...buttons)).toBe(ValveFrameButtonCount[hand] - 1);
+    }
+  });
+
+  it('lays out slots 0-5 like Meta Touch', () => {
+    // The patch reports oculus-touch-v3 after valve-frame; every component
+    // Touch has in slots 0-5 (trigger, squeeze, thumbstick, A/X, B/Y) sits
+    // at the same index on the Frame. Slot 6 is Touch's thumbrest, a
+    // placeholder on the Frame. Touch v3's left menu (slot 7) is not
+    // matched: the Frame has its D-pad up there.
+    expect(VALVE_FRAME_PROFILE.fallbackProfileIds).toEqual([
+      'oculus-touch-v3',
+      'oculus-touch',
+      'generic-trigger-squeeze-thumbstick',
+    ]);
+    const touch = getGeneratedProfile(
+      'oculus-touch-v3/profile.json',
+    ) as InputProfile;
+    for (const hand of ['left', 'right'] as const) {
+      const frame = VALVE_FRAME_PROFILE.layouts[hand]!.components;
+      const touchComponents = Object.entries(touch.layouts[hand]!.components);
+      const shared = touchComponents.filter(
+        ([, c]) => (c.gamepadIndices.button ?? 0) <= 5,
+      );
+      expect(shared.length).toBe(5);
+      for (const [id, config] of shared) {
+        expect(frame[id]?.gamepadIndices, `${hand} ${id}`).toEqual(
+          config.gamepadIndices,
+        );
+      }
     }
   });
 

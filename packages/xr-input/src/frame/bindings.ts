@@ -13,14 +13,20 @@ import { InputComponent } from '../gamepad/stateful-gamepad.js';
  * active input profile wins. This is the WebXR counterpart of FramePlayer's
  * OpenXR binding tiers (`fp-xr` `bindings.rs`):
  *
- * - **valve-frame** (browser with the IWFDK Chromium patch): every control is
- *   physical, laid out as on the hardware: A/B/X/Y and menu on the right,
- *   D-pad and view on the left.
- * - **Touch emulation** (a Frame whose browser lacks the patch: without
- *   XR_VALVE_frame_controller_interaction SteamVR presents the Frame
- *   controllers as `oculus-touch`; the same mapping serves Touch-style
- *   controllers elsewhere): A/B on the right, X/Y and menu on the left as
- *   the emulation exposes them; the D-pad is emulated from the left stick.
+ * - **valve-frame** (browser with the IWFDK Chromium patches 0004 and 0006):
+ *   every control is physical, laid out as on the hardware: A/B/X/Y and menu
+ *   on the right (gamepad slots 4, 5, 7, 8 and 10), D-pad and view on the
+ *   left (slots 7-10 and 12). The browser also mirrors the right X/Y into the
+ *   left gamepad's Touch X/Y slots (4/5) for Quest-only pages; the right
+ *   controller comes first below, so `FrameInput` reads the physical
+ *   buttons. Shoulder buttons are per hand (`FrameControllerState.shoulder`;
+ *   right slot 9, left slot 11).
+ * - **Touch layout** (SteamVR's Touch emulation on a Frame whose browser
+ *   lacks the patches, which reports `oculus-touch`; and Touch-style
+ *   controllers elsewhere): A/B on the right, X/Y and menu on the left as the
+ *   emulation exposes them; the D-pad is emulated from the left stick. Since
+ *   patch 0006 the `valve-frame` gamepad also has Touch's A/B/X/Y slots, so
+ *   code that only knows Touch component ids reads A/B/X/Y on the Frame too.
  */
 export type FrameButtonId =
   | 'a'
@@ -56,6 +62,8 @@ export const FRAME_BUTTON_SOURCES: Readonly<
 > = {
   a: [['right', InputComponent.A_Button]],
   b: [['right', InputComponent.B_Button]],
+  // Right first: on valve-frame the left X/Y are the browser's mirror of the
+  // right controller's; on Touch layouts only the left ones exist.
   x: [
     ['right', InputComponent.X_Button],
     ['left', InputComponent.X_Button],
