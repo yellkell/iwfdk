@@ -9,6 +9,7 @@
 export * from './gamepad/stateful-button-axes-device.js';
 export * from './gamepad/stateful-gamepad.js';
 export * from './gamepad/input-profiles.js';
+export * from './gamepad/haptics.js';
 export * from './gamepad/profiles/valve-frame.js';
 
 // Steam Frame controller semantics

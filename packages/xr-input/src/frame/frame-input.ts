@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { pulseHaptics } from '../gamepad/haptics.js';
 import { VALVE_FRAME_PROFILE_ID } from '../gamepad/profiles/valve-frame.js';
 import { InputComponent } from '../gamepad/stateful-gamepad.js';
 import {
@@ -270,32 +271,10 @@ export class FrameInput {
 
   /**
    * Vibrate a controller. Best effort: returns false when the browser exposes
-   * no haptic actuator for that hand.
+   * no haptic actuator for that hand. See {@link pulseHaptics}.
    */
   vibrate(hand: FrameHand, amplitude: number, durationMs: number): boolean {
-    const gamepad = this.gamepads[hand]?.gamepad as
-      | (Gamepad & {
-          hapticActuators?: ReadonlyArray<{
-            pulse?: (value: number, duration: number) => Promise<boolean>;
-          }>;
-        })
-      | undefined;
-    const value = Math.min(1, Math.max(0, amplitude));
-    const pulse = gamepad?.hapticActuators?.[0]?.pulse;
-    if (pulse) {
-      void pulse.call(gamepad!.hapticActuators![0], value, durationMs);
-      return true;
-    }
-    const actuator = gamepad?.vibrationActuator;
-    if (actuator?.playEffect) {
-      void actuator.playEffect('dual-rumble', {
-        duration: durationMs,
-        strongMagnitude: value,
-        weakMagnitude: value,
-      });
-      return true;
-    }
-    return false;
+    return pulseHaptics(this.gamepads[hand]?.gamepad, amplitude, durationMs);
   }
 
   private updateController(
