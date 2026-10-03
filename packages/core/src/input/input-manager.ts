@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { XRInputManager } from '@iwsdk/xr-input';
+import { FrameInput, XRInputManager } from '@iwsdk/xr-input';
 import { WebXRManager } from '../runtime/index.js';
 import { InputActionManager } from './input-actions.js';
 import { StatefulBrowserGamepad } from './stateful-browser-gamepad.js';
@@ -42,6 +42,11 @@ export function normalizeCanvasPointerEventsOptions(
 
 export class InputManager {
   public readonly xr: XRInputManager;
+  /**
+   * Steam Frame controller semantics (A/B/X/Y, menu, view, D-pad, bumpers,
+   * pinch) over whichever profile the browser reports. See docs/FRAME.md.
+   */
+  public readonly frame: FrameInput;
   public readonly keyboard: StatefulKeyboard;
   public readonly browserGamepads: Array<StatefulBrowserGamepad | undefined> =
     [];
@@ -50,6 +55,7 @@ export class InputManager {
 
   constructor(xr: XRInputManager, options: InputManagerOptions = {}) {
     this.xr = xr;
+    this.frame = new FrameInput();
     this.keyboard = new StatefulKeyboard();
     this.actions = new InputActionManager();
     this.canvasPointerEvents = normalizeCanvasPointerEventsOptions(
@@ -88,15 +94,27 @@ export class InputManager {
     this.keyboard.update();
     this.updateBrowserGamepads();
     this.xr.update(xrManager, delta, time);
+    this.updateFrame(xrManager);
     this.actions.update({
       keyboard: this.keyboard,
       browserGamepads: this.browserGamepads,
       xr: this.xr,
+      frame: this.frame,
     });
   }
 
   destroy(): void {
     this.keyboard.destroy();
+  }
+
+  private updateFrame(xrManager: WebXRManager): void {
+    this.frame.update(this.xr.gamepads);
+    const session = xrManager.getSession();
+    const frame = xrManager.getFrame();
+    const referenceSpace = xrManager.getReferenceSpace();
+    if (session && frame && referenceSpace) {
+      this.frame.updateHands(frame, referenceSpace, session.inputSources);
+    }
   }
 
   private updateBrowserGamepads(): void {

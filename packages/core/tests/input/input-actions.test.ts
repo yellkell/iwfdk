@@ -221,4 +221,37 @@ describe('InputActionManager', () => {
     expect(actions.removeBinding(binding)).toBe(false);
     expect(actions.getBindings('player.jetpack')).toEqual([]);
   });
+
+  it('maps Frame controls through the frame binding source', () => {
+    const actions = new InputActionManager();
+    actions.clearBindings();
+    actions.addBinding({
+      source: 'frame',
+      kind: 'button',
+      action: 'menu.open',
+      button: 'menu',
+    });
+    const menu = { pressed: true, justPressed: true, justReleased: false };
+    const context = {
+      ...createContext(),
+      frame: { buttons: { menu } },
+    } as any;
+
+    actions.update(context);
+    expect(actions.getButtonPressed('menu.open')).toBe(true);
+    expect(actions.getButtonDown('menu.open')).toBe(true);
+
+    Object.assign(menu, {
+      pressed: false,
+      justPressed: false,
+      justReleased: true,
+    });
+    actions.update(context);
+    expect(actions.getButtonPressed('menu.open')).toBe(false);
+    expect(actions.getButtonUp('menu.open')).toBe(true);
+
+    // Contexts without Frame input (older callers) read as released.
+    actions.update(createContext());
+    expect(actions.getButtonPressed('menu.open')).toBe(false);
+  });
 });

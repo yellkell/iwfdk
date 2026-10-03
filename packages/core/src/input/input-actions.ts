@@ -8,6 +8,8 @@
 import {
   AxesState,
   InputComponent,
+  type FrameButtonId,
+  type FrameInput,
   type XRInputManager,
 } from '@iwsdk/xr-input';
 import {
@@ -113,6 +115,18 @@ type XRGamepadAxesDirectionBinding = {
   state: AxesState;
 };
 
+/**
+ * A Steam Frame control (see `FrameInput`): resolves to the physical button
+ * on Frame controllers and to the closest equivalent elsewhere, with the
+ * D-pad emulated from the left stick where there is none.
+ */
+type FrameButtonBinding = {
+  source: 'frame';
+  action: InputActionName;
+  kind: 'button';
+  button: FrameButtonId;
+};
+
 export type InputActionBinding =
   | AxisKeyBinding
   | KeyboardButtonBinding
@@ -122,12 +136,14 @@ export type InputActionBinding =
   | XRGamepadAxis2DBinding
   | XRGamepadAxis1DBinding
   | XRGamepadButtonBinding
-  | XRGamepadAxesDirectionBinding;
+  | XRGamepadAxesDirectionBinding
+  | FrameButtonBinding;
 
 export type InputActionContext = {
   keyboard: StatefulKeyboard;
   browserGamepads: Array<StatefulBrowserGamepad | undefined>;
   xr: XRInputManager;
+  frame?: FrameInput;
 };
 
 type ButtonState = {
@@ -377,6 +393,9 @@ export class InputActionManager {
     context: InputActionContext,
     binding: InputActionBinding & { kind: 'button' },
   ): boolean {
+    if (binding.source === 'frame') {
+      return context.frame?.buttons[binding.button].pressed ?? false;
+    }
     if (binding.source === 'keyboard') {
       return context.keyboard.getKeyPressed(binding.code);
     }
@@ -405,6 +424,9 @@ export class InputActionManager {
     context: InputActionContext,
     binding: InputActionBinding & { kind: 'button' },
   ): boolean {
+    if (binding.source === 'frame') {
+      return context.frame?.buttons[binding.button].justPressed ?? false;
+    }
     if (binding.source === 'keyboard') {
       return context.keyboard.getKeyDown(binding.code);
     }
@@ -434,6 +456,9 @@ export class InputActionManager {
     context: InputActionContext,
     binding: InputActionBinding & { kind: 'button' },
   ): boolean {
+    if (binding.source === 'frame') {
+      return context.frame?.buttons[binding.button].justReleased ?? false;
+    }
     if (binding.source === 'keyboard') {
       return context.keyboard.getKeyUp(binding.code);
     }
