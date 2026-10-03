@@ -28,6 +28,18 @@ const HEADERS = {
 # LICENSE file in the root directory of this source tree.`,
 };
 
+// Files authored for IWFDK (the Steam Frame fork) carry this header instead.
+const IWFDK_HEADERS = {
+  block: HEADERS.block.replace(
+    'Meta Platforms, Inc. and affiliates.',
+    'IWFDK contributors.',
+  ),
+  line: HEADERS.line.replace(
+    'Meta Platforms, Inc. and affiliates.',
+    'IWFDK contributors.',
+  ),
+};
+
 // Directories to check
 const INCLUDE_DIRS = ['packages', 'examples', 'scripts', 'docs'];
 
@@ -142,7 +154,10 @@ async function hasCorrectHeader(filePath) {
 
     // Check if header is present
     const remainingContent = lines.slice(startIndex).join('\n');
-    return remainingContent.startsWith(expectedHeader);
+    return (
+      remainingContent.startsWith(expectedHeader) ||
+      remainingContent.startsWith(IWFDK_HEADERS[commentType])
+    );
   } catch (error) {
     console.warn(`Warning: Could not read ${filePath}: ${error.message}`);
     return true; // Skip files we can't read

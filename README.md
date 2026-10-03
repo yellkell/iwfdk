@@ -1,3 +1,10 @@
+> **IWFDK** — this repository is the Immersive Web SDK adapted to the Valve
+> Steam Frame: the Frame controllers from
+> [FramePlayer](https://github.com/yellkell/frameplayer) ported to WebXR
+> (`world.input.frame`), a `valve-frame` input profile, and a Chromium patch
+> that exposes the full Frame controller layout to pages. See
+> **[FRAME.md](FRAME.md)**. Everything below is the upstream IWSDK README.
+
 <h1 align="center">Immersive Web SDK</h1>
 
 <p align="center">
