@@ -1,0 +1,25 @@
+[package]
+name = "frame-models"
+version = "0.1.0"
+description = "Extracts the Steam Frame controller render models and their animation from the OpenXR runtime, for IWFDK"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+
+[dependencies]
+# Vulkan through the system loader, loaded at run time (a session needs a
+# graphics binding even though nothing is rendered).
+ash = "0.38.0"
+glam = "0.30"
+# Runtime loaded directly from the active OpenXR manifest, as FramePlayer's
+# frame-probe does: no C++ loader to build or ship.
+libloading = "0.8"
+openxr = { version = "0.22.0", default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["float_roundtrip"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "debuginfo"

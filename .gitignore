@@ -99,3 +99,7 @@ docs/api/
 
 # Local-only notes and artifacts (kept on disk, never committed)
 /.local/
+
+# Steam Frame controller models extracted from SteamVR (Valve assets; see FRAME.md)
+/frame-models/
+tools/frame-models/target/
