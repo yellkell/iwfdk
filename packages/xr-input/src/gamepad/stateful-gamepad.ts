@@ -20,6 +20,13 @@ export enum InputComponent {
   Y_Button = 'y-button',
   Thumbrest = 'thumbrest',
   Menu = 'menu',
+  // Steam Frame controllers (valve-frame profile).
+  Bumper = 'bumper',
+  View = 'view',
+  DpadUp = 'dpad-up',
+  DpadDown = 'dpad-down',
+  DpadLeft = 'dpad-left',
+  DpadRight = 'dpad-right',
 }
 
 export class StatefulGamepad extends StatefulButtonAxesDevice {

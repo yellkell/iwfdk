@@ -12,6 +12,7 @@ import {
   PROFILES_LIST,
   getProfile as getGeneratedProfile,
 } from './generated-profiles.js';
+import { VALVE_FRAME_PROFILE } from './profiles/valve-frame.js';
 const DEFAULT_PROFILE = 'generic-trigger';
 const PROFILE_LIST_NAME = 'profilesList.json';
 
@@ -50,6 +51,90 @@ export interface InputProfile {
   layouts: Partial<{ [handedness in XRHandedness]: InputLayout }>;
 }
 
+export interface RegisterInputProfileOptions {
+  /**
+   * Base URL that relative layout `assetPath`s resolve against. Defaults to
+   * `<DEFAULT_PROFILES_PATH>/<profileId>`. Absolute asset paths are used as is.
+   */
+  assetBasePath?: string;
+}
+
+type RegisteredInputProfile = {
+  profile: InputProfile;
+  assetBasePath?: string;
+};
+
+const registeredProfiles = new Map<string, RegisteredInputProfile>();
+
+/**
+ * Make an input profile that is not in the bundled
+ * `@webxr-input-profiles/assets` set resolvable, or override a bundled one.
+ * Registered profiles are matched before bundled ones for the same profile id;
+ * an input source's `profiles` array is still walked in order.
+ */
+export function registerInputProfile(
+  profile: InputProfile,
+  options: RegisterInputProfileOptions = {},
+): void {
+  registeredProfiles.set(profile.profileId, {
+    profile,
+    assetBasePath: options.assetBasePath,
+  });
+}
+
+export function unregisterInputProfile(profileId: string): boolean {
+  return registeredProfiles.delete(profileId);
+}
+
+export function getRegisteredInputProfile(
+  profileId: string,
+): InputProfile | undefined {
+  return registeredProfiles.get(profileId)?.profile;
+}
+
+// Profiles IWFDK ships beyond the generated registry snapshot.
+registerInputProfile(VALVE_FRAME_PROFILE);
+
+function isAbsoluteAssetPath(assetPath: string): boolean {
+  return /^[a-z][a-z0-9+.-]*:/i.test(assetPath) || assetPath.startsWith('/');
+}
+
+function resolveAssetPath(
+  profileId: string,
+  assetPath: string,
+  assetBasePath?: string,
+): string {
+  if (isAbsoluteAssetPath(assetPath)) {
+    return assetPath;
+  }
+  const base = assetBasePath ?? `${DEFAULT_PROFILES_PATH}/${profileId}`;
+  return `${base.replace(/\/+$/, '')}/${assetPath}`;
+}
+
+type ResolvedProfile = {
+  profile: InputProfile;
+  assetBasePath?: string;
+};
+
+function resolveProfileSync(
+  inputSource: XRInputSource,
+  defaultProfile: string,
+): ResolvedProfile {
+  for (const profileId of [...inputSource.profiles, defaultProfile]) {
+    const registered = registeredProfiles.get(profileId);
+    if (registered) {
+      return registered;
+    }
+    const supportedProfile = PROFILES_LIST[profileId];
+    if (supportedProfile) {
+      return { profile: getGeneratedProfile(supportedProfile.path) };
+    }
+  }
+  throw new Error(
+    `No matching profile name found and default profile "${defaultProfile}" missing.`,
+  );
+}
+
 export async function fetchJsonFile(path: string): Promise<InputProfile> {
   const response = await fetch(path);
   if (!response.ok) {
@@ -78,44 +163,7 @@ export function fetchProfileSync(
     defaultProfile = DEFAULT_PROFILE,
   }: Omit<FetchProfileOptions, 'basePath'> = {},
 ): InputProfile {
-  const supportedProfilesList = PROFILES_LIST;
-
-  let match:
-    | {
-        profileId: string;
-        profilePath: string;
-        deprecated: boolean;
-      }
-    | undefined;
-  inputSource.profiles.some((profileId) => {
-    const supportedProfile = supportedProfilesList[profileId];
-    if (supportedProfile) {
-      match = {
-        profileId,
-        profilePath: supportedProfile.path,
-        deprecated: !!supportedProfile.deprecated,
-      };
-    }
-    return !!match;
-  });
-
-  if (!match) {
-    const supportedProfile = supportedProfilesList[defaultProfile];
-    if (!supportedProfile) {
-      throw new Error(
-        `No matching profile name found and default profile "${defaultProfile}" missing.`,
-      );
-    }
-
-    match = {
-      profileId: defaultProfile,
-      profilePath: supportedProfile.path,
-      deprecated: !!supportedProfile.deprecated,
-    };
-  }
-
-  const profile = getGeneratedProfile(match.profilePath);
-  return profile;
+  return resolveProfileSync(inputSource, defaultProfile).profile;
 }
 
 export async function fetchProfile(
@@ -125,49 +173,37 @@ export async function fetchProfile(
     defaultProfile = DEFAULT_PROFILE,
   }: FetchProfileOptions,
 ): Promise<InputProfile> {
-  const supportedProfilesList = await fetchProfilesList(basePath);
-
-  let match:
-    | {
-        profileId: string;
-        profilePath: string;
-        deprecated: boolean;
-      }
-    | undefined;
-  inputSource.profiles.some((profileId) => {
-    const supportedProfile = supportedProfilesList[profileId];
-    if (supportedProfile) {
-      match = {
-        profileId,
-        profilePath: `${basePath}/${supportedProfile.path}`,
-        deprecated: !!supportedProfile.deprecated,
-      };
-    }
-    return !!match;
-  });
-
-  if (!match) {
-    const supportedProfile = supportedProfilesList[defaultProfile];
-    if (!supportedProfile) {
-      throw new Error(
-        `No matching profile name found and default profile "${defaultProfile}" missing.`,
-      );
-    }
-
-    match = {
-      profileId: defaultProfile,
-      profilePath: `${basePath}/${supportedProfile.path}`,
-      deprecated: !!supportedProfile.deprecated,
-    };
+  const candidates = [...inputSource.profiles, defaultProfile];
+  const firstRegistered = candidates.findIndex((id) =>
+    registeredProfiles.has(id),
+  );
+  // Nothing earlier than a registered profile can match without the list.
+  if (firstRegistered === 0) {
+    return registeredProfiles.get(candidates[0])!.profile;
   }
 
-  const profile = await fetchJsonFile(match.profilePath);
-  return profile;
+  const supportedProfilesList = await fetchProfilesList(basePath);
+  for (const profileId of candidates) {
+    const registered = registeredProfiles.get(profileId);
+    if (registered) {
+      return registered.profile;
+    }
+    const supportedProfile = supportedProfilesList[profileId];
+    if (supportedProfile) {
+      return fetchJsonFile(`${basePath}/${supportedProfile.path}`);
+    }
+  }
+  throw new Error(
+    `No matching profile name found and default profile "${defaultProfile}" missing.`,
+  );
 }
 
 export function loadInputProfile(inputSource: XRInputSource) {
   const profileId = inputSource.profiles[0];
-  let profile = fetchProfileSync(inputSource);
+  const { profile, assetBasePath } = resolveProfileSync(
+    inputSource,
+    DEFAULT_PROFILE,
+  );
   const layout = profile.layouts[inputSource.handedness];
   if (!layout) {
     throw new DOMException('No applicable layout found', 'NotSupportedError');
@@ -177,6 +213,10 @@ export function loadInputProfile(inputSource: XRInputSource) {
     layout,
     profileId,
     resolvedProfileId: profile.profileId,
-    assetPath: `${DEFAULT_PROFILES_PATH}/${profile.profileId}/${layout.assetPath}`,
+    assetPath: resolveAssetPath(
+      profile.profileId,
+      layout.assetPath,
+      assetBasePath,
+    ),
   };
 }
