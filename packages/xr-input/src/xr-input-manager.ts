@@ -15,6 +15,11 @@ import {
   WebXRManager,
 } from 'three';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {
+  DEFAULT_FRAME_MODELS_URL,
+  loadFrameControllerModels,
+} from './frame/models.js';
+import { isSteamFrameBrowser } from './frame/platform.js';
 import { loadInputProfile } from './gamepad/input-profiles.js';
 import { StatefulGamepad } from './gamepad/stateful-gamepad.js';
 import { GazePointer, GazePointerInput } from './pointer/gaze-pointer.js';
@@ -82,6 +87,13 @@ export interface XRInputOptions {
   assetLoader?: XRAssetLoader;
   inputDevices?: XRInputDeviceConfig[];
   pointerSettings?: XRPointerSettings;
+  /**
+   * Steam Frame controller models (see `loadFrameControllerModels`): on a
+   * Steam Frame browser IWFDK loads its own from
+   * {@link DEFAULT_FRAME_MODELS_URL}. Give another directory, or `false` to
+   * keep the default controller visuals.
+   */
+  frameControllerModels?: string | false;
 }
 
 export class XRInputManager {
@@ -221,6 +233,13 @@ export class XRInputManager {
 
   constructor(options: XRInputOptions) {
     const { scene, camera, assetLoader } = options;
+    const frameModels =
+      options.frameControllerModels ?? DEFAULT_FRAME_MODELS_URL;
+    if (frameModels !== false && isSteamFrameBrowser()) {
+      loadFrameControllerModels(frameModels).catch((e) =>
+        console.warn('IWFDK: Steam Frame controller models did not load:', e),
+      );
+    }
     this.xrOrigin = new XROrigin();
     this.scene = scene; // used implicitly by MultiPointer via constructor
     this.visualAdapters = {

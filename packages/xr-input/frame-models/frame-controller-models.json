@@ -1,0 +1,251 @@
+{
+  "format": "iwfdk-frame-controller-models",
+  "version": 1,
+  "runtime": {
+    "name": "SteamVR/OpenXR",
+    "version": "2.17.10"
+  },
+  "hands": {
+    "left": {
+      "asset": "left.glb",
+      "nodeNames": [
+        "body",
+        "bumper",
+        "button_grip",
+        "button_system",
+        "button_view",
+        "dpad",
+        "status",
+        "thumbstick",
+        "trigger"
+      ],
+      "animations": [
+        {
+          "kind": "button",
+          "node": "bumper",
+          "component": "shoulder",
+          "property": "pressed",
+          "rest": {
+            "position": [0.0, 0.0, 0.0],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "pressed": {
+            "position": [-0.0015724234, 0.0014178231, 0.0015548797],
+            "orientation": [0.0037529005, 0.018292377, -0.012884789, 0.9997427]
+          },
+          "confidence": 0.9999966
+        },
+        {
+          "kind": "button",
+          "node": "button_grip",
+          "component": "xr-standard-squeeze",
+          "property": "value",
+          "rest": {
+            "position": [0.0, 0.0, 0.0],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "pressed": {
+            "position": [0.007847056, -0.0027155904, -0.0015697397],
+            "orientation": [-0.014120467, -0.06882673, 0.048479825, 0.99635]
+          },
+          "confidence": 0.996985
+        },
+        {
+          "kind": "button",
+          "node": "dpad",
+          "component": "dpad-right",
+          "property": "pressed",
+          "rest": {
+            "position": [5.740292e-10, -2.9118765e-9, -3.791228e-9],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "pressed": {
+            "position": [0.002790358, 0.00048600818, 0.0010993228],
+            "orientation": [0.020924803, -0.03771294, -0.045807082, 0.99801886]
+          },
+          "confidence": 0.812928
+        },
+        {
+          "kind": "stick",
+          "node": "thumbstick",
+          "component": "xr-standard-thumbstick",
+          "rest": {
+            "position": [1.5464541e-9, -2.7288862e-9, -5.3574114e-9],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "left": {
+            "position": [-0.011059103, -0.009803711, 0.0056342105],
+            "orientation": [-0.019178098, 0.1015729, 0.13914426, 0.98486245]
+          },
+          "right": {
+            "position": [0.014210819, 0.0061575086, -0.0027558443],
+            "orientation": [0.017002244, -0.10176009, -0.13967736, 0.9848076]
+          },
+          "up": {
+            "position": [-0.0017247517, -0.017758684, 0.0019838086],
+            "orientation": [-0.17033967, 0.013074805, -0.031099213, 0.98480785]
+          },
+          "down": null,
+          "confidence": 0.9916824
+        },
+        {
+          "kind": "button",
+          "node": "trigger",
+          "component": "xr-standard-trigger",
+          "property": "value",
+          "rest": {
+            "position": [0.0, 0.0, 0.0],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "pressed": {
+            "position": [-0.0008467483, -0.010306139, -0.004359247],
+            "orientation": [-0.115212746, 0.01478284, -0.012570434, 0.9931513]
+          },
+          "confidence": 0.9981326
+        }
+      ],
+      "visibleAtRest": {
+        "body": false,
+        "bumper": false,
+        "button_grip": false,
+        "button_system": false,
+        "button_view": false,
+        "dpad": false,
+        "status": false,
+        "thumbstick": false,
+        "trigger": false
+      },
+      "unmappedNodes": ["body", "button_system", "button_view", "status"],
+      "gripFromModel": {
+        "position": [0.0031169204, -0.0006046675, -0.099593006],
+        "orientation": [-0.024512352, 3.5466053e-7, 0.0000015860683, 0.99969953]
+      },
+      "gripFromModelSpread": 0.00042759586,
+      "restSamples": 291,
+      "missingCoverage": ["view.pressed"]
+    },
+    "right": {
+      "asset": "right.glb",
+      "nodeNames": [
+        "body",
+        "bumper",
+        "button_a",
+        "button_b",
+        "button_grip",
+        "button_menu",
+        "button_system",
+        "button_x",
+        "button_y",
+        "status",
+        "thumbstick",
+        "trigger"
+      ],
+      "animations": [
+        {
+          "kind": "button",
+          "node": "bumper",
+          "component": "shoulder",
+          "property": "pressed",
+          "rest": {
+            "position": [0.0, 0.0, 0.0],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "pressed": {
+            "position": [0.0015724301, 0.0014178175, 0.0015548728],
+            "orientation": [0.003752925, -0.018292377, 0.012884744, 0.9997427]
+          },
+          "confidence": 0.99836624
+        },
+        {
+          "kind": "button",
+          "node": "button_grip",
+          "component": "xr-standard-squeeze",
+          "property": "value",
+          "rest": {
+            "position": [-0.0000018903494, -7.612577e-7, -5.3015793e-7],
+            "orientation": [
+              -0.0000035183925, 0.00001714928, -0.000012079567, 1.0
+            ]
+          },
+          "pressed": {
+            "position": [-0.008054918, -0.0027751254, -0.0015937058],
+            "orientation": [-0.014482619, 0.07059151, -0.04972282, 0.99616003]
+          },
+          "confidence": 0.9956299
+        },
+        {
+          "kind": "stick",
+          "node": "thumbstick",
+          "component": "xr-standard-thumbstick",
+          "rest": {
+            "position": [-3.5308134e-10, 1.7679601e-9, 2.852465e-9],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "left": {
+            "position": [-0.01408969, 0.0058064833, -0.0028030353],
+            "orientation": [0.013610193, 0.10098254, 0.14066869, 0.9847993]
+          },
+          "right": {
+            "position": [0.011110586, -0.009435962, 0.0056324825],
+            "orientation": [-0.015760997, -0.10157482, -0.13910629, 0.9849283]
+          },
+          "up": {
+            "position": [0.0016934124, -0.017722704, 0.0019616415],
+            "orientation": [-0.17024568, -0.012753738, 0.031752333, 0.98480743]
+          },
+          "down": {
+            "position": [-0.00072688906, 0.01752571, 0.0041114455],
+            "orientation": [0.1704538, 0.014105019, -0.030032992, 0.98480684]
+          },
+          "confidence": 0.9914664
+        },
+        {
+          "kind": "button",
+          "node": "trigger",
+          "component": "xr-standard-trigger",
+          "property": "value",
+          "rest": {
+            "position": [0.0, 0.0, 0.0],
+            "orientation": [0.0, 0.0, 0.0, 1.0]
+          },
+          "pressed": {
+            "position": [-0.000027310467, -0.010294277, -0.004519917],
+            "orientation": [-0.11633998, -0.008975115, 0.021144127, 0.9929439]
+          },
+          "confidence": 0.9984064
+        }
+      ],
+      "visibleAtRest": {
+        "body": false,
+        "bumper": false,
+        "button_a": false,
+        "button_b": false,
+        "button_grip": false,
+        "button_menu": false,
+        "button_system": false,
+        "button_x": false,
+        "button_y": false,
+        "status": false,
+        "thumbstick": false,
+        "trigger": false
+      },
+      "unmappedNodes": [
+        "body",
+        "button_a",
+        "button_b",
+        "button_menu",
+        "button_system",
+        "button_x",
+        "button_y",
+        "status"
+      ],
+      "gripFromModel": {
+        "position": [-0.0031169592, -0.00060446997, -0.09959307],
+        "orientation": [-0.024511244, -3.5678164e-7, 1.9275791e-7, 0.99969953]
+      },
+      "gripFromModelSpread": 0.0002116555,
+      "restSamples": 364,
+      "missingCoverage": ["menu.pressed"]
+    }
+  }
+}

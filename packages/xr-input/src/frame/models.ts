@@ -43,6 +43,15 @@ export const FRAME_MODELS_FORMAT = 'iwfdk-frame-controller-models';
 export const FRAME_MODELS_VERSION = 1;
 export const FRAME_MODELS_FILE = 'frame-controller-models.json';
 
+/**
+ * Where IWFDK's own Steam Frame controller models live: extracted from
+ * SteamVR with `tools/frame-models` and kept in this repository
+ * (`packages/xr-input/frame-models`), served by jsDelivr from a fixed tag.
+ * {@link XRInputManager} loads them by itself on a Steam Frame browser.
+ */
+export const DEFAULT_FRAME_MODELS_URL =
+  'https://cdn.jsdelivr.net/gh/yellkell/iwfdk@frame-models-1/packages/xr-input/frame-models';
+
 export interface FramePose {
   position: [number, number, number];
   /** Quaternion `[x, y, z, w]`. */
@@ -360,7 +369,12 @@ export class FrameControllerVisual extends BaseControllerVisual {
         asset.getObjectByName(name)
       );
     };
-    for (const [name, visible] of Object.entries(model.visibleAtRest)) {
+    // SteamVR has been seen to report every node hidden at rest, which would
+    // hide the whole controller: only trust the data when something shows.
+    const visibleAtRest = Object.values(model.visibleAtRest).some(Boolean)
+      ? model.visibleAtRest
+      : {};
+    for (const [name, visible] of Object.entries(visibleAtRest)) {
       const node = find(name);
       if (node) {
         node.visible = visible;

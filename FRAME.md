@@ -210,9 +210,15 @@ everything has been seen (the terminal lists what is still missing) or after
 | `frame-controller-models.json` | per node: driving input and rest/pressed poses (or per-direction stick poses); model-to-grip offset |
 | `recording.json`               | the raw capture; `frame-models calibrate DIR` re-runs the calibration offline                       |
 
-**2. Load in the app.** Serve the directory with the app and load it before
-entering XR (the URL may be absolute or relative to the page; controllers
-already connected switch on their next connection):
+**2. Load in the app.** IWFDK ships a set extracted from a Steam Frame
+(`packages/xr-input/frame-models`, served by jsDelivr from the
+`frame-models-1` tag) and loads it by itself when the page runs in a Steam
+Frame browser: apps show Frame controllers with no code. To use your own
+extraction instead, serve its directory and pass it as
+`frameControllerModels` in the XR input options, or load it before entering
+XR (the URL may be absolute or relative to the page; controllers already
+connected switch on their next connection); `frameControllerModels: false`
+keeps the default visuals:
 
 ```ts
 import { loadFrameControllerModels } from '@iwsdk/core';
@@ -234,9 +240,10 @@ Frame controllers when no models were loaded. An app that calls
 
 **Licensing.** The models are Valve's assets, served by SteamVR to
 applications running on the user's device; their redistribution terms are
-not published. `frame-models/` is git-ignored, and nothing extracted is in
-this repository. Hosting them on a public site is a decision to make with
-that in mind. The OpenXR specification also asks applications not to ship
+not published. This repository carries one extraction (in
+`packages/xr-input/frame-models`, credited to Valve) by the maintainer's
+choice; `frame-models/` at the root, where `tools/frame-models.sh` writes
+yours, stays git-ignored. The OpenXR specification also asks applications not to ship
 models in place of the runtime's; the WebXR route has no other way to show
 them, so re-extract after SteamVR updates the controllers.
 
