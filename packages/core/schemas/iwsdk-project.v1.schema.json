@@ -322,7 +322,9 @@
             "metaQuest3",
             "metaQuestPro",
             "metaVRGlasses",
-            "oculusQuest1"
+            "oculusQuest1",
+            "steamFrame",
+            "steamFrameTouch"
           ]
         },
         "iwer": { "type": "boolean" },

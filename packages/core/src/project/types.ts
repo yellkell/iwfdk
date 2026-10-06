@@ -177,7 +177,9 @@ export type ProjectEmulatorDevice =
   | 'metaQuest3'
   | 'metaQuestPro'
   | 'metaVRGlasses'
-  | 'oculusQuest1';
+  | 'oculusQuest1'
+  | 'steamFrame'
+  | 'steamFrameTouch';
 
 export type ProjectEmulatorEnvironment =
   | 'living_room'

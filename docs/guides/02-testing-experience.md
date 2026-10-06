@@ -133,7 +133,7 @@ IWER is injected by the `iwsdkDev` Vite plugin, but its project settings live in
 {
   "dev": {
     "emulator": {
-      "device": "metaQuest3"
+      "device": "steamFrame"
     }
   }
 }
@@ -147,7 +147,7 @@ iwsdkDev();
 
 **Configuration options:**
 
-- **`device`**: Which headset to emulate (`metaQuest2`, `metaQuest3`, `metaQuestPro`, `metaVRGlasses`, or `oculusQuest1`). `metaVRGlasses` emulates Meta VR Glasses' narrower field of view and adds gaze input. More headset presets and custom headset configuration support coming soon.
+- **`device`**: Which headset to emulate (`steamFrame`, `steamFrameTouch`, `metaQuest2`, `metaQuest3`, `metaQuestPro`, `metaVRGlasses`, or `oculusQuest1`). IWFDK's default is `steamFrame`: a Valve Steam Frame in Chromium XR, whose controllers report `valve-frame` with every Frame control (D-pad, shoulders, menu, view). `steamFrameTouch` is a Frame browser without the IWFDK Chromium patches, where SteamVR presents the controllers as Touch controllers. Neither offers AR; use a Quest preset for AR projects. `metaVRGlasses` emulates Meta VR Glasses' narrower field of view and adds gaze input.
 - **`activation`**: Controls when IWER activates. The default `'localhost'` is smart - it activates IWER when you access the site from localhost (typically your computer, which needs emulation), but not when accessing via IP address (typically from a headset with native WebXR support).
 - **`userAgentException`**: Adds an extra layer of protection by skipping IWER activation if the browser's user agent matches a pattern (like `OculusBrowser`). This ensures IWER won't activate on headsets even when using ADB port forwarding with localhost.
 - **`environment`**: Synthetic room data for AR scene-understanding testing, such as `living_room`

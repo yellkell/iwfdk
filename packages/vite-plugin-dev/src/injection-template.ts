@@ -17,7 +17,13 @@ import {
   metaVRGlasses,
   oculusQuest1,
 } from 'iwer';
+import { extendGamepadTools } from './gamepad-remote.js';
 import { initMCPBridge, initMCPClient } from './mcp/ws-client.js';
+import {
+  mirrorFrameXY,
+  steamFrame,
+  steamFrameTouch,
+} from './steam-frame-device.js';
 import type { ProcessedDevOptions } from './types.js';
 
 // Configuration will be replaced by the plugin
@@ -44,6 +50,8 @@ const DEVICE_CONFIGS = {
   metaQuestPro,
   metaVRGlasses: META_VR_GLASSES_WITH_GAZE,
   oculusQuest1,
+  steamFrame,
+  steamFrameTouch,
 } as const;
 
 type SEMConstructor = Parameters<XRDevice['installSEM']>[0];
@@ -215,7 +223,7 @@ function initDevRuntime(config: ProcessedDevOptions): void {
       console.error(
         `[IWSDK Dev] ❌ Invalid device configuration: "${config.device}"\n` +
           `Available devices: ${availableDevices}\n` +
-          `Falling back to default device: metaQuest3`,
+          `Falling back to default device: steamFrame`,
       );
     }
 
@@ -223,8 +231,12 @@ function initDevRuntime(config: ProcessedDevOptions): void {
     // head-directed gaze, so it always previews the gaze-capable target.
     const finalDeviceConfig = targetPreviewActive
       ? META_VR_GLASSES_WITH_GAZE
-      : deviceConfig || metaQuest3;
+      : deviceConfig || steamFrame;
     const xrDevice = new XRDevice(finalDeviceConfig);
+    if (finalDeviceConfig === steamFrame) {
+      mirrorFrameXY(xrDevice);
+    }
+    extendGamepadTools(xrDevice);
 
     if (config.verbose) {
       console.log(
@@ -233,7 +245,7 @@ function initDevRuntime(config: ProcessedDevOptions): void {
           ? 'metaVRGlasses (gaze preview)'
           : deviceConfig
             ? config.device
-            : 'metaQuest3 (fallback)',
+            : 'steamFrame (fallback)',
       );
     }
 

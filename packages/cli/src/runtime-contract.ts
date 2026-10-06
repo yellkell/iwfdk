@@ -1104,7 +1104,7 @@ const ALL_RUNTIME_MCP_TOOLS: McpToolDefinition[] = [
   {
     name: 'xr_get_gamepad_state',
     description:
-      'Get full gamepad state including all buttons and axes. Button indices in the result: 0=trigger, 1=squeeze, 2=thumbstick, 3=A/X, 4=B/Y, 5=thumbrest.',
+      'Get full gamepad state including all buttons and axes. Button indices in the result: 0=trigger, 1=squeeze, 2=thumbstick, 3=A/X, 4=B/Y, 5=thumbrest, then any other buttons of the emulated controller by name (Steam Frame right: x, y, shoulder, menu; left: dpad-up, dpad-down, dpad-left, dpad-right, shoulder, view).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -1119,7 +1119,8 @@ const ALL_RUNTIME_MCP_TOOLS: McpToolDefinition[] = [
   },
   {
     name: 'xr_set_gamepad_state',
-    description: 'Set gamepad button and axis values by index',
+    description:
+      'Set gamepad button values by index or name, and axis values by index. Names are those xr_get_gamepad_state reports, e.g. dpad-up or menu on a Steam Frame.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -1137,7 +1138,12 @@ const ALL_RUNTIME_MCP_TOOLS: McpToolDefinition[] = [
               index: {
                 type: 'number',
                 description:
-                  'Button index (0=trigger, 1=squeeze, 2=thumbstick, 3=A/X, 4=B/Y, 5=thumbrest)',
+                  'Button index (0=trigger, 1=squeeze, 2=thumbstick, 3=A/X, 4=B/Y, 5=thumbrest; higher indices as xr_get_gamepad_state lists them)',
+              },
+              name: {
+                type: 'string',
+                description:
+                  'Button name instead of index, as xr_get_gamepad_state reports it (e.g. a, x, dpad-up, shoulder, menu, view)',
               },
               value: { type: 'number', description: 'Button value 0-1' },
               touched: {
@@ -1145,7 +1151,8 @@ const ALL_RUNTIME_MCP_TOOLS: McpToolDefinition[] = [
                 description: 'Whether button is touched',
               },
             },
-            required: ['index', 'value'],
+            required: ['value'],
+            anyOf: [{ required: ['index'] }, { required: ['name'] }],
           },
         },
         axes: {

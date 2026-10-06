@@ -94,15 +94,19 @@ export interface WorkspaceOptions {
  */
 export interface EmulatorOptions {
   /**
-   * XR device to emulate
-   * @default 'metaQuest3'
+   * XR device to emulate. `steamFrame` is a Valve Steam Frame in Chromium XR
+   * (`valve-frame` controllers); `steamFrameTouch` a Frame browser without
+   * the IWFDK Chromium patches (SteamVR's Touch emulation).
+   * @default 'steamFrame'
    */
   device?:
     | 'metaQuest2'
     | 'metaQuest3'
     | 'metaQuestPro'
     | 'metaVRGlasses'
-    | 'oculusQuest1';
+    | 'oculusQuest1'
+    | 'steamFrame'
+    | 'steamFrameTouch';
 
   /**
    * When to activate the WebXR emulation
@@ -273,7 +277,9 @@ export interface ProcessedDevOptions {
     | 'metaQuest3'
     | 'metaQuestPro'
     | 'metaVRGlasses'
-    | 'oculusQuest1';
+    | 'oculusQuest1'
+    | 'steamFrame'
+    | 'steamFrameTouch';
   sem?: {
     defaultScene: string;
   };

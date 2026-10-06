@@ -80,8 +80,10 @@ export function createProjectManifest(
     },
     dev: {
       emulator: {
-        device: 'metaQuest3',
-        ...(target === 'ar' ? { environment: 'living_room' } : {}),
+        // The Steam Frame has no WebXR AR, so AR projects emulate a Quest.
+        ...(target === 'ar'
+          ? { device: 'metaQuest3', environment: 'living_room' }
+          : { device: 'steamFrame' }),
       },
     },
   };

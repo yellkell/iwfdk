@@ -14,6 +14,32 @@ session), IWER (IWSDK's browser-based XR emulator), ECS (entity-component
 system), and controller target-ray versus grip poses with a link to the
 applicable IWSDK guide or concept page.
 
+## Target: the Valve Steam Frame
+
+This app is built with IWFDK, the Immersive Web SDK adapted to the Valve Steam
+Frame, and its main target is the Frame's WebXR browser (Chromium XR). The
+emulator imitates a Frame unless `dev.emulator.device` in `iwsdk.config.json`
+says otherwise: `steamFrame` (every Frame control), `steamFrameTouch` (a Frame
+browser that shows the controllers as Touch controllers), or a Quest preset for
+AR, which the Frame has no WebXR support for.
+
+- Read controls through `this.input.frame`: `frame.a`/`b`/`x`/`y`/`menu`/`view`,
+  `frame.dpad.up`..., and per hand `frame.left.shoulder`, `.trigger`,
+  `.select`, `.grip`, `.thumbstick` (y down). X and Y are on the **right**
+  Frame controller.
+- Every essential action needs a path that works without the D-pad, shoulders,
+  menu and view, which other browsers and Quest controllers lack; use those for
+  shortcuts.
+- Vibrate with `frame.vibrate()` or `pulseHaptics()`, never
+  `hapticActuators[0].pulse()` directly.
+- Don't require the WebXR `layers` feature (the headset shows black) or AR
+  features; budget about 11 ms per frame on a mobile GPU.
+- In the emulator, `xr_get_gamepad_state` lists the Frame buttons by name, and
+  `xr_set_gamepad_state` presses them with `{"name":"dpad-up","value":1}`.
+
+Use the `iwsdk-steam-frame` skill for controller input, input actions,
+vibration, Frame performance, and testing input in the emulator.
+
 ## What is not standard Vite
 
 **`iwsdk.config.json` is the project authority, not `vite.config.ts`.** It selects
@@ -37,7 +63,7 @@ window hosts the editor and application roles. Browser failure leaves Vite and
 HMR running. `runtime status`, `runtime targets`, and `runtime wait` do not recover
 or launch a browser; `runtime recover` explicitly retries after a failure.
 
-Pair a headset using `runtime pair-headset --input-json '{"headsetId":"ADB_SERIAL"}'`,
+Pair a Quest headset using `runtime pair-headset --input-json '{"headsetId":"ADB_SERIAL"}'`,
 open the returned URL on that exact device through ADB reverse, then copy its
 `runtimeTarget` from `runtime targets`. Include deviceClass, headsetId, pageId, and
 tabGeneration on every physical command. Reload is supported through the page
@@ -112,8 +138,9 @@ outside XR can prove that the app renders, but it cannot prove immersive pose or
 interaction correctness.
 
 For a physical headset smoke test, run `npx @iwsdk/cli dev status`, open a URL from
-`data.runtimeUrls.network` on a headset connected to the same Wi-Fi network,
-and accept the expected local certificate warning. See
+`data.runtimeUrls.network` on a headset connected to the same Wi-Fi network
+(Chromium XR on a Steam Frame), and accept the expected local certificate
+warning. See
 [Testing Your Experience](https://iwsdk.dev/guides/02-testing-experience.html)
 for the complete workflow.
 
@@ -166,8 +193,9 @@ The selected playbook routes work to the narrowest owning specialist:
 - a model-local defect found during composition routes back to `iwsdk-build-model`;
   a placement or lighting defect stays in `iwsdk-compose-scene`.
 
-UI authoring, physics, depth occlusion, grab and ray interaction testing, ECS
-frame-stepping, and debugging have their own project skills. Use them only when
+UI authoring, physics, depth occlusion, grab and ray interaction testing,
+Steam Frame controls, ECS frame-stepping, and debugging have their own project
+skills. Use them only when
 the selected `iwsdk-dev` playbook calls for the matching specialty.
 
 The failure worth guarding against is improvising a domain that already has a

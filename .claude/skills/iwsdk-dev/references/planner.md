@@ -173,6 +173,8 @@ only the skills needed by the contract, normally at most once each:
   lighting, environment, or camera views after model work is complete;
 - `iwsdk-ui` for UIKitML authoring or layout debugging;
 - `iwsdk-grab` / `iwsdk-ray` for unfamiliar live interaction simulation;
+- `iwsdk-steam-frame` for controller buttons, input actions, vibration, Steam
+  Frame performance, or pressing Frame buttons in the emulator;
 - `iwsdk-debug` after a concrete runtime failure.
 
 Pass a concise problem statement to a specialist. Do not paste the full user

@@ -1,6 +1,6 @@
 ---
 name: iwsdk-project-code-reviewer
-description: Reviews code in IWSDK projects (apps built with IWSDK) for correct framework usage, ECS patterns, performance, and best practices. Use when the user requests review or when a live or build failure remains unexplained after implementation.
+description: Reviews code in IWSDK projects (apps built with IWSDK/IWFDK) for correct framework usage, ECS patterns, performance, Steam Frame readiness, and best practices. Use when the user requests review or when a live or build failure remains unexplained after implementation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -13,7 +13,7 @@ You are a senior code reviewer specializing in IWSDK (Immersive Web SDK) applica
 
 When invoked:
 
-0. **Load the API ground truth** - Read `.claude/skills/iwsdk-dev/references/api-reference.md` (full IWSDK API patterns, enums, and anti-patterns) before reviewing.
+0. **Load the API ground truth** - Read `.claude/skills/iwsdk-dev/references/api-reference.md` (full IWSDK API patterns, enums, and anti-patterns) and `.claude/skills/iwsdk-steam-frame/SKILL.md` (this project targets the Valve Steam Frame) before reviewing.
 
 1. **Identify the project files** - Look for `src/` directory, `index.ts`/`index.js` entry point, system files, component files.
 
@@ -221,13 +221,19 @@ entity.addComponent(PhysicsShape, {
 
 ### 9. Input Handling
 
-Check for proper gamepad/input access.
+Check for proper gamepad/input access. Prefer `this.input.frame`, which works
+on every controller layout (section 21).
 
 ```typescript
 // ✅ GOOD - Safe input access with optional chaining
 update() {
   const leftGamepad = this.input.xr.gamepads.left;
   const triggerPressed = leftGamepad?.getButtonDown(InputComponent.Trigger) ?? false;
+}
+
+// ✅ GOOD - Frame controls, resolved for whichever browser runs the app
+update() {
+  if (this.input.frame.a.justPressed) this.jump();
 }
 ```
 
@@ -402,6 +408,29 @@ entity.destroy();
 entity.dispose();
 ```
 
+### 21. Steam Frame readiness
+
+This project's main target is the Valve Steam Frame in Chromium XR; other
+Frame browsers present the controllers as Touch controllers (emulator device
+`steamFrameTouch`). Check:
+
+| Pattern                                                                                                                          | Severity   | Why                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `world.xr.features.layers: { "required": true }`                                                                                 | Critical   | Frame browsers can't composite WebXR layers: the session fails or the headset shows black                                           |
+| `world.xr.mode: "ar"` or required AR features (hit test, anchors, planes, meshes, depth sensing) while the app targets the Frame | Critical   | the Frame has no WebXR AR; flag as Warning when the project emulates a Quest and says it targets Quest                              |
+| `layers: true` with content that only exists as a layer                                                                          | Warning    | IWFDK drops optional `layers` on a Frame, so that content disappears; it needs a mesh fallback                                      |
+| An essential action reachable only through the D-pad, a shoulder, menu or view                                                   | Warning    | those controls are absent outside Chromium XR (`frame.layout` `'remapped'` or `'other'`); give it a trigger/grip/stick/A/B/X/Y path |
+| `hapticActuators[0].pulse(` / `hapticActuators?.[0]?.pulse(`                                                                     | Warning    | Chromium XR vibrates only through `vibrationActuator`; use `pulseHaptics()` or `frame.vibrate()`                                    |
+| Gating on `profiles` containing `oculus-touch*`, or on `Quest`/`OculusBrowser` in the user agent                                 | Warning    | the Frame reports `valve-frame` first and its user agent names no headset; use `frame.layout` or `isSteamFrameBrowser()`            |
+| X/Y read from the left gamepad (`gamepads.left` + `X_Button`/`Y_Button`)                                                         | Suggestion | the Frame has X/Y on the right; the left reads them only through Chromium XR's mirror. Use `frame.x` / `frame.y`                    |
+| Prompts that say "left X" / "left menu", or show Quest controller art                                                            | Suggestion | wrong on the Frame                                                                                                                  |
+| `session.updateTargetFrameRate(...)` relied on, or `render.finishXRFrames` set to `true`/`false`                                 | Suggestion | SteamVR sets the Frame's refresh rate; keep `finishXRFrames` at `'auto'` unless measured                                            |
+| Thumbstick `y > 0` treated as up/forward                                                                                         | Suggestion | Gamepad API y is down-positive                                                                                                      |
+| `navigator.xr.requestSession` / `renderer.xr.setSession` called directly                                                         | Warning    | bypasses IWFDK's Frame rendering workarounds; use `world.launchXR()`                                                                |
+
+When input changed, check the project verified it on both `steamFrame` and
+`steamFrameTouch` in the emulator; if not, list that as a Suggestion.
+
 ---
 
 ## Confidence-Based Reporting
@@ -446,6 +475,12 @@ Only report issues you're confident about:
 - locomotion: [enabled/disabled] - [assessment]
 - physics: [enabled/disabled] - [assessment]
 - grabbing: [enabled/disabled] - [assessment]
+
+### Steam Frame Readiness
+
+- Emulator device: [steamFrame / steamFrameTouch / other]
+- Input: [works without Frame-only controls? uses `this.input.frame`?]
+- Rendering: [layers / AR features / frame-rate assumptions]
 
 ### Summary
 

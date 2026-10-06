@@ -374,6 +374,20 @@ other runtime-dispatched tools still require their corresponding in-page bridge.
 These tools operate on the emulated WebXR device, input sources, session, and poses.
 Inspect each installed schema for device names, axes, timing, and optional fields.
 
+`xr_get_gamepad_state` lists the six Touch-compatible buttons at indices 0-5
+(trigger, squeeze, thumbstick, A/X, B/Y, thumbrest), then every other button of
+the emulated controller by name. On the default `steamFrame` device those are
+`x`, `y`, `shoulder`, `menu` on the right and `dpad-up`, `dpad-down`,
+`dpad-left`, `dpad-right`, `shoulder`, `view` on the left.
+`xr_set_gamepad_state` takes a button's `index` or its `name`:
+
+```json
+{
+  "device": "controller-left",
+  "buttons": [{ "name": "dpad-up", "value": 1 }]
+}
+```
+
 ## ECS Debugging
 
 - `ecs_pause`, `ecs_resume`, `ecs_step`

@@ -54,6 +54,9 @@ lookup between the bounded inspection and the first edit.
   coordinates, read screenshots for interaction debugging, or inspect pointer,
   input, grab, ray, or UIKit internals in `node_modules`; use the specialist and
   measured ECS/UI state.
+- This app targets the Valve Steam Frame: when the change reads controller
+  buttons, binds input actions, or adds vibration, load `iwsdk-steam-frame`
+  before writing that code.
 - Before the first typecheck, do not read specialist references or inspect
   `node_modules`. Import IWSDK ECS, UIKit, interaction, material, and Three.js
   re-exports from `@iwsdk/core`; use

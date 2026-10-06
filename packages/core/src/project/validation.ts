@@ -30,6 +30,8 @@ const DEVICES = [
   'metaQuestPro',
   'metaVRGlasses',
   'oculusQuest1',
+  'steamFrame',
+  'steamFrameTouch',
 ] as const;
 const ENVIRONMENTS = [
   'living_room',

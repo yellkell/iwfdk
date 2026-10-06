@@ -26,7 +26,7 @@ import { iwsdkDev } from '@iwsdk/vite-plugin-dev';
 export default defineConfig({
   plugins: [
     iwsdkDev({
-      emulator: { device: 'metaQuest3' },
+      emulator: { device: 'steamFrame' },
       verbose: true,
     }),
   ],
@@ -39,8 +39,11 @@ export default defineConfig({
 iwsdkDev({
   emulator: {
     // XR device to emulate
-    // Options: 'metaQuest2' | 'metaQuest3' | 'metaQuestPro' | 'metaVRGlasses' | 'oculusQuest1'
-    device: 'metaQuest3', // default
+    // Options: 'steamFrame' | 'steamFrameTouch' | 'metaQuest2' | 'metaQuest3'
+    //        | 'metaQuestPro' | 'metaVRGlasses' | 'oculusQuest1'
+    // steamFrame: Valve Steam Frame in Chromium XR (valve-frame controllers);
+    // steamFrameTouch: a Frame browser showing the controllers as Touch ones.
+    device: 'steamFrame', // default
 
     // Synthetic environment for AR room simulation
     // Options: 'living_room' | 'meeting_room' | 'music_room' | 'office_large' | 'office_small'

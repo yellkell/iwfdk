@@ -169,6 +169,9 @@ All source files in `packages/` must have:
  */
 ```
 
+Files that IWFDK added for the Steam Frame say `Copyright (c) IWFDK contributors.`
+instead; keep each file's existing holder.
+
 ### 6. Import Ordering
 
 ESLint enforces this order (auto-fixable with `pnpm format`):
@@ -248,6 +251,32 @@ The project uses strict TypeScript. Watch for:
 - Unchecked null/undefined access
 - Unused variables (prefix with `_` if intentionally unused)
 - Missing return types on complex functions
+
+### 11. Steam Frame (IWFDK)
+
+IWFDK adapts IWSDK to the Valve Steam Frame (FRAME.md). Flag changes that
+break it:
+
+- **Layout drift (Critical):** gamepad indices or button ids for `valve-frame`
+  must agree everywhere: `packages/xr-input/src/gamepad/profiles/valve-frame.ts`
+  (`ValveFrameGamepadIndex`), the Chromium patches in
+  `platform/chromium/patches/`, FRAME.md section 3, and the emulator device in
+  `packages/vite-plugin-dev/src/steam-frame-device.ts`. A change to one needs
+  the others and their tests.
+- **Frame detection (Critical):** `isSteamFrameBrowser()` must never match
+  Quest, Pico or Android browsers, and must not rely on the user agent alone
+  (the Frame's says x86_64; `userAgentData` says arm).
+- **Rendering workarounds (Warning):** code that requests XR sessions or sets
+  the renderer's session must keep going through `withoutProjectionLayers()`
+  and must not offer optional `layers` on a Frame; per-frame paths must keep
+  `shouldFinishXRFrame()`.
+- **Quest-only assumptions (Warning):** new input code that reads Touch slots
+  or profile ids directly instead of `FrameInput`, or haptics through
+  `hapticActuators[0].pulse()` instead of `pulseHaptics()`.
+- **Agent guidance (Suggestion):** a change to Frame input, the emulator
+  device, or the gamepad MCP tools should update
+  `packages/create/guidance/claude/.claude/skills/iwsdk-steam-frame/SKILL.md`
+  and the Steam Frame section of `packages/cli/guidance/AGENTS.md`.
 
 ---
 

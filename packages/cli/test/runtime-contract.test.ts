@@ -338,6 +338,38 @@ describe('runtime contract scene tools', () => {
     });
   });
 
+  test('addresses gamepad buttons by index or by name', () => {
+    const operation = getRuntimeOperationByToolName('xr_set_gamepad_state')!;
+
+    expect(
+      resolveRuntimeOperationRequest(operation, {
+        device: 'controller-left',
+        buttons: [
+          { name: 'dpad-up', value: 1 },
+          { index: 7, value: 0, touched: true },
+        ],
+      }).params,
+    ).toEqual({
+      device: 'controller-left',
+      buttons: [
+        { name: 'dpad-up', value: 1 },
+        { index: 7, value: 0, touched: true },
+      ],
+    });
+    expect(() =>
+      resolveRuntimeOperationRequest(operation, {
+        device: 'controller-left',
+        buttons: [{ value: 1 }],
+      }),
+    ).toThrow('must match a supported shape');
+    expect(() =>
+      resolveRuntimeOperationRequest(operation, {
+        device: 'controller-left',
+        buttons: [{ name: 'menu' }],
+      }),
+    ).toThrow('value is required');
+  });
+
   test('rejects unknown keys and invalid schema values before transport', () => {
     const step = getRuntimeOperationByToolName('ecs_step')!;
     const input = getRuntimeOperationByToolName('xr_set_input_mode')!;

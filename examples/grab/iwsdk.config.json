@@ -17,7 +17,7 @@
   },
   "dev": {
     "emulator": {
-      "device": "metaQuest3",
+      "device": "steamFrame",
       "activation": "always",
       "injectOnBuild": true
     }

@@ -12,7 +12,7 @@ Chromium XR, carries the controller patches; the controller models were
 extracted on a Frame and ship with IWFDK; haptics work. The rendering
 workarounds for other Frame browsers ([section 5](#5-making-a-webxr-app-great-on-the-steam-frame))
 are unit-tested but not yet run on the headset (see
-[What still needs a Frame](#8-what-still-needs-a-frame)).
+[What still needs a Frame](#9-what-still-needs-a-frame)).
 
 Controller paths and layout come from Valve's own OpenXR profile for the
 Frame controllers
@@ -35,6 +35,7 @@ shoulder button and thumbstick, with touch sensing on every button.
 | Controller models                 | The real models come from the OpenXR runtime (`XR_EXT_render_model`), which a page cannot reach; no Frame model exists in `@webxr-input-profiles`.                       | `tools/frame-models` extracts them on the headset with their animation; `loadFrameControllerModels()` shows and animates them ([section 4](#4-real-controller-models)).                                                                                                               |
 | Rendering                         | Chromium on the Frame offers WebXR projection layers it cannot composite (black headset), and builds without patch 0005 lose the right eye.                              | On a Steam Frame browser `@iwsdk/core` renders through an `XRWebGLLayer` and finishes each XR frame where needed ([section 5](#5-making-a-webxr-app-great-on-the-steam-frame)).                                                                                                       |
 | Haptics                           | Chromium XR vibrates XR controllers through `vibrationActuator.playEffect()`, Quest Browser through `hapticActuators[0].pulse()`.                                        | `pulseHaptics()` (and `frame.vibrate()`) try both.                                                                                                                                                                                                                                    |
+| Agent tooling                     | IWSDK's emulator, MCP tools and agent guidance assume a Quest: an agent never sees the Frame's controls and can't press the D-pad, shoulders, menu or view.              | `steamFrame` / `steamFrameTouch` emulator devices (`steamFrame` is the default), gamepad tools that address every button by name, and Frame guidance in generated projects ([section 8](#8-agents-and-the-emulator)).                                                                 |
 
 Package names stay `@iwsdk/*` for now so upstream merges stay mechanical (see
 [Tracking upstream](#7-tracking-upstream)). New code is under
@@ -480,9 +481,65 @@ Upstream-touching edits are deliberately small: `InputComponent` (6 ids),
 `core/src/input/input-manager.ts` and `input-actions.ts` (the `frame` source),
 `core/src/init/xr.ts` (no `layers` offer and no projection layer in a Steam
 Frame browser), `core/src/init/world-initializer.ts` (`render.finishXRFrames`),
-and `scripts/check-headers.mjs` (accepts the IWFDK header).
+and `scripts/check-headers.mjs` (accepts the IWFDK header). For the agent
+tooling ([section 8](#8-agents-and-the-emulator)): `vite-plugin-dev`'s
+`injection-template.ts`, `types.ts` and `index.ts` (Frame devices, default
+device), `cli/src/runtime-contract.ts` (gamepad tool schemas),
+`core/src/project/` and `core/schemas/` (device names),
+`create/src/project-manifest.ts` (VR starters emulate a Frame),
+`cli/guidance/AGENTS.md`, the `iwsdk-dev` playbooks, both code-reviewer agents,
+and the VR examples' `iwsdk.config.json`.
 
-## 8. What still needs a Frame
+## 8. Agents and the emulator
+
+IWSDK is built for coding agents: `iwsdk dev up` runs the app in a managed
+browser with IWER, its WebXR emulator, and an MCP server lets the agent enter
+XR, move and press the controllers, take screenshots and inspect the ECS. IWFDK
+makes that loop target the Frame.
+
+**Emulated Frames.** `dev.emulator.device` in `iwsdk.config.json` takes two
+Frame presets (`packages/vite-plugin-dev/src/steam-frame-device.ts`):
+
+| Device            | Emulates                                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `steamFrame`      | Chromium XR: `valve-frame` controllers with the [section 3](#3-the-valve-frame-gamepad-layout) layout, X/Y mirrored to the left |
+| `steamFrameTouch` | a Frame browser without the patches: SteamVR's Touch emulation (`oculus-touch`), so `frame.layout` reads `remapped`             |
+
+`steamFrame` is the default when a project names no device, and VR starters
+from `@iwsdk/create` name it; AR starters keep `metaQuest3`. Both presets offer
+`immersive-vr` only, with `viewer`, `local`, `local-floor`, `bounded-floor` and
+`hand-tracking`, no page-selectable frame rate, and a user agent naming ARM64
+Linux, so `isSteamFrameBrowser()` is true in the emulator and the app takes its
+Frame paths: Frame controller models, no `layers` offer. (The real browser's
+user agent says x86_64 and IWFDK knows it by `userAgentData`, which the
+emulator can't set.)
+
+**Every button by name.** IWER's `xr_get_gamepad_state` and
+`xr_set_gamepad_state` know six Touch buttons by index. IWFDK extends them to
+the emulated controller's whole gamepad
+(`packages/vite-plugin-dev/src/gamepad-remote.ts`): indices 0-5 keep their
+meaning, the other buttons follow by name (`x`, `y`, `shoulder`, `menu` on the
+right; `dpad-up` ... `dpad-right`, `shoulder`, `view` on the left), and
+`xr_set_gamepad_state` takes `{"name":"dpad-up","value":1}`. Quest presets are
+unchanged.
+
+**Guidance in generated projects.** `cli/guidance/AGENTS.md` (always loaded)
+says the app targets the Frame and gives the input, haptics and rendering
+rules; the `iwsdk-steam-frame` skill
+(`packages/create/guidance/claude/.claude/skills/`) has the details and the
+emulator recipes; the `iwsdk-dev` playbooks route input work to it; and the
+project code reviewer checks Steam Frame readiness (layers, AR, Frame-only
+controls without a fallback, direct `pulse()`, Touch-only assumptions). The
+SDK's own reviewer (`.claude/agents/iwsdk-code-reviewer.md`) guards the
+`valve-frame` layout across the profile, patches, emulator and docs.
+
+Verified in a browser (2026-10-06): an IWFDK `World` on `steamFrame` sees
+`valve-frame` controllers with 13/11 buttons, `frame.layout` `frame`, and every
+Frame-only control pressed by name; on `steamFrameTouch` it sees
+`oculus-touch`, `frame.layout` `remapped`, the D-pad from the left stick, and
+loads the Frame controller models in both.
+
+## 9. What still needs a Frame
 
 Verified on a Frame (2026-10-03/04): Chromium XR with patches 0004 and 0006
 reports `valve-frame` with the [section 3](#3-the-valve-frame-gamepad-layout)
@@ -498,3 +555,6 @@ agent says x86_64). Still open:
    `remapped`.
 3. **Chromium XR Sandboxed** (seccomp filter on).
 4. **Pinch thresholds** against Frame hand-tracking noise.
+5. **The emulated feature list.** The `steamFrame` presets offer
+   `bounded-floor` and `hand-tracking`; confirm Chromium XR grants both, and
+   update `steam-frame-device.ts` if not.

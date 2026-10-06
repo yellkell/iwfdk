@@ -319,7 +319,7 @@ function processOptions(
     ...(options.componentManifest == null
       ? {}
       : { componentManifest: options.componentManifest }),
-    device: emulator.device || 'metaQuest3',
+    device: emulator.device || 'steamFrame',
     injectOnBuild: emulator.injectOnBuild || false,
     activation: emulator.activation || 'localhost',
     verbose: options.verbose || false,
