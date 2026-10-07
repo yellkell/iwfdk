@@ -7,11 +7,13 @@
 
 import type { XRDevice as XRDeviceType } from 'iwer';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { steamFrameDeviceConfig } from '../../frame-kit/steam-frame-emulator.js';
 import { isSteamFrameBrowser } from '../../xr-input/src/frame/platform.js';
 import {
   ValveFrameButtonCount,
   ValveFrameGamepadIndex,
 } from '../../xr-input/src/gamepad/profiles/valve-frame.js';
+// @ts-expect-error plain JS module without types
 import { extendGamepadTools } from '../src/gamepad-remote.js';
 import {
   mirrorFrameXY,
@@ -221,5 +223,15 @@ describe('extended gamepad tools', () => {
       buttons: [{ name: 'x', value: 1 }],
     });
     expect(device.controllers.left!.getButtonValue('x-button')).toBe(1);
+  });
+});
+
+describe('frame-kit emulator', () => {
+  it('emulates the same devices as the dev server', async () => {
+    const iwer = await import('iwer');
+    expect(steamFrameDeviceConfig(iwer, 'steamFrame')).toEqual(steamFrame);
+    expect(steamFrameDeviceConfig(iwer, 'steamFrameTouch')).toEqual(
+      steamFrameTouch,
+    );
   });
 });

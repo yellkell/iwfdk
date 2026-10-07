@@ -228,8 +228,9 @@ everything has been seen (the terminal lists what is still missing) or after
 | `recording.json`               | the raw capture; `frame-models calibrate DIR` re-runs the calibration offline                       |
 
 **2. Load in the app.** IWFDK ships a set extracted from a Steam Frame
-(`packages/xr-input/frame-models`, served by jsDelivr from the
-`frame-models-1` tag) and loads it by itself when the page runs in a Steam
+(`packages/xr-input/frame-models`, served from the `frame-models-1` tag by
+GitHub's raw host; jsDelivr refuses files from this repository, which is over
+its 50 MB limit) and loads it by itself when the page runs in a Steam
 Frame browser: apps show Frame controllers with no code. To use your own
 extraction instead, serve its directory and pass it as
 `frameControllerModels` in the XR input options, or load it before entering
@@ -275,7 +276,12 @@ rest (the tool's summary and `missingCoverage` list them).
 
 What bringing WebXR apps (Fish & Chips, built with IWSDK) to the Frame
 taught, as a checklist. Each item says what IWFDK already does; apps on plain
-three.js or older IWSDK builds need to do it themselves. The Frame renders
+three.js or older IWSDK builds need to do it themselves, and
+[`packages/frame-kit`](packages/frame-kit/README.md) does it for them:
+Frame controller models, the Frame's controls with a fallback, haptics, the
+rendering fixes, and a virtual Frame for development. To port an existing app
+with a coding agent, point it at
+[`docs/public/skills/steam-frame-port/SKILL.md`](docs/public/skills/steam-frame-port/SKILL.md). The Frame renders
 2160×2160 pixels per eye at 90 Hz in Chromium XR on an Adreno 750: an
 11.1 ms frame.
 

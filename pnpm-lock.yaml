@@ -280,6 +280,12 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@20.19.25)(@vitest/coverage-v8@4.1.11)(vite@7.3.6(@types/node@20.19.25)(terser@5.44.1)(yaml@2.8.3))
 
+  packages/frame-kit:
+    dependencies:
+      three:
+        specifier: npm:super-three@0.181.0
+        version: super-three@0.181.0
+
   packages/locomotor:
     dependencies:
       three:

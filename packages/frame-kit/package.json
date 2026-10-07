@@ -1,0 +1,30 @@
+{
+  "name": "@iwfdk/frame-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Steam Frame support for existing WebXR apps: Frame controller models, Frame controls with fallbacks, haptics, rendering fixes, and a virtual Frame for development.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./steam-frame.js",
+    "./models": "./steam-frame-models.js",
+    "./emulator": "./steam-frame-emulator.js"
+  },
+  "files": [
+    "steam-frame.js",
+    "steam-frame-models.js",
+    "steam-frame-emulator.js",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "three": ">=0.150.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node --test test/steam-frame.test.mjs"
+  }
+}
