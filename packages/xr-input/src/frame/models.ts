@@ -46,11 +46,13 @@ export const FRAME_MODELS_FILE = 'frame-controller-models.json';
 /**
  * Where IWFDK's own Steam Frame controller models live: extracted from
  * SteamVR with `tools/frame-models` and kept in this repository
- * (`packages/xr-input/frame-models`), served by jsDelivr from a fixed tag.
+ * (`packages/xr-input/frame-models`), served from a fixed tag by GitHub's raw
+ * host (CORS-enabled). Not jsDelivr: it refuses files from repositories over
+ * 50 MB, which this one is (right.glb answered 403).
  * {@link XRInputManager} loads them by itself on a Steam Frame browser.
  */
 export const DEFAULT_FRAME_MODELS_URL =
-  'https://cdn.jsdelivr.net/gh/yellkell/iwfdk@frame-models-1/packages/xr-input/frame-models';
+  'https://raw.githubusercontent.com/yellkell/iwfdk/frame-models-1/packages/xr-input/frame-models';
 
 export interface FramePose {
   position: [number, number, number];
